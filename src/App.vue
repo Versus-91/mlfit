@@ -1,17 +1,21 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="columns is-multiline" id="app">
+    <SidebarComponent></SidebarComponent>
+    <MainComponent></MainComponent>
+
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import SidebarComponent from "./components/sidebar-component.vue";
+import MainComponent from "./components/main-component.vue";
+
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    SidebarComponent,
+    MainComponent,
   }
 }
 </script>
