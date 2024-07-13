@@ -1,8 +1,9 @@
 <template>
-  <div class="columns is-multiline" id="app">
-    <SidebarComponent></SidebarComponent>
-    <MainComponent></MainComponent>
-
+  <div class="container">
+    <div class="columns is-multiline" id="app">
+      <SidebarComponent @dataframe="setDataframePorp"></SidebarComponent>
+      <MainComponent :dataframe="dataframe"></MainComponent>
+    </div>
   </div>
 </template>
 
@@ -16,6 +17,16 @@ export default {
   components: {
     SidebarComponent,
     MainComponent,
+  },
+  data() {
+    return {
+      dataframe: null
+    }
+  },
+  methods: {
+    setDataframePorp(e) {
+      this.dataframe = e
+    }
   }
 }
 </script>

@@ -10,7 +10,7 @@ export class TXTParser extends DataParser {
         this.has_header = options.header
     }
     parse(content) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             Papa.parse(content, {
                 worker: false,
                 header: this.has_header,

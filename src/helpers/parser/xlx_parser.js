@@ -1,8 +1,9 @@
+/* eslint-disable no-undef */
 import { DataParser } from './parser';
 
 export class XLXParser extends DataParser {
     parse(content) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             var reader = new FileReader();
             reader.onload = function () {
                 var arrayBuffer = this.result,

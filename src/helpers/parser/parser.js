@@ -1,5 +1,6 @@
+/* eslint-disable no-unused-vars */
 export class DataParser {
-    parse(content) {
+    parse(_content) {
         throw new Error("Not implemented.")
     }
 }
