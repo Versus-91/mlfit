@@ -60,6 +60,7 @@ export const Settings = {
                     "values": [{ label: "linear", value: "linear" }, { label: "quadratic", value: "quadratic" }]
                 },
                 "priors": {
+                    label: "priors",
                     type: "text",
                     placeholder: "comma separated priors"
                 },
@@ -71,14 +72,17 @@ export const Settings = {
             "value": 3,
             "options": {
                 "min": {
+                    "label": "min",
                     type: "number",
                     default: 3
                 },
                 "max": {
+                    "label": "max",
                     type: "number",
                     default: 9
                 },
                 "metric": {
+                    label: "metrics",
                     type: "select",
                     default: "manhattan",
                     values: [{ label: "euclidean", value: "euclidean" }, { label: "manhattan", value: "manhattan" }]
@@ -97,11 +101,13 @@ export const Settings = {
                         , { label: "Sigmoid", value: "Sigmoid" }]
                 },
                 "gamma": {
+                    "label": "gamma",
                     type: "number",
                     for: ["RBF", "Sigmoid", "Polynomial"],
                     default: 1
                 },
                 "bias": {
+                    "label": "bias",
                     type: "number",
                     for: ["Sigmoid", "Sigmoid"],
                     default: 0
@@ -119,18 +125,22 @@ export const Settings = {
             "value": 5,
             "options": {
                 "estimators": {
+                    label: "estimators",
                     type: "number",
                     default: 100
                 },
                 "features": {
+                    label: "features",
                     type: "number",
                     default: "sqrt"
                 },
                 "depth": {
+                    label: "depth",
                     type: "number",
                     default: 5
                 },
                 "criteria": {
+                    label: "criteria",
                     type: "select",
                     default: "gini",
                     "values": [{ label: "gini", value: "gini" }, { label: "log loss", value: "log_loss" },

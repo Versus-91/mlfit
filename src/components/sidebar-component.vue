@@ -35,15 +35,28 @@
                     </b-select>
                 </b-field>
                 <b-field label="Model" :label-position="'on-border'">
-                    <b-select :expanded="true" v-model="modelOption" size="is-small">
+                    <b-select :disabled="tuneModel" :expanded="true" v-model="modelOption" size="is-small">
                         <option v-for="option in modelOptions" :value="option.id" :key="option.id">
                             {{ option.label }}
                         </option>
                     </b-select>
+                    <b-button @click="configureModel" size="is-small" icon-pack="fas"
+                        :icon-left="!this.tuneModel ? 'cog' : 'arrow-left'"></b-button>
                 </b-field>
+                <section v-if="tuneModel" class="mx-1">
+                    <b-field v-for="(option, i) in modelConfigurations" :key="i" :label="option.label"
+                        :label-position="'on-border'">
+                        <b-select :expanded="true" size="is-small" v-if="option.type === 'select'">
+                            <option v-for="(item, index) in option.values" :value="item.value" :key="index">
+                                {{ item.label }}
+                            </option>
+                        </b-select>
+                        <b-input size="is-small" type="number" v-else-if="option.type === 'number'"></b-input>
+                        <b-input size="is-small" type="text" v-else-if="option.type === 'text'"></b-input>
+                    </b-field>
+                </section>
                 <b-field>
-                    <b-button @click="train" size="is-small" icon-pack="fas" icon-left="play"
-                        type="is-success is-light">
+                    <b-button @click="train" size="is-small" icon-pack="fas" icon-left="play" type=" is-light">
                         train</b-button>
                 </b-field>
             </div>
@@ -111,6 +124,7 @@ export default {
 
     data() {
         return {
+            tuneModel: false,
             seed: 1,
             dataframe: null,
             configureFeatures: false,
@@ -121,6 +135,7 @@ export default {
             crossValidationOption: 1,
             columns: [],
             modelTarget: null,
+            modelConfigurations: null,
             imputationOptions: [{
                 id: 1,
                 label: 'Delete rows'
@@ -150,6 +165,15 @@ export default {
         }
     },
     methods: {
+        configureModel() {
+            this.tuneModel = !this.tuneModel;
+            for (const key in this.modelOptions) {
+                const model = this.modelOptions[key];
+                if (model.id === this.modelOption) {
+                    this.modelConfigurations = model.options
+                }
+            }
+        },
         generateTargetDropdown(e) {
             this.columns = e.columns;
             this.featureSettings = this.columns.map((column, index) => {
@@ -160,6 +184,7 @@ export default {
                 }
             })
             this.modelTarget = e.columns[e.columns.length - 1];
+            this.dataframe = e;
             this.$emit('dataframe', e)
             let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
             for (let i = 0; i < selectedFeatures.length; i++) {
@@ -176,7 +201,7 @@ export default {
             }
         },
         async train() {
-            let len = this.dataframe.$data.lengththis.dataframe.$data.length;
+            let len = this.dataframe.$data.length;
             let seed = this.seed;
             let dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
             let numericColumns = this.settings.items.filter(m => m.selected).map(m => m.name)
@@ -194,11 +219,11 @@ export default {
             }
             let filterd_dataset = dataset.loc({ columns: selected_columns })
             filterd_dataset.dropNa({ axis: 1, inplace: true })
-
             const targets = filterd_dataset.column(target)
             filterd_dataset.drop({ columns: target, inplace: true })
             const cross_validation_setting = this.crossValidationOption;
-            filterd_dataset = encode_dataset(filterd_dataset, this.settings.items.filter(m => m.selected).map(m => {
+            console.log(this.settings.items);
+            filterd_dataset = encode_dataset(filterd_dataset, this.settings.items.filter(m => m.selected).filter(m => m.name !== this.settings.modelTarget).map(m => {
                 return {
                     name: m.name,
                     type: m.type

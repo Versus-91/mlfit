@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import { asyncRun } from "./py-worker";
 import { MinMaxScaler, StandardScaler, LabelEncoder, getDummies } from 'danfojs/dist/danfojs-base';
-import { FeatureCategories } from '../helpers/settings'
+import { FeatureCategories, Settings } from '../helpers/settings'
 
 import * as Papa from 'papaparse';
 async function parseCsv(data) {
@@ -345,7 +345,7 @@ export function handle_missing_values(data_frame, impute = true) {
             }
         })
         string_columns.forEach(element => {
-            let mode = this.getCategoricalMode(element).mode
+            let mode = getCategoricalMode(element).mode
             string_column_modes.push(mode)
         });
         numeric_columns.forEach(element => {
@@ -359,6 +359,41 @@ export function handle_missing_values(data_frame, impute = true) {
         data_frame.dropNa({ axis: 1, inplace: true })
     }
     return data_frame
+}
+export function getCategoricalMode(arr) {
+    if (arr.length === 0) {
+        return null;
+    }
+
+    const categoryCount = {};
+    categoryCount['total'] = 0
+    categoryCount['mode'] = ''
+    for (let i = 0; i < arr.length; i++) {
+        const category = arr[i];
+        if (category === null || category === undefined) {
+            continue
+        }
+        categoryCount['total']++
+        if (category in categoryCount) {
+            categoryCount[category]++;
+        } else {
+            categoryCount[category] = 1;
+        }
+    }
+
+    let modeCategory = null;
+    let modeCount = 0;
+    for (const category in categoryCount) {
+        if (category === 'total') {
+            continue
+        }
+        if (categoryCount[category] > modeCount) {
+            modeCategory = category;
+            modeCount = categoryCount[category];
+        }
+    }
+    categoryCount['mode'] = modeCategory;
+    return categoryCount;
 }
 export function encode_dataset(data_frame, columns_types, model) {
     let df = data_frame.copy()
