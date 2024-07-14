@@ -1,10 +1,10 @@
 <template>
-    <div class="column is-9">
+    <div class="column is-10">
         <section>
-            <b-tabs v-model="activeTab">
+            <b-tabs type="is-toggle" v-model="activeTab" :position="'is-centered'">
                 <b-tab-item label="Data Anaysis">
-                    <section>
-                        <b-message title="Default" v-model="isActive" :closable="false">
+                    <section v-if="dataframe">
+                        <b-message title="Default" v-model="isActive" type="is-info" :closable="false">
                             <div class="columns is-multiline">
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Continious Features :</h5>
@@ -24,18 +24,16 @@
                             </div>
                         </b-message>
                     </section>
-                    <template #empty>
-                        <div class="has-text-centered">No records</div>
-                    </template>
+                    <section v-else>
+                        <b-message type="is-danger" has-icon icon-pack="fas">
+                            Upload a dataset or select a sample from sidebar.
+                        </b-message>
+                    </section>
                 </b-tab-item>
 
                 <b-tab-item label="Dymensionality Reduction">
-                    What light is light, if Silvia be not seen? <br>
-                    What joy is joy, if Silvia be not by— <br>
-                    Unless it be to think that she is by <br>
-                    And feed upon the shadow of perfection? <br>
-                    Except I be by Silvia in the night, <br>
-                    There is no music in the nightingale.
+                    <dmensionality-reduction-component :dataframe="dataframe"
+                        :columns="selectedFeatures"></dmensionality-reduction-component>
                 </b-tab-item>
                 <b-tab-item label="Results Analysis">
                     Lorem ipsum dolor sit amet.
@@ -47,6 +45,7 @@
                     Maecenas vehicula pulvinar tellus, id sodales felis lobortis eget.
                 </b-tab-item>
             </b-tabs>
+
         </section>
     </div>
 </template>
@@ -54,12 +53,17 @@
 <script>
 import UI from '@/helpers/ui';
 import { toJSON } from 'danfojs';
+import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
 let ui = new UI(null, null)
 export default {
     name: 'MainComponent',
+    components: {
+        'dmensionality-reduction-component': PCAComponent
+    },
     props: {
         msg: String,
-        dataframe: Object
+        dataframe: Object,
+        selectedFeatures: []
     },
     data() {
         return {
@@ -76,13 +80,15 @@ export default {
             datasetColumns: [
             ],
             isActive: true,
-            activeTab: 0
+            activeTab: 0,
         }
+    },
+    methods: {
+
     },
     watch: {
         dataframe: async function (val) {
             let datasetStats = ui.renderDatasetStats(val);
-            console.log(datasetStats);
             this.continiousFeaturesColumns = datasetStats[0];
             this.continiousFeaturesStats = datasetStats[1];
             this.categoricalFeaturesColumns = datasetStats[2];
@@ -95,9 +101,6 @@ export default {
                 }
             });
             this.sampleData = toJSON(val.head(5));
-            console.log(this.sampleData);
-            console.log(this.datasetColumns);
-
         }
     },
 }

@@ -1,13 +1,10 @@
 <template>
     <div class="column is-12">
-        <b-field class="file is-primary" :class="{ 'has-name': !!file }">
+        <b-field class="file is-warning" :class="{ 'has-name': !!file }">
             <b-upload accept=".csv" v-model="file" class="file-label">
                 <span class="file-cta">
                     <b-icon pack="fas" class="file-icon" icon="upload"></b-icon>
-                    <span class="file-label">Upload</span>
-                </span>
-                <span class="file-name" v-if="file">
-                    {{ file.name }}
+                    <span class="file-label">{{ file?.name || "Upload" }}</span>
                 </span>
             </b-upload>
         </b-field>

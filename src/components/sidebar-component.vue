@@ -1,12 +1,15 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
-    <div class="column is-3">
+    <div class="column is-2">
         <section v-if="!configureFeatures">
             <upload-component @dataframe="generateTargetDropdown"></upload-component>
             <div class="column is-12">
-                <b-button @click="configureFeatures = !configureFeatures" size="is-small" type="is-primary is-light"
-                    icon-pack="fas" icon-left="cog">Select Features {{ featureSettings.filter(feature =>
-                        feature.selected).length }}</b-button>
+                <b-field>
+                    <b-button @click="configureFeatures = !configureFeatures" size="is-small" type="is-primary is-light"
+                        icon-pack="fas" icon-left="cog">Select Features {{ featureSettings.filter(feature =>
+                            feature.selected).length }}</b-button>
+                </b-field>
+
                 <b-field label="Target" :label-position="'on-border'">
                     <b-select :expanded="true" v-model="modelTarget" size="is-small">
                         <option v-for="option in columns" :value="option" :key="option">
@@ -34,6 +37,10 @@
                             {{ option.label }}
                         </option>
                     </b-select>
+                </b-field>
+                <b-field>
+                    <b-button size="is-small" icon-pack="fas" icon-left="play" type="is-success is-light">
+                        train</b-button>
                 </b-field>
             </div>
         </section>
@@ -70,7 +77,6 @@
                                     </option>
                                 </b-select>
                             </td>
-
                         </tr>
                     </tbody>
                 </table>
@@ -82,9 +88,14 @@
 <script>
 import UploadComponent from "./upload-component.vue";
 import { Settings, FeatureCategories } from '../helpers/settings'
-
+import { settingStore } from '../stores/settings'
 export default {
     name: 'SidebarComponent',
+    setup() {
+        const settings = settingStore()
+
+        return { settings }
+    },
     components: {
         UploadComponent
     },
@@ -142,18 +153,28 @@ export default {
                 }
             })
             this.modelTarget = e.columns[e.columns.length - 1];
-            this.$emit('dataframe', e);
+            this.$emit('dataframe', e)
+            let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
+            for (let i = 0; i < selectedFeatures.length; i++) {
+                this.settings.addFeature(selectedFeatures[i])
+            }
         },
         checkModelType() {
-            console.log('cc');
             let targetFeature = this.featureSettings.find(feature => feature.name == this.modelTarget);
+            this.settings.setModelType(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
             this.modelOptions = targetFeature.type === FeatureCategories.Numerical.id ? Settings.regression : Settings.classification;
+            let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
+            for (let i = 0; i < selectedFeatures.length; i++) {
+                this.settings.addFeature(selectedFeatures[i])
+            }
         }
     },
     watch: {
         modelTarget: function name(target, oldVal) {
             if (target !== oldVal) {
+                this.settings.setTarget(target)
                 let targetFeature = this.featureSettings.find(feature => feature.name == target);
+                this.settings.setModelType(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
                 this.modelOptions = targetFeature.type === FeatureCategories.Numerical.id ? Settings.regression : Settings.classification;
             }
         },

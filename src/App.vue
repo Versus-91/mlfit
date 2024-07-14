@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div class="columns is-multiline" id="app">
-      <SidebarComponent @dataframe="setDataframePorp"></SidebarComponent>
-      <MainComponent :dataframe="dataframe"></MainComponent>
+      <SidebarComponent @dataframe="setDataframePorp" @selected-features="setSelectedFeatures"></SidebarComponent>
+      <MainComponent :dataframe="dataframe" :selectedFeatures="selectedFeatures"></MainComponent>
     </div>
   </div>
 </template>
@@ -20,12 +20,16 @@ export default {
   },
   data() {
     return {
-      dataframe: null
+      dataframe: null,
+      selectedFeatures: []
     }
   },
   methods: {
     setDataframePorp(e) {
       this.dataframe = e
+    },
+    setSelectedFeatures(e) {
+      this.selectedFeatures = e
     }
   }
 }
