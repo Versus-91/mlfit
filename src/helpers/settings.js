@@ -11,8 +11,28 @@ export const FeatureCategories = {
         id: 3,
         name: "Ordinal"
     }
+};
+export const ScaleOptions = {
+    "No": {
+        id: 0,
+        name: "No",
+    },
+    "Scale": {
+        id: 1,
+        name: "Scale"
+    }
+    , "x^2": {
+        id: 2,
+        name: "x^2"
+    }
+    , "ln(x)": {
+        id: 3,
+        name: "ln(x)"
+    }, "Standardize": {
+        id: 4,
+        name: "Standardize"
+    }
 }
-    ;
 export const Settings = {
     "classification": {
         "logistic_regression": {

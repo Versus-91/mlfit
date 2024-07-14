@@ -1658,35 +1658,35 @@ export default class ChartController {
                 Plotly.react('scatterplot_mtx', traces, layout, {
                     staticPlot: true
                 })
-                let column_width = 100 / features.length;
-                const target = document.getElementById("target").value;
-                let content = `<div class="columns my-1 ml-5 is-multiline" style="width:${features.length * 100}">`;
-                features.forEach(feature => {
+                // let column_width = 100 / features.length;
+                // const target = document.getElementById("target").value;
+                // let content = `<div class="columns my-1 ml-5 is-multiline" style="width:${features.length * 100}">`;
+                // features.forEach(feature => {
 
-                    content += `<div style="width: ${column_width}%">
-                    <div class="select px-1 is-small is-fullwidth">
-                        <select id="${feature + '--normal2'}">
-                            <option selected>${feature}</option>
-                            <option value="0">No</option>
-                            <option value="1">Scale</option>
-                            <option value="2">x^2</option>
-                            <option value="3">ln(x)</option>
-                            <option value="4">Standardize </option>
-                        </select>
-                    </div>
-                    </div>`
+                //     content += `<div style="width: ${column_width}%">
+                //     <div class="select px-1 is-small is-fullwidth">
+                //         <select id="${feature + '--normal2'}">
+                //             <option selected>${feature}</option>
+                //             <option value="0">No</option>
+                //             <option value="1">Scale</option>
+                //             <option value="2">x^2</option>
+                //             <option value="3">ln(x)</option>
+                //             <option value="4">Standardize </option>
+                //         </select>
+                //     </div>
+                //     </div>`
 
-                });
-                content += '</div>'
-                $("#scatterplot_mtx").append(content)
-                $("#scatterplot_mtx").append(`<button class="button is-small" id="splom_update">Update</button>`);
-                features.forEach(feature => {
-                    document.getElementById(feature + '--normal2').addEventListener('change', function () {
-                        let data = dataset.loc({ columns: [feature, target] });
-                        let normalization_type = document.getElementById(feature + '--normal').value
-                        scale_data(data, feature, normalization_type)
-                    });
-                });
+                // });
+                // content += '</div>'
+                // $("#scatterplot_mtx").append(content)
+                // $("#scatterplot_mtx").append(`<button class="button is-small" id="splom_update">Update</button>`);
+                // features.forEach(feature => {
+                //     document.getElementById(feature + '--normal2').addEventListener('change', function () {
+                //         let data = dataset.loc({ columns: [feature, target] });
+                //         let normalization_type = document.getElementById(feature + '--normal').value
+                //         scale_data(data, feature, normalization_type)
+                //     });
+                // });
                 resolve()
 
             }, 1000);

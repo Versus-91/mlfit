@@ -4,7 +4,7 @@
             <b-tabs type="is-toggle" v-model="activeTab" :position="'is-centered'">
                 <b-tab-item label="Data Anaysis">
                     <section v-if="dataframe">
-                        <b-message title="Default" v-model="isActive" type="is-info" :closable="false">
+                        <b-message title="Data summary" v-model="isActive" type="is-info" :closable="false">
                             <div class="columns is-multiline">
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Continious Features :</h5>
@@ -23,12 +23,16 @@
                                 </div>
                             </div>
                         </b-message>
+                        <section>
+                            <scatterplot-matrix-component :dataframe="dataframe"></scatterplot-matrix-component>
+                        </section>
                     </section>
                     <section v-else>
                         <b-message type="is-danger" has-icon icon-pack="fas">
                             Upload a dataset or select a sample from sidebar.
                         </b-message>
                     </section>
+
                 </b-tab-item>
 
                 <b-tab-item label="Dymensionality Reduction">
@@ -54,11 +58,14 @@
 import UI from '@/helpers/ui';
 import { toJSON } from 'danfojs';
 import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
+import ScatterplotMatrixComponent from './visualization/scatterplot-matrix-component.vue'
 let ui = new UI(null, null)
 export default {
     name: 'MainComponent',
     components: {
-        'dmensionality-reduction-component': PCAComponent
+        'dmensionality-reduction-component': PCAComponent,
+        'scatterplot-matrix-component': ScatterplotMatrixComponent,
+
     },
     props: {
         msg: String,
