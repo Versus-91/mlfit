@@ -9,7 +9,10 @@
                         icon-pack="fas" icon-left="cog">Select Features {{ featureSettings.filter(feature =>
                             feature.selected).length }}</b-button>
                 </b-field>
-
+                <b-field label="Seed" :label-position="'on-border'">
+                    <b-input v-model="seed" size="is-small" placeholder="Seed" type="number" min="0">
+                    </b-input>
+                </b-field>
                 <b-field label="Target" :label-position="'on-border'">
                     <b-select :expanded="true" v-model="modelTarget" size="is-small">
                         <option v-for="option in columns" :value="option" :key="option">
@@ -39,7 +42,8 @@
                     </b-select>
                 </b-field>
                 <b-field>
-                    <b-button size="is-small" icon-pack="fas" icon-left="play" type="is-success is-light">
+                    <b-button @click="train" size="is-small" icon-pack="fas" icon-left="play"
+                        type="is-success is-light">
                         train</b-button>
                 </b-field>
             </div>
@@ -88,7 +92,9 @@
 <script>
 import UploadComponent from "./upload-component.vue";
 import { Settings, FeatureCategories } from '../helpers/settings'
+import { ModelFactory } from "@/helpers/model_factory";
 import { settingStore } from '../stores/settings'
+import { apply_data_transformation, handle_missing_values, encode_dataset } from '@/helpers/utils';
 export default {
     name: 'SidebarComponent',
     setup() {
@@ -105,6 +111,7 @@ export default {
 
     data() {
         return {
+            seed: 1,
             dataframe: null,
             configureFeatures: false,
             modelOptions: Settings.classification,
@@ -167,6 +174,54 @@ export default {
             for (let i = 0; i < selectedFeatures.length; i++) {
                 this.settings.addFeature(selectedFeatures[i])
             }
+        },
+        async train() {
+            let len = this.dataframe.$data.lengththis.dataframe.$data.length;
+            let seed = this.seed;
+            let dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
+            let numericColumns = this.settings.items.filter(m => m.selected).map(m => m.name)
+            let model_name = this.modelOption;
+            const target = this.settings.modelTarget;
+            dataset = handle_missing_values(dataset)
+            dataset = apply_data_transformation(dataset, numericColumns);
+            let selected_columns = this.settings.items.filter(m => m.selected).map(m => m.name)
+            const index = selected_columns.findIndex(m => m === target)
+            if (index === -1) {
+                selected_columns.push(target)
+            }
+            if (selected_columns.length < 2) {
+                throw new Error("most select at least 2 features")
+            }
+            let filterd_dataset = dataset.loc({ columns: selected_columns })
+            filterd_dataset.dropNa({ axis: 1, inplace: true })
+
+            const targets = filterd_dataset.column(target)
+            filterd_dataset.drop({ columns: target, inplace: true })
+            const cross_validation_setting = this.crossValidationOption;
+            filterd_dataset = encode_dataset(filterd_dataset, this.settings.items.filter(m => m.selected).map(m => {
+                return {
+                    name: m.name,
+                    type: m.type
+                }
+            }), model_name)
+            let x_train, y_train, x_test, y_test;
+            if (cross_validation_setting === 1) {
+                const limit = Math.ceil(len * 70 / 100)
+                const train_bound = `0:${limit}`
+                const test_bound = `${limit}:${len}`
+                x_train = filterd_dataset.iloc({ rows: [`0: ${limit}`] })
+                y_train = targets.iloc([train_bound])
+                x_test = filterd_dataset.iloc({ rows: [`${limit}: ${len}`] });
+                y_test = targets.iloc([test_bound]);
+            } else if (cross_validation_setting === 2) {
+                x_train = filterd_dataset
+                y_train = targets
+                x_test = filterd_dataset
+                y_test = targets
+            }
+
+            let model_factory = new ModelFactory();
+            console.log(model_factory, y_test, x_test, y_train, x_train);
         }
     },
     watch: {

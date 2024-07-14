@@ -32,18 +32,21 @@
                 </option>
             </b-select>
         </b-field>
-        <b-field label="Seed" :label-position="'on-border'">
-            <b-input size="is-small" placeholder="Seed" type="number" min="0">
-            </b-input>
-        </b-field>
+
     </div>
 </template>
 
 <script>
 import { ParserFactory } from '../helpers/parser/parser_factory.js'
 import { DataFrame } from 'danfojs/dist/danfojs-base';
+import { settingStore } from '@/stores/settings'
+
 const DATASET_SIZE = 10000;
 export default {
+    setup() {
+        const settings = settingStore()
+        return { settings }
+    },
     name: 'UploadComponent',
     props: {
         msg: String
@@ -102,9 +105,9 @@ export default {
         }
     },
     watch: {
-        // eslint-disable-next-line no-unused-vars
-        file: async function (val, oldVal) {
+        file: async function (val) {
             let result = await this.process_file(val, 'csv')
+            this.settings.resetFeatures()
             this.$emit('dataframe', result)
         }
     },

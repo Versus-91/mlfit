@@ -15,6 +15,9 @@ export const settingStore = defineStore({
         modelType: (state) => state.isClassification,
     },
     actions: {
+        resetFeatures() {
+            this.features = []
+        },
         addFeature(feature) {
             let index = this.features.findIndex(m => m.name === feature.name);
             if (index !== -1) {

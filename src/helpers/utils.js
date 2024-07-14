@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import { asyncRun } from "./py-worker";
-import { MinMaxScaler, StandardScaler } from 'danfojs/dist/danfojs-base';
+import { MinMaxScaler, StandardScaler, LabelEncoder, getDummies } from 'danfojs/dist/danfojs-base';
+import { FeatureCategories } from '../helpers/settings'
 
 import * as Papa from 'papaparse';
 async function parseCsv(data) {
@@ -328,6 +329,56 @@ export function apply_data_transformation(dataset, column_names) {
         }
     }
     return dataset
+}
+export function handle_missing_values(data_frame, impute = true) {
+    // to do normalization
+    if (impute) {
+        let string_columns = []
+        let numeric_columns = []
+        let string_column_modes = []
+        let numeric_column_means = []
+        data_frame.columns.forEach((item) => {
+            if (data_frame.column(item)?.dtype === 'string') {
+                string_columns.push(item)
+            } else {
+                numeric_columns.push(item)
+            }
+        })
+        string_columns.forEach(element => {
+            let mode = this.getCategoricalMode(element).mode
+            string_column_modes.push(mode)
+        });
+        numeric_columns.forEach(element => {
+            let mean = data_frame.column(element).mean()
+            numeric_column_means.push(mean)
+        });
+        data_frame = data_frame.fillNa(string_column_modes, { columns: string_columns })
+        data_frame = data_frame.fillNa(numeric_column_means, { columns: numeric_columns })
+
+    } else {
+        data_frame.dropNa({ axis: 1, inplace: true })
+    }
+    return data_frame
+}
+export function encode_dataset(data_frame, columns_types, model) {
+    let df = data_frame.copy()
+
+    let categorical_columns = columns_types.filter(column => column.type === FeatureCategories.Nominal.id || column.type === FeatureCategories.Ordinal.id)
+    categorical_columns.forEach((column) => {
+        if (column.type === FeatureCategories.Ordinal.id) {
+            let encoder = new LabelEncoder()
+            encoder.fit(df[column.name])
+            let encoded_column = encoder.transform(df[column.name])
+            df.addColumn(column.name, encoded_column.values, { inplace: true })
+        } else {
+            df = getDummies(df, { columns: [column.name] })
+            if (model === Settings.classification.logistic_regression.label || model === Settings.regression.linear_regression.label) {
+                df.drop({ columns: [df.columns.find(m => m.includes(column.name + "_"))], inplace: true })
+            }
+        }
+    })
+
+    return df
 }
 
 
