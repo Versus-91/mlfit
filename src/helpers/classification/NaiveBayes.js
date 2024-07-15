@@ -7,14 +7,16 @@ export default class NaiveBayes {
         this.model = null
     }
     async train(x_train, y_train, x_test = null) {
-        const priors = this.options.priors ? this.options.priors?.split(',').map((m) => parseFloat(m)) : undefined
-        if (this.options.type === "Gaussian") {
+        const priors = this.options.priors.value ? this.options.priors?.value.split(',').map((m) => parseFloat(m)) : undefined
+        if (this.options.type.value === "Gaussian") {
             this.model = new GaussianNB({ priors: priors })
             await this.model.fit(x_train, y_train)
+            const predictions = this.model.predict(x_test);
+            return Array.from(predictions.dataSync());
         } else {
             this.context = {
-                nb_type: this.options.type === "Multinomial" ? 0 : 1,
-                priors: this.options.priors,
+                nb_type: this.options.type.value === "Multinomial" ? 0 : 1,
+                priors: this.options.priors.value,
                 X_train: x_train,
                 y_train: y_train,
                 X_test: x_test,
@@ -40,7 +42,7 @@ export default class NaiveBayes {
                 const { results, error } = await asyncRun(script, this.context);
                 if (results) {
                     console.log("pyodideWorker return results: ", results);
-                    return results;
+                    return Array.from(results);
                 } else if (error) {
                     console.log("pyodideWorker error: ", error);
                 }
@@ -52,9 +54,5 @@ export default class NaiveBayes {
         }
 
 
-    }
-    predict(x_test) {
-        const result = this.model.predict(x_test);
-        return result.dataSync()
     }
 }

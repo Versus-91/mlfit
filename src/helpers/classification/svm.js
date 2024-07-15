@@ -1,15 +1,25 @@
 import SVM from "libsvm-js/asm";
 export default class SupportVectorMachine {
-    constructor(options) {
+    constructor(opt) {
+        let options = {
+            kernel: SVM.KERNEL_TYPES[opt.kernel.value.toUpperCase()],
+            type: SVM.SVM_TYPES.C_SVC,
+            coef0: opt.bias.value,
+            gamma: opt.gamma.value,
+            degree: opt.degree.value,
+            quiet: true
+        }
         this.model = new SVM(options);
     }
-    train(x_train, y_train) {
+    train(x_train, y_train, x_test) {
 
         return new Promise((resolve, reject) => {
             try {
                 setTimeout(async () => {
                     this.model.train(x_train, y_train);
-                    resolve()
+                    const result = this.model.predict(x_test);
+                    this.model.free();
+                    resolve(result)
                 }, 1000)
             } catch (error) {
                 reject(error)

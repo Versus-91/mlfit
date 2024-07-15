@@ -1,8 +1,11 @@
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
+
 import { MinMaxScaler, StandardScaler } from 'danfojs/dist/danfojs-base';
 import { calculateRSquared, calculateMSE, encode_name } from './utils';
-
+import $ from "jquery";
 import { FeatureCategories, Settings } from "./settings.js";
+
 export default class UI {
     constructor(parser, chart_controller) {
         this.data_parser = parser
@@ -920,56 +923,50 @@ export default class UI {
     //         bDestroy: true,
     //     });
     // }
-    // predictions_table(x, y, encoder, predictions, probs = null, tab_index = 0) {
-    //     let content = `
-    //     <div class="column is-12">
-    //         <table id="predictions_table_${tab_index}" class="table is-bordered is-hoverable is-narrow display is-size-7" width="100%">
-    //        </table>
-    //     </div>`
-    //     $("#tabs_info li[data-index='" + tab_index + "'] #results_" + tab_index + "").append(content);
-    //     let table_columns = [];
-    //     if (probs !== null) {
-    //         x.addColumn("probs", probs, { inplace: true });
-    //     }
-    //     x.addColumn("y", y, { inplace: true });
-    //     x.addColumn("predictions: ", encoder.inverseTransform(predictions), { inplace: true });
-    //     x.columns.forEach(element => {
-    //         table_columns.push({ title: element });
-    //     });
-    //     new DataTable('#predictions_table_' + tab_index, {
-    //         pageLength: 10,
-    //         responsive: true,
-    //         paging: true,
-    //         "bPaginate": true,
-    //         columns: table_columns,
-    //         data: x.values,
-    //         bDestroy: true,
-    //         columnDefs: [
-    //             {
-    //                 render: function (data, type, row) {
-    //                     for (let i = 0; i < data.length; i++) {
-    //                         data[i] = data[i].toFixed(2);
-    //                     }
-    //                     return data
-    //                 },
-    //                 targets: [-3]
-    //             },
-    //             {
-    //                 render: function (data, type, row) {
-    //                     return data.toFixed(2);
-    //                 },
-    //                 targets: [...Array(table_columns.length - 3).keys()]
-    //             }
-    //         ],
-    //         rowCallback: function (row, data, index) {
-    //             var prediction = data[table_columns.length - 1];
-    //             var y = data[table_columns.length - 2];
-    //             if (prediction !== y) {
-    //                 $(row).addClass('is-danger');
-    //             }
-    //         }
-    //     });
-    // }
+    predictions_table(x, y, encoder, predictions, probs = null, tab_index = 0) {
+        let table_columns = [];
+        if (probs !== null) {
+            x.addColumn("probs", probs, { inplace: true });
+        }
+        x.addColumn("y", y, { inplace: true });
+        x.addColumn("predictions: ", encoder.inverseTransform(predictions), { inplace: true });
+        x.columns.forEach(element => {
+            table_columns.push({ title: element });
+        });
+        new DataTable('#predictions_table_' + tab_index, {
+            pageLength: 10,
+            responsive: true,
+            paging: true,
+            "bPaginate": true,
+            columns: table_columns,
+            data: x.values,
+            bDestroy: true,
+            columnDefs: [
+                {
+                    render: function (data, type, row) {
+                        for (let i = 0; i < data.length; i++) {
+                            data[i] = data[i].toFixed(2);
+                        }
+                        return data
+                    },
+                    targets: [-3]
+                },
+                {
+                    render: function (data, type, row) {
+                        return data.toFixed(2);
+                    },
+                    targets: [...Array(table_columns.length - 3).keys()]
+                }
+            ],
+            rowCallback: function (row, data, index) {
+                var prediction = data[table_columns.length - 1];
+                var y = data[table_columns.length - 2];
+                if (prediction !== y) {
+                    $(row).addClass('is-danger');
+                }
+            }
+        });
+    }
     // regression_metrics_display(y_test, predictions, tab_index) {
     //     let r2 = calculateRSquared(y_test.values, predictions);
     //     let mse = calculateMSE(y_test.values, predictions);

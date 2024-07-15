@@ -40,7 +40,7 @@
                         :columns="selectedFeatures"></dmensionality-reduction-component>
                 </b-tab-item>
                 <b-tab-item label="Results Analysis">
-                    Lorem ipsum dolor sit amet.
+                    <results-component></results-component>
                 </b-tab-item>
                 <b-tab-item label="Details" disabled>
                     Nunc nec velit nec libero vestibulum eleifend.
@@ -59,13 +59,14 @@ import UI from '@/helpers/ui';
 import { toJSON } from 'danfojs';
 import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
 import ScatterplotMatrixComponent from './visualization/scatterplot-matrix-component.vue'
+import ResultsComponent from './tabs/results-component.vue'
 let ui = new UI(null, null)
 export default {
     name: 'MainComponent',
     components: {
         'dmensionality-reduction-component': PCAComponent,
         'scatterplot-matrix-component': ScatterplotMatrixComponent,
-
+        'results-component': ResultsComponent,
     },
     props: {
         msg: String,

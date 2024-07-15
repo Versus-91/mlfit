@@ -12,8 +12,7 @@ import { scale_data } from './utils';
 import { tensorflow } from 'danfojs/dist/danfojs-base';
 
 export default class ChartController {
-    constructor(data_processor) {
-        this.data_processor = data_processor
+    constructor() {
         this.color_scheme = schemeCategory10;
     }
 
@@ -667,9 +666,6 @@ export default class ChartController {
         };
         var data = [trace1, trace2];
 
-        var chart_container = `<div class="column is-6" style="height: 40vh" id="pca_results_${index}"></div>`
-        $("#tabs_info li[data-index='" + index + "'] #results_" + index + "").append(chart_container);
-
         Plotly.newPlot('pca_results_' + index, data, {
             hovermode: "closest",
             hoverlabel: { bgcolor: "#FFF" },
@@ -1000,10 +996,10 @@ export default class ChartController {
     }
     async plot_confusion_matrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
         const confusionMatrix = await tfvis.metrics.confusionMatrix(y, predictedLabels);
-        let div = document.createElement('div');
-        div.classList.add('column');
-        div.classList.add('is-12');
-        div.setAttribute("id", "result_number_" + tab_index);
+        // let div = document.createElement('div');
+        // div.classList.add('column');
+        // div.classList.add('is-12');
+        // div.setAttribute("id", "result_number_" + tab_index);
         let metric = await metrics(y.arraySync(), predictedLabels.arraySync(), uniqueClasses)
         let len = confusionMatrix[0].length
         let preceissions = [];
@@ -1014,21 +1010,21 @@ export default class ChartController {
         for (let j = 0; j < len; j++) {
             recalls.push(parseFloat(metric[1][j].toFixed(2)))
         }
-        div.innerHTML =
-            `<div class="column is-12">
+        // div.innerHTML =
+        //     `<div class="column is-12">
 
-            <span class="subtitle mb-1">Accuracy: ${metric[4].toFixed(2)}, </span>
-            <span class="subtitle mr-2">F1 micro: ${metric[3].toFixed(2)}, </span>
-            <span class="subtitle">F1 macro: ${metric[3].toFixed(2)}</span>
-            </div>`
-            ;
-        $("#tabs_info li[data-index='" + tab_index + "'] #results_" + tab_index + "").append(div);
-        $("#tabs_info li[data-index='" + tab_index + "'] #results_" + tab_index + "").append(`
-        <div class="column is-6" id="confusion_matrix_${tab_index}" style="height:50vh">
-        </div>
-        `);
-        window.tensorflow.dispose(y)
-        window.tensorflow.dispose(predictedLabels)
+        //     <span class="subtitle mb-1">Accuracy: ${metric[4].toFixed(2)}, </span>
+        //     <span class="subtitle mr-2">F1 micro: ${metric[3].toFixed(2)}, </span>
+        //     <span class="subtitle">F1 macro: ${metric[3].toFixed(2)}</span>
+        //     </div>`
+        //     ;
+        // $("#tabs_info li[data-index='" + tab_index + "'] #results_" + tab_index + "").append(div);
+        // $("#tabs_info li[data-index='" + tab_index + "'] #results_" + tab_index + "").append(`
+        // <div class="column is-6" id="confusion_matrix_${tab_index}" style="height:50vh">
+        // </div>
+        // `);
+        tensorflow.dispose(y)
+        tensorflow.dispose(predictedLabels)
         const metric_labels = ["Precession", "Recall", "F1 score", "Support"]
         // labels.push("Precession")
         labels.push("Precession")

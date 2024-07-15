@@ -44,7 +44,8 @@ export const Settings = {
                     "label": "regulrization",
                     "type": "select",
                     default: "no",
-                    "values": [{ label: "No", value: "No" }, { label: "lasso", value: "lasso" }, { label: "ridge", value: "ridge" }]
+                    value: "no",
+                    "values": [{ label: "No", value: "no" }, { label: "lasso", value: "lasso" }, { label: "ridge", value: "ridge" }]
                 }
             }
         },
@@ -95,6 +96,7 @@ export const Settings = {
             "value": 4,
             "options": {
                 "kernel": {
+                    label: 'kernel',
                     type: "select",
                     default: "RBF",
                     values: [{ label: "RBF", value: "RBF" }, { label: "Linear", value: "Linear" }, { label: "Polynomial", value: "Polynomial" }
@@ -113,6 +115,7 @@ export const Settings = {
                     default: 0
                 },
                 "degree": {
+                    label: 'degeree',
                     type: "number",
                     for: ["Polynomial"],
                     default: 3
@@ -176,6 +179,7 @@ export const Settings = {
         "naive_bayes": {
             "label": "Naive Bayes",
             "value": 7,
+            "id": 7,
             "options": {
                 "laplace": {
                     type: "number",
@@ -198,6 +202,8 @@ export const Settings = {
         "linear_regression": {
             "label": "Linear Regression",
             "value": 9,
+            "id": 9,
+
             "feature_selection": ["no", "Lasso", "ridge"],
             "criteria": ["AIC", "BIC", "AR2",],
             "options": {
@@ -211,6 +217,8 @@ export const Settings = {
         "polynomial_regression": {
             "label": "Polynomial Regression",
             "value": 14,
+            "id": 14,
+
             "feature_selection": ["no", "Lasso", "ridge"],
             "criteria": ["AIC", "BIC", "AR2",],
             "options": {
@@ -231,6 +239,7 @@ export const Settings = {
         "k_nearest_neighbour": {
             "label": "k nearest neighbour Regression",
             "value": 10,
+            "id": 10,
             "options": {
                 "min": {
                     type: "number",
@@ -245,6 +254,7 @@ export const Settings = {
         "boosting": {
             "label": "Boosting Regression",
             "value": 11,
+            "id": 11,
             "options": {
                 "booster": {
                     type: "select",
@@ -269,6 +279,7 @@ export const Settings = {
         "support_vector_machine": {
             "label": "Support vector machine Regression",
             "value": 12,
+            "id": 12,
             "options": {
                 "kernel": {
                     type: "select",
@@ -296,6 +307,7 @@ export const Settings = {
         "random_forest": {
             "label": "Random forest Regression",
             "value": 13,
+            "id": 13,
             "options": {
                 "estimators": {
                     type: "number",
@@ -320,6 +332,7 @@ export const Settings = {
         "kernel_regression": {
             "label": "Kernel Regression",
             "value": 15,
+            "id": 15,
             "options": {
                 "estimators": {
                     type: "number",
@@ -330,6 +343,8 @@ export const Settings = {
         "bspline_regression": {
             "label": "Bspline Regression",
             "value": 16,
+            "id": 16,
+
             "options": {
                 "knots": {
                     type: "number",

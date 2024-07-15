@@ -3,7 +3,9 @@ import { defineStore } from 'pinia'
 export const settingStore = defineStore({
     id: 'cart',
     state: () => ({
+        counter: 0,
         features: [],
+        results: [],
         target: null,
         isClassification: true,
     }),
@@ -11,12 +13,19 @@ export const settingStore = defineStore({
         items: (state) => {
             return state.features
         },
+        getCounter: (state) => {
+            return state.counter
+        },
+        outputs: (state) => state.results,
         modelTarget: (state) => state.target,
         modelType: (state) => state.isClassification,
     },
     actions: {
         resetFeatures() {
             this.features = []
+        },
+        increaseCounter() {
+            this.counter++;
         },
         addFeature(feature) {
             let index = this.features.findIndex(m => m.name === feature.name);
@@ -25,6 +34,9 @@ export const settingStore = defineStore({
                 return
             }
             this.features.push(feature)
+        },
+        addResult(result) {
+            this.results.push(result)
         },
         updateFeature(feature) {
             let index = this.features.findIndex(m => m.name === feature.name);

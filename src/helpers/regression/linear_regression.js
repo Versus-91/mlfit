@@ -1,34 +1,38 @@
+
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
+
+
 import Plotly from 'plotly.js-dist-min';
-
-
 export default class LinearRegression {
     constructor(options) {
         this.options = options;
         this.model = null;
 
     }
-    async train_test(x_train, y_train, x_test, y_test, labels, container_regularization, container_errors, container_coefs, qqplot_ols, qqplot_1se, qqplot_min) {
+
+    async train(x_train, y_train, x_test, y_test, labels, container_regularization, container_errors, container_coefs, qqplot_ols, qqplot_1se, qqplot_min) {
         this.context = {
             X_train: x_train,
             y_train: y_train,
             y_test: y_test,
             X_test: x_test,
-            regularization_type: this.options.regularization === "Lasso" ? 1 : 0,
+            regularization_type: this.options.regularization.value === "Lasso" ? 1 : 0,
             labels: labels
         };
-        async ({ WebR }) => {
-            const webR = new WebR({ interactive: false });
-            await webR.init();
-            await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'tidyr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary'], { quiet: true });
-            await webR.objs.globalEnv.bind('xx', x_train);
-            await webR.objs.globalEnv.bind('x_test', x_test);
 
-            await webR.objs.globalEnv.bind('y', y_train);
-            await webR.objs.globalEnv.bind('names', labels);
-            await webR.objs.globalEnv.bind('is_lasso', this.context.regularization_type);
+        const webR = window.webr;
+        await webR.init();
+        await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'tidyr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary'], { quiet: true });
+        await webR.objs.globalEnv.bind('xx', x_train);
+        await webR.objs.globalEnv.bind('x_test', x_test);
+
+        await webR.objs.globalEnv.bind('y', y_train);
+        await webR.objs.globalEnv.bind('names', labels);
+        await webR.objs.globalEnv.bind('is_lasso', this.context.regularization_type);
 
 
-            const plotlyData = await webR.evalR(`
+        const plotlyData = await webR.evalR(`
                     library(plotly)
                     library(ggplot2)
                     library(tidyr)
@@ -172,66 +176,64 @@ export default class LinearRegression {
                     
                     )
                     `);
-            let results = await plotlyData.toArray()
-            let reg_plot = JSON.parse(await results[0].toString())
-            reg_plot.layout.legend["orientation"] = 'h'
-            reg_plot.layout['showlegend'] = false;
-            Plotly.newPlot(container_regularization, reg_plot, { staticPlot: true });
-            Plotly.newPlot(container_errors, JSON.parse(await results[1].toString()), { staticPlot: true });
-            Plotly.newPlot(qqplot_ols, JSON.parse(await results[27].toString()), { staticPlot: true });
-            Plotly.newPlot(qqplot_1se, JSON.parse(await results[28].toString()), { staticPlot: true });
-            Plotly.newPlot(qqplot_min, JSON.parse(await results[29].toString()), { staticPlot: true });
+        let results = await plotlyData.toArray()
+        let reg_plot = JSON.parse(await results[0].toString())
+        reg_plot.layout.legend["orientation"] = 'h'
+        reg_plot.layout['showlegend'] = false;
+        Plotly.newPlot(container_regularization, reg_plot, { staticPlot: true });
+        Plotly.newPlot(container_errors, JSON.parse(await results[1].toString()), { staticPlot: true });
+        Plotly.newPlot(qqplot_ols, JSON.parse(await results[27].toString()), { staticPlot: true });
+        Plotly.newPlot(qqplot_1se, JSON.parse(await results[28].toString()), { staticPlot: true });
+        Plotly.newPlot(qqplot_min, JSON.parse(await results[29].toString()), { staticPlot: true });
 
-            let coefs_plot = JSON.parse(await results[15].toString())
-            coefs_plot.layout.legend = {
-                x: 0,
-                y: 1,
-                traceorder: 'normal',
-                font: {
-                    family: 'sans-serif',
-                    size: 8,
-                    color: '#000'
-                },
-            };
-            Plotly.newPlot(container_coefs, coefs_plot, { staticPlot: true });
+        let coefs_plot = JSON.parse(await results[15].toString())
+        coefs_plot.layout.legend = {
+            x: 0,
+            y: 1,
+            traceorder: 'normal',
+            font: {
+                family: 'sans-serif',
+                size: 8,
+                color: '#000'
+            },
+        };
+        Plotly.newPlot(container_coefs, coefs_plot, { staticPlot: true });
 
-            let summary = {
-                params: await results[2].toArray(),
-                bse: await results[4].toArray(),
-                pvalues: await results[3].toArray(),
-                predictions: await results[5].toArray(),
-                predictions1se: await results[21].toArray(),
-                predictionsmin: await results[22].toArray(),
-                residuals_ols: await results[18].toArray(),
-                residuals_1se: await results[19].toArray(),
-                residuals_min: await results[20].toArray(),
-                aic: await results[6].toNumber(),
-                bic: await results[7].toNumber(),
-                r2: await results[8].toNumber(),
-                best_fit_min: {
-                    r2: await results[25].toNumber(),
-                    aic: await results[26].toNumber(),
-                    names: await results[16].toArray(),
-                    coefs: await results[9].toArray(),
-                    bse: await results[11].toArray(),
-                    pvalues: await results[10].toArray(),
-                },
-                best_fit_1se: {
-                    r2: await results[23].toNumber(),
-                    aic: await results[24].toNumber(),
-                    names: await results[17].toArray(),
-                    coefs: await results[12].toArray(),
-                    bse: await results[14].toArray(),
-                    pvalues: await results[13].toArray(),
-                },
-            };
-            return summary;
-        }
+        let summary = {
+            params: await results[2].toArray(),
+            bse: await results[4].toArray(),
+            pvalues: await results[3].toArray(),
+            predictions: await results[5].toArray(),
+            predictions1se: await results[21].toArray(),
+            predictionsmin: await results[22].toArray(),
+            residuals_ols: await results[18].toArray(),
+            residuals_1se: await results[19].toArray(),
+            residuals_min: await results[20].toArray(),
+            aic: await results[6].toNumber(),
+            bic: await results[7].toNumber(),
+            r2: await results[8].toNumber(),
+            best_fit_min: {
+                r2: await results[25].toNumber(),
+                aic: await results[26].toNumber(),
+                names: await results[16].toArray(),
+                coefs: await results[9].toArray(),
+                bse: await results[11].toArray(),
+                pvalues: await results[10].toArray(),
+            },
+            best_fit_1se: {
+                r2: await results[23].toNumber(),
+                aic: await results[24].toNumber(),
+                names: await results[17].toArray(),
+                coefs: await results[12].toArray(),
+                bse: await results[14].toArray(),
+                pvalues: await results[13].toArray(),
+            },
+        };
+
+        return summary;
+
 
 
     }
-    predict(x_test) {
-        const result = this.model.predict(x_test);
-        return result
-    }
+
 }

@@ -10,8 +10,8 @@ export default class DiscriminantAnalysis {
     }
     async train(x, y, x_test) {
         this.context = {
-            lda_type: this.options.type,
-            priors: this.options.priors,
+            lda_type: this.options.type.value,
+            priors: this.options.priors.value,
             X_train: x,
             y_train: y,
             X_test: x_test,
@@ -37,7 +37,7 @@ export default class DiscriminantAnalysis {
             const { results, error } = await asyncRun(script, this.context);
             if (results) {
                 console.log("pyodideWorker return results: ", results);
-                return results;
+                return Array.from(results);
             } else if (error) {
                 console.log("pyodideWorker error: ", error);
             }
