@@ -125,7 +125,8 @@ export default {
             if (processdDataset.length > DATASET_SIZE) {
                 processdDataset = processdDataset.slice(0, DATASET_SIZE)
             }
-            return new DataFrame(processdDataset)
+            let dataFrame = new DataFrame(processdDataset)
+            return dataFrame
         },
         async handleFileSelect(evt, url) {
             var target = evt?.target || evt?.srcElement;

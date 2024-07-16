@@ -1,10 +1,12 @@
 <template>
     <section>
-        <b-tabs v-model="activeTab">
+        <b-tabs v-model="activeTab" @input="resize">
             <b-tab-item v-for="result in this.settings.results" :label="result.name.toString()" :key="result.id">
                 <div class="columns is-multiline">
                     <div class="column is-6" :id="'confusion_matrix_' + result.id"></div>
                     <div class="column is-6" :id="'pca_results_' + result.id"></div>
+                    <div class="column is-6" :id="'knn_table_' + result.id"
+                        v-if="result.name.toString().includes('neighbour')"></div>
                     <div class="column is-12">
                         <table :id="'predictions_table_' + result.id"
                             class="table is-bordered is-hoverable is-narrow display is-size-7" width="100%">
@@ -33,7 +35,9 @@ export default {
         }
     },
     methods: {
-
+        resize() {
+            window.dispatchEvent(new Event('resize'));
+        }
     },
 }
 </script>

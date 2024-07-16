@@ -1,6 +1,8 @@
 import SVM from "libsvm-js/asm";
-export default class SupportVectorMachine {
+import { ClassificationModel } from "../model";
+export default class SupportVectorMachine extends ClassificationModel {
     constructor(opt) {
+        super();
         let options = {
             kernel: SVM.KERNEL_TYPES[opt.kernel.value.toUpperCase()],
             type: SVM.SVM_TYPES.C_SVC,

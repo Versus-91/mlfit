@@ -2,10 +2,11 @@
     <section v-if="this.settings?.items.length > 2">
         <b-message title="Principle Component Analysis" type="is-info" :closable="false">
             <b-field>
-                <b-input v-model="pcaX" size="is-small" type="number" placeholder="0,00"></b-input>
-                <b-input v-model="pcaY" size="is-small" type="number" placeholder="0,00"></b-input>
+                <b-input v-model="pcaX" size="is-small" type="number" placeholder="X axis component"></b-input>
+                <b-input v-model="pcaY" size="is-small" type="number" placeholder="Y axis component"></b-input>
                 <p class="control">
-                    <b-button size="is-small" @click="findPCA" type="is-info" :loading="findingPCA" label="Find PCA" />
+                    <b-button :disabled="!pcaX || !pcaY" size="is-small" @click="findPCA" type="is-info"
+                        :loading="findingPCA" label="Find PCA" />
                 </p>
             </b-field>
             <div class="columns" v-if="hasPCA">
@@ -72,7 +73,7 @@ export default {
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
             console.log(numericColumns);
             await chartController.draw_pca(this.dataframe.loc({ columns: numericColumns }).values,
-                this.settings.modelType ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [],
+                this.settings.modelTask ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [],
                 this.dataframe.loc({ columns: [this.settings.modelTarget] }).values
                 , this.pcaX, this.pcaY)
             this.findingPCA = false;
@@ -83,7 +84,7 @@ export default {
             this.findingTSNE = true;
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
             await chartController.plot_tsne(this.dataframe.loc({ columns: numericColumns }).values,
-                this.settings.modelType ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [], this.dataframe.loc({ columns: [this.settings.modelTarget] }).values);
+                this.settings.modelTask ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [], this.dataframe.loc({ columns: [this.settings.modelTarget] }).values);
             this.findingTSNE = false;
 
         }

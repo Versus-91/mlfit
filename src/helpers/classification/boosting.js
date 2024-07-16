@@ -1,6 +1,8 @@
 import xgb from '@/helpers/xgboost/index';
-export default class Boosting {
-    constructor(opt) {
+import { ClassificationModel } from '../model';
+export default class Boosting extends ClassificationModel {
+    constructor(opt, chartControler) {
+        super(chartControler);
         let options = {
             booster: opt.booster.value ?? "gbtree",
             objective: "multi:softmax",

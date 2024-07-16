@@ -1,12 +1,13 @@
 import { asyncRun } from "@/helpers/py-worker";
+import { ClassificationModel } from "../model";
 
 
-export default class RandomForest {
-    constructor(options) {
+export default class RandomForest extends ClassificationModel {
+    constructor(options, chartController) {
+        super(chartController)
         this.options = options;
         this.model = null;
         this.predictions = []
-
     }
     async train(x_train, y_train, x_test) {
         if (this.options.criteria === 'gini') {

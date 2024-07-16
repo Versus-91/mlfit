@@ -14,6 +14,8 @@ import * as sk from 'scikitjs'
 import { createPinia, PiniaVuePlugin } from 'pinia'
 sk.setBackend(tensorflow)
 Vue.config.productionTip = false
+Vue.prototype.window = window;
+
 Vue.use(Buefy)
 Vue.use(PiniaVuePlugin)
 const pinia = createPinia()

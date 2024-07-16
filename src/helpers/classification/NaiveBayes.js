@@ -1,8 +1,10 @@
 import { GaussianNB } from 'scikitjs'
 import { asyncRun } from "@/helpers/py-worker";
+import { ClassificationModel } from '../model';
 
-export default class NaiveBayes {
+export default class NaiveBayes extends ClassificationModel {
     constructor(options) {
+        super();
         this.options = options
         this.model = null
     }

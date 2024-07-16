@@ -92,7 +92,7 @@
                             <td>{{ feature.name }}</td>
                             <td>
                                 <b-select :expanded="true" v-model="feature.type" size="is-small"
-                                    @input="checkModelType">
+                                    @input="checkmodelTask">
                                     <option v-for="option in featureTypeOptions" :value="option.id" :key="option.id">
                                         {{ option.name }}
                                     </option>
@@ -110,7 +110,7 @@
 /* eslint-disable no-unused-vars */
 
 import UploadComponent from "./upload-component.vue";
-import { Settings, FeatureCategories } from '../helpers/settings'
+import { Settings, FeatureCategories, CV_OPTIONS } from '../helpers/settings'
 import { ModelFactory } from "@/helpers/model_factory";
 import { settingStore } from '@/stores/settings'
 import UI from '@/helpers/ui';
@@ -165,23 +165,23 @@ export default {
                 label: 'random forest'
             }],
             crossValidationOptions: [{
-                id: 1,
+                id: CV_OPTIONS.SPLIT,
                 label: '70 % training - 30 % test'
             },
             {
-                id: 2,
+                id: CV_OPTIONS.NO,
                 label: 'No'
             }, {
-                id: 3,
+                id: CV_OPTIONS.KFOLD,
                 label: 'k-fold'
             }],
             featureSettings: [],
             modelSettings: [],
+            modelName: ''
         }
     },
     methods: {
-        configureModel() {
-            this.tuneModel = !this.tuneModel;
+        getDefaultModelConfiguration() {
             for (const key in this.modelOptions) {
                 const model = this.modelOptions[key];
                 if (model.id === this.modelOption) {
@@ -189,8 +189,13 @@ export default {
                         model.options[key].value = model.options[key]?.default;
                     }
                     this.modelConfigurations = model.options;
+                    this.modelName = model.label
                 }
             }
+        },
+        configureModel() {
+            this.tuneModel = !this.tuneModel;
+            this.getDefaultModelConfiguration()
         },
         generateTargetDropdown(e) {
             this.columns = e.columns;
@@ -209,9 +214,9 @@ export default {
                 this.settings.addFeature(selectedFeatures[i])
             }
         },
-        checkModelType() {
+        checkmodelTask() {
             let targetFeature = this.featureSettings.find(feature => feature.name == this.modelTarget);
-            this.settings.setModelType(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
+            this.settings.setmodelTask(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
             this.modelOptions = targetFeature.type === FeatureCategories.Numerical.id ? Settings.regression : Settings.classification;
             let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
             for (let i = 0; i < selectedFeatures.length; i++) {
@@ -220,7 +225,10 @@ export default {
         },
         async train() {
             try {
-
+                if (!this.modelConfigurations) {
+                    this.getDefaultModelConfiguration()
+                }
+                console.log(this.modelConfigurations);
                 let len = this.dataframe.$data.length;
                 let seed = this.seed;
                 let dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
@@ -234,56 +242,28 @@ export default {
                 if (index === -1) {
                     selected_columns.push(target)
                 }
-                if (selected_columns.length < 2) {
-                    throw new Error("most select at least 2 features")
-                }
                 let filterd_dataset = dataset.loc({ columns: selected_columns })
-                filterd_dataset.dropNa({ axis: 1, inplace: true })
                 const targets = filterd_dataset.column(target)
                 filterd_dataset.drop({ columns: target, inplace: true })
                 const cross_validation_setting = this.crossValidationOption;
-                console.log(this.settings.items);
                 filterd_dataset = encode_dataset(filterd_dataset, this.settings.items.filter(m => m.selected).filter(m => m.name !== this.settings.modelTarget).map(m => {
                     return {
                         name: m.name,
                         type: m.type
                     }
                 }), model_name)
-                let x_train, y_train, x_test, y_test;
-                if (cross_validation_setting === 1) {
-                    const limit = Math.ceil(len * 70 / 100)
-                    const train_bound = `0:${limit}`
-                    const test_bound = `${limit}:${len}`
-                    x_train = filterd_dataset.iloc({ rows: [`0: ${limit}`] })
-                    y_train = targets.iloc([train_bound])
-                    x_test = filterd_dataset.iloc({ rows: [`${limit}: ${len}`] });
-                    y_test = targets.iloc([test_bound]);
-                } else if (cross_validation_setting === 2) {
-                    x_train = filterd_dataset
-                    y_train = targets
-                    x_test = filterd_dataset
-                    y_test = targets
-                }
-                
-                let labelEncoder = new LabelEncoder()
+                let [x_train, y_train, x_test, y_test] = this.splitData(cross_validation_setting, filterd_dataset, targets, len);
                 let uniqueLabels = [...new Set(y_train.values)];
-                labelEncoder.fit(y_train.values)
-                labelEncoder.transform(y_train.values)
-                let encoded_y = labelEncoder.transform(y_train.values)
-                let encoded_y_test = labelEncoder.transform(y_test.values)
+                let [labelEncoder, encoded_y, encoded_y_test] = this.encodeTarget(y_train.values, y_test.values)
                 let model_factory = new ModelFactory();
                 console.log(this.modelConfigurations);
                 let model = model_factory.createModel(this.modelOption, this.modelConfigurations)
-                let id = this.settings.getCounter
+                model.id = this.settings.getCounter
                 this.training = true;
-                let predictions = await model.train(x_train.values, encoded_y, x_test.values)
-                this.settings.addResult({ name: this.modelOption + this.seed, type: this.settings.modelType, id: id })
-                const evaluation_result = evaluate_classification(predictions, encoded_y_test, labelEncoder)
-                const classes = labelEncoder.inverseTransform(Object.values(labelEncoder.$labels))
-                await chartController.plot_confusion_matrix(tensorflow.tensor(predictions), tensorflow.tensor(encoded_y_test), classes, labelEncoder.transform(classes), id)
+                let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test);
+                this.settings.addResult({ name: this.modelName + this.seed, type: this.settings.modelTask, id: model.id });
+                await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder)
                 this.settings.increaseCounter();
-                await chartController.draw_classification_pca(x_test.values, y_test.values, evaluation_result, uniqueLabels, id)
-                ui.predictions_table(x_test, y_test, labelEncoder, predictions, null, id);
                 this.training = false;
 
             } catch (error) {
@@ -292,15 +272,46 @@ export default {
             }
         }
     },
+    created: function () {
+        let x_train, y_train, x_test, y_test;
+        this.splitData = function (cross_validation_setting, filterd_dataset, targets, len) {
+            if (cross_validation_setting === CV_OPTIONS.SPLIT) {
+                const limit = Math.ceil(len * 70 / 100)
+                const train_bound = `0:${limit}`
+                const test_bound = `${limit}:${len}`
+                x_train = filterd_dataset.iloc({ rows: [`0: ${limit}`] })
+                y_train = targets.iloc([train_bound])
+                x_test = filterd_dataset.iloc({ rows: [`${limit}: ${len}`] });
+                y_test = targets.iloc([test_bound]);
+            } else if (cross_validation_setting === CV_OPTIONS.NO) {
+                x_train = filterd_dataset
+                y_train = targets
+                x_test = filterd_dataset
+                y_test = targets
+            }
+            return [x_train, y_train, x_test, y_test]
+        }
+        this.encodeTarget = function (y_train, y_test) {
+            let labelEncoder = new LabelEncoder()
+            labelEncoder.fit(y_train)
+            labelEncoder.transform(y_train)
+            let encoded_y = labelEncoder.transform(y_train)
+            let encoded_y_test = labelEncoder.transform(y_test)
+            return [labelEncoder, encoded_y, encoded_y_test]
+        }
+    },
     watch: {
         modelTarget: function name(target, oldVal) {
-            if (target !== oldVal) {
+            if (target !== oldVal && target) {
                 this.settings.setTarget(target)
                 let targetFeature = this.featureSettings.find(feature => feature.name == target);
-                this.settings.setModelType(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
+                this.settings.setmodelTask(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
                 this.modelOptions = targetFeature.type === FeatureCategories.Numerical.id ? Settings.regression : Settings.classification;
             }
         },
+        modelOption: function () {
+            this.modelConfigurations = null
+        }
 
 
     }

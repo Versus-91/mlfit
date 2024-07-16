@@ -18,7 +18,7 @@ export const settingStore = defineStore({
         },
         outputs: (state) => state.results,
         modelTarget: (state) => state.target,
-        modelType: (state) => state.isClassification,
+        modelTask: (state) => state.isClassification,
     },
     actions: {
         resetFeatures() {
@@ -51,7 +51,7 @@ export const settingStore = defineStore({
         setTarget(target) {
             this.target = target
         },
-        setModelType(type) {
+        setmodelTask(type) {
             this.isClassification = type
         }
     },

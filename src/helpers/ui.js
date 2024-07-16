@@ -923,13 +923,13 @@ export default class UI {
     //         bDestroy: true,
     //     });
     // }
-    predictions_table(x, y, encoder, predictions, probs = null, tab_index = 0) {
+    predictions_table(x, y, predictions, probs = null, tab_index = 0) {
         let table_columns = [];
         if (probs !== null) {
             x.addColumn("probs", probs, { inplace: true });
         }
         x.addColumn("y", y, { inplace: true });
-        x.addColumn("predictions: ", encoder.inverseTransform(predictions), { inplace: true });
+        x.addColumn("predictions: ", predictions, { inplace: true });
         x.columns.forEach(element => {
             table_columns.push({ title: element });
         });

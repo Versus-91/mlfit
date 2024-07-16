@@ -1,6 +1,8 @@
 import { asyncRun } from "@/helpers/py-worker";
-export default class DiscriminantAnalysis {
+import { ClassificationModel } from "../model";
+export default class DiscriminantAnalysis extends ClassificationModel {
     constructor(options) {
+        super();
         this.options = options
         this.context = {
             X_train: [0.8, 0.4, 1.2, 3.7, 2.6, 5.8],

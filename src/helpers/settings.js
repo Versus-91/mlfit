@@ -12,6 +12,15 @@ export const FeatureCategories = {
         name: "Ordinal"
     }
 };
+export const CV_OPTIONS = {
+    SPLIT: 1,
+    NO: 2,
+    KFOLD: 3
+}
+export const REGRESSION = 1;
+export const CLASSIFICATION = 2;
+
+
 export const ScaleOptions = {
     "No": {
         id: 0,

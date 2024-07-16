@@ -43,7 +43,7 @@ export var ModelFactory = function () {
             model = new SupportVectorMachine(options);
         }
         // else if (modelName === Settings.regression.boosting.value) {
-        //     model = new BoostingRegression(options);
+        //     model = new BoostingRegression(options,chartControler);
         // } 
         else if (modelName === Settings.regression.random_forest.value) {
             model = new RandomForestRegressor(options);
