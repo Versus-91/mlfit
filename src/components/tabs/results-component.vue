@@ -1,6 +1,6 @@
 <template>
     <section>
-        <b-tabs v-model="activeTab" @input="resize">
+        <b-tabs v-model="activeTab" @input="resize" v-if="this.settings.results?.length > 0">
             <b-tab-item v-for="result in this.settings.results" :label="result.name.toString()" :key="result.id">
                 <div class="columns is-multiline">
                     <div class="column is-12">
@@ -9,6 +9,11 @@
                             <p>Dataset Name : {{ result.target }}</p>
                             <p>Categorical Features : {{ result.categoricalFeatures }}</p>
                             <p>Numerical Features : {{ result.numericColumns }}</p>
+                            <p>Transformations :
+                                <span v-for="transformation in result.transformations" :key="transformation.name">
+                                    {{ transformation.name + ': ' + transformation.scaler + ',' }}
+                                </span>
+                            </p>
                             <p>Accuracy : {{ result.metrics[3].toFixed(2) }}</p>
                             <p>f1 micro : {{ result.metrics[4].toFixed(2) }}</p>
                             <p> f1 macro :{{ result.metrics[2].toFixed(2) }}</p>
@@ -26,6 +31,11 @@
                 </div>
             </b-tab-item>
         </b-tabs>
+        <section v-else>
+            <b-message type="is-danger" has-icon icon-pack="fas">
+                No result to show.
+            </b-message>
+        </section>
     </section>
 </template>
 

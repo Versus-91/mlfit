@@ -244,7 +244,7 @@ export default {
                 let model_name = this.modelOption;
                 const target = this.settings.modelTarget;
                 dataset = handle_missing_values(dataset)
-                dataset = applyDataTransformation(dataset, numericColumns);
+                dataset = applyDataTransformation(dataset, numericColumns, this.settings.transformationsList);
                 let selected_columns = this.settings.items.filter(m => m.selected).map(m => m.name)
                 const index = selected_columns.findIndex(m => m === target)
                 if (index === -1) {
@@ -279,6 +279,7 @@ export default {
                     target: target,
                     categoricalFeatures: this.settings.items.filter(m => m.selected && m.type !== FeatureCategories.Numerical.id).map(m => m.name),
                     numericColumns: numericColumns,
+                    transformations: this.settings.transformationsList
                 });
                 await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder)
                 this.settings.increaseCounter();

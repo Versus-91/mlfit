@@ -59,7 +59,10 @@ export default {
                 applyDataTransformation(dataframe, validTransformations.map(transformation => transformation.name), validTransformations);
                 await this.dispalySPLOM(dataframe)
                 this.isLoading = false;
-                return
+                validTransformations.forEach(transformation => {
+                    this.settings.addTransformation(transformation)
+                });
+                return;
             }
             this.$buefy.toast.open("No transformation available.")
         }
