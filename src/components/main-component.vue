@@ -7,9 +7,9 @@
                         <b-message title="Data summary" v-model="isActive" type="is-info" :closable="false">
                             <div class="columns is-multiline">
                                 <div class="column is-6">
-                                    <h5 class="title is-6 has-text-left">Continious Features :</h5>
-                                    <b-table class="is-size-7" :data="continiousFeaturesStats"
-                                        :columns="continiousFeaturesColumns" :narrowed="true"></b-table>
+                                    <h5 class="title is-6 has-text-left">Continuous Features :</h5>
+                                    <b-table class="is-size-7" :data="continuousFeaturesStats"
+                                        :columns="continuousFeaturesColumns" :narrowed="true"></b-table>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Categorical Features :</h5>
@@ -35,7 +35,7 @@
 
                 </b-tab-item>
 
-                <b-tab-item label="Dymensionality Reduction">
+                <b-tab-item label="Dimensionality Reduction">
                     <dmensionality-reduction-component :dataframe="dataframe"
                         :columns="selectedFeatures"></dmensionality-reduction-component>
                 </b-tab-item>
@@ -75,9 +75,9 @@ export default {
     },
     data() {
         return {
-            continiousFeaturesStats: [
+            continuousFeaturesStats: [
             ],
-            continiousFeaturesColumns: [
+            continuousFeaturesColumns: [
             ],
             categoricalFeaturesStats: [
             ],
@@ -97,8 +97,8 @@ export default {
     watch: {
         dataframe: async function (val) {
             let datasetStats = ui.renderDatasetStats(val);
-            this.continiousFeaturesColumns = datasetStats[0];
-            this.continiousFeaturesStats = datasetStats[1];
+            this.continuousFeaturesColumns = datasetStats[0];
+            this.continuousFeaturesStats = datasetStats[1];
             this.categoricalFeaturesColumns = datasetStats[2];
             this.categoricalFeaturesStats = datasetStats[3];
             this.datasetColumns = val.columns.map(column => {

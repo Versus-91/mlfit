@@ -63,6 +63,8 @@
                         :disabled="!dataframe" type=" is-light">
                         train</b-button>
                 </b-field>
+                <b-loading :is-full-page="false" v-model="training"></b-loading>
+
             </div>
         </section>
         <section v-else>

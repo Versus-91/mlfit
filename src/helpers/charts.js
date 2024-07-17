@@ -1598,7 +1598,7 @@ export default class ChartController {
                     spacing: 0,
                     showlegend: false,
                     grid: { rows: features.length, columns: features.length, pattern: 'independent' },
-                    margin: { l: 40, r: 10, b: 30, t: 10, pad: 5 },
+                    margin: {  r: 10, t: 10, pad: 5 },
 
                 };
                 for (var i = 0; i < features.length; i++) {

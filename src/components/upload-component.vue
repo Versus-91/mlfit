@@ -1,7 +1,7 @@
 <template>
     <div class="column is-12">
         <b-field class="file is-warning" :class="{ 'has-name': !!file }">
-            <b-upload accept=".csv" v-model="file" class="file-label">
+            <b-upload accept=".csv,.txt,.xlsx" v-model="file" class="file-label">
                 <span class="file-cta">
                     <b-icon pack="fas" class="file-icon" icon="upload"></b-icon>
                     <span class="file-label">{{ file?.name || "Upload" }}</span>
@@ -106,9 +106,14 @@ export default {
     },
     watch: {
         file: async function (val) {
-            let result = await this.process_file(val, 'csv')
-            this.settings.resetFeatures()
-            this.$emit('dataframe', result)
+            try {
+                let result = await this.process_file(val, val.name.split('.')[1])
+                this.settings.resetFeatures()
+                this.$emit('dataframe', result)
+            } catch (error) {
+                this.$buefy.toast.open('Failed to parse the dataset.')
+            }
+
         }
     },
     methods: {

@@ -446,10 +446,10 @@ export default class UI {
     }
     renderDatasetStats(data) {
         //build numerical feature table table
-        let continiousFeaturesStats = []
+        let continuousFeaturesStats = []
         let categoricalFeaturesStats = []
 
-        const continiousHeaders =
+        const continuousHeaders =
             [{ field: 'name', label: '#' }, { field: 'min', label: 'Min' }, { field: 'max', label: 'Max' }, { field: 'median', label: 'Median' }
                 , { field: 'std', label: 'std' }, { field: 'missingVlauesCount', label: '# NAs' }
             ];
@@ -462,7 +462,7 @@ export default class UI {
             const column = data.columns[i];
             const key = encode_name(column)
             if (data.dtypes[i] !== 'string') {
-                continiousFeaturesStats.push({
+                continuousFeaturesStats.push({
                     name: column,
                     min: data.column(column).min(),
                     max: data.column(column).min(),
@@ -492,8 +492,8 @@ export default class UI {
             }
         });
         return [
-            continiousHeaders,
-            continiousFeaturesStats,
+            continuousHeaders,
+            continuousFeaturesStats,
             categoricalHeaders,
             categoricalFeaturesStats,
         ]
@@ -704,7 +704,7 @@ export default class UI {
     //     }
     //     content += `<div class="column is-12 "><p><strong>Dataset name :</strong> ${dataset_name}</p></div>`
     //     content += `<div class="column is-12 "><p><strong>Target :</strong> ${target}</p></div>`
-    //     content += `<div class="column is-12 "><p><strong>Continious featues :</strong> ${numeric_columns}</p></div>`
+    //     content += `<div class="column is-12 "><p><strong>Continuous featues :</strong> ${numeric_columns}</p></div>`
     //     content += `<div class="column is-12 "><p><strong>Categorical featues :</strong> ${categorical_columns}</p></div>`
     //     content += `<div class="column is-12 "><p><strong>Transformations :</strong> ${columns_transformation}</p></div>`
     //     content += `<div class="column is-12 ">
