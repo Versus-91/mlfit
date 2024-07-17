@@ -7,6 +7,11 @@ export const settingStore = defineStore({
         features: [],
         transformations: [],
         results: [],
+        datasetName: '',
+        datasetShape: {
+            count: 0,
+            columns: 0
+        },
         target: null,
         isClassification: true,
     }),
@@ -17,14 +22,37 @@ export const settingStore = defineStore({
         getCounter: (state) => {
             return state.counter
         },
+        getDatasetName: (state) => {
+            return state.datasetName
+        },
+        getDatasetShape: (state) => {
+            return state.datasetShape
+        },
         outputs: (state) => state.results,
         transformationsList: (state) => state.transformations,
         modelTarget: (state) => state.target,
         modelTask: (state) => state.isClassification,
     },
     actions: {
+        setDatasetName(name) {
+            this.datasetName = name;
+        },
+        setDatasetShape(shape) {
+            this.datasetShape = shape;
+        },
         resetFeatures() {
             this.features = []
+        },
+        resetTransformations() {
+            this.transformations = []
+        },
+        resetDataset() {
+            this.datasetName = '';
+            this.datasetShape = {
+                count: 0,
+                columns: 0
+            };
+
         },
         increaseCounter() {
             this.counter++;

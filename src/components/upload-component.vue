@@ -4,7 +4,7 @@
             <b-upload accept=".csv,.txt,.xlsx" v-model="file" class="file-label">
                 <span class="file-cta">
                     <b-icon pack="fas" class="file-icon" icon="upload"></b-icon>
-                    <span class="file-label">{{ file?.name || "Upload" }}</span>
+                    <span class="file-label">{{ this.settings.datasetName || "Upload" }}</span>
                 </span>
             </b-upload>
         </b-field>
@@ -32,7 +32,7 @@
                 </option>
             </b-select>
         </b-field>
-
+        {{ settings.datasetShape }}
     </div>
 </template>
 
@@ -107,9 +107,11 @@ export default {
     watch: {
         file: async function (val) {
             try {
-                let result = await this.process_file(val, val.name.split('.')[1])
-                this.settings.resetFeatures()
-                this.$emit('dataframe', result)
+                let dataset = await this.process_file(val, val.name.split('.')[1])
+                this.settings.resetFeatures();
+                this.settings.setDatasetName(val.name.split('.')[0]);
+                this.settings.setDatasetShape({ count: dataset.$data.length, columns: dataset.columns.length });
+                this.$emit('dataframe', dataset)
             } catch (error) {
                 this.$buefy.toast.open('Failed to parse the dataset.')
             }

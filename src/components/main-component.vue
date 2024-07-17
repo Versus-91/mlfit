@@ -3,7 +3,7 @@
         <section>
             <b-tabs type="is-toggle" v-model="activeTab" :position="'is-centered'">
                 <b-tab-item label="Data Anaysis">
-                    <section v-if="dataframe">
+                    <section v-if="this.settings.datasetShape?.count > 0">
                         <b-message title="Data summary" v-model="isActive" type="is-info" :closable="false">
                             <div class="columns is-multiline">
                                 <div class="column is-6">
@@ -60,6 +60,8 @@ import { toJSON } from 'danfojs';
 import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
 import ScatterplotMatrixComponent from './visualization/scatterplot-matrix-component.vue'
 import ResultsComponent from './tabs/results-component.vue'
+import { settingStore } from '@/stores/settings'
+
 let ui = new UI(null, null)
 export default {
     name: 'MainComponent',
@@ -67,6 +69,10 @@ export default {
         'dmensionality-reduction-component': PCAComponent,
         'scatterplot-matrix-component': ScatterplotMatrixComponent,
         'results-component': ResultsComponent,
+    },
+    setup() {
+        const settings = settingStore()
+        return { settings }
     },
     props: {
         msg: String,
