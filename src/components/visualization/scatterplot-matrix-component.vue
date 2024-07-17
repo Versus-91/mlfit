@@ -13,7 +13,7 @@
             </div>
             <button @click="scaleData(dataframe?.copy())" class="button mt-2 is-info is-small">update</button>
         </div>
-
+        <b-loading :is-full-page="false" v-model="isLoading"></b-loading>
     </section>
 </template>
 
@@ -37,6 +37,7 @@ export default {
     },
     data() {
         return {
+            isLoading: false,
             ScaleOptions: ScaleOptions,
             features: [],
         }
@@ -51,10 +52,16 @@ export default {
                 this.settings.modelTask, numericColumns, categorical_columns, dataframe)
         },
         async scaleData(dataframe) {
-            Plotly.purge('scatterplot_mtx')
             let validTransformations = this.features.filter(m => m.scaler !== 0);
-            applyDataTransformation(dataframe, validTransformations.map(transformation => transformation.name), validTransformations);
-            await this.dispalySPLOM(dataframe)
+            if (validTransformations?.length > 0) {
+                this.isLoading = true;
+                Plotly.purge('scatterplot_mtx')
+                applyDataTransformation(dataframe, validTransformations.map(transformation => transformation.name), validTransformations);
+                await this.dispalySPLOM(dataframe)
+                this.isLoading = false;
+                return
+            }
+            this.$buefy.toast.open("No transformation available.")
         }
     },
     created: function () {
