@@ -24,7 +24,7 @@
                             </div>
                         </b-message>
                         <section>
-                            <scatterplot-matrix-component :dataframe="dataframe"></scatterplot-matrix-component>
+                            <scatterplot-matrix-component :dataframe="dataframe?.copy()"></scatterplot-matrix-component>
                         </section>
                     </section>
                     <section v-else>

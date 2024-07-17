@@ -114,7 +114,7 @@ import { Settings, FeatureCategories, CV_OPTIONS } from '../helpers/settings'
 import { ModelFactory } from "@/helpers/model_factory";
 import { settingStore } from '@/stores/settings'
 import UI from '@/helpers/ui';
-import { apply_data_transformation, handle_missing_values, encode_dataset, evaluate_classification } from '@/helpers/utils';
+import { applyDataTransformation, handle_missing_values, encode_dataset, evaluate_classification } from '@/helpers/utils';
 import { LabelEncoder, tensorflow } from 'danfojs/dist/danfojs-base';
 import ChartController from '@/helpers/charts';
 
@@ -241,11 +241,10 @@ export default {
                 let seed = this.seed;
                 let dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
                 let numericColumns = this.settings.items.filter(m => m.selected && m.type === FeatureCategories.Numerical.id).map(m => m.name);
-                console.log(numericColumns);
                 let model_name = this.modelOption;
                 const target = this.settings.modelTarget;
                 dataset = handle_missing_values(dataset)
-                dataset = apply_data_transformation(dataset, numericColumns);
+                dataset = applyDataTransformation(dataset, numericColumns);
                 let selected_columns = this.settings.items.filter(m => m.selected).map(m => m.name)
                 const index = selected_columns.findIndex(m => m === target)
                 if (index === -1) {

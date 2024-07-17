@@ -5,6 +5,7 @@ export const settingStore = defineStore({
     state: () => ({
         counter: 0,
         features: [],
+        transformations: [],
         results: [],
         target: null,
         isClassification: true,
@@ -34,6 +35,14 @@ export const settingStore = defineStore({
                 return
             }
             this.features.push(feature)
+        },
+        addTransformation(transformation) {
+            let index = this.transformations.findIndex(m => m.name === transformation.name);
+            if (index !== -1) {
+                this.transformations[index] = transformation
+                return
+            }
+            this.transformations.push(transformation)
         },
         addResult(result) {
             this.results.push(result)

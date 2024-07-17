@@ -318,13 +318,12 @@ export function scale_data(dataset, column, normalization_type) {
         throw new Error('falied at data transformation.')
     }
 }
-export function apply_data_transformation(dataset, column_names) {
+export function applyDataTransformation(dataset, column_names, transformations) {
     for (let i = 0; i < column_names.length; i++) {
         const column = column_names[i];
-        const key = encode_name(column_names[i]);
-        let normalization_type = document.getElementById(key + '--normal')?.value;
-        if (normalization_type && normalization_type !== "0") {
-            scale_data(dataset, column, normalization_type)
+        let transformation = transformations.find(transformation => transformation.name === column)
+        if (transformation && transformation !== "0") {
+            scale_data(dataset, column, transformation.scaler.toString())
         }
     }
     return dataset
