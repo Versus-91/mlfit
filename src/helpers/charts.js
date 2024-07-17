@@ -607,7 +607,7 @@ export default class ChartController {
         }
     }
 
-    async draw_classification_pca(dataset, labels, missclassifications, uniqueLabels, index) {
+    async classificationPCA(dataset, labels, missclassifications, uniqueLabels, index) {
 
         const pca = new PCA(dataset, { center: true, scale: true });
         var colorIndices = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label)));
@@ -994,16 +994,16 @@ export default class ChartController {
 
         Plotly.newPlot('probs_violin_plot', traces, layout);
     }
-    async plot_confusion_matrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
+    async plotConfusionMatrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
         console.log(labels);
         console.log(uniqueClasses);
 
         const confusionMatrix = await tfvis.metrics.confusionMatrix(y, predictedLabels);
-        // let div = document.createElement('div');
-        // div.classList.add('column');
-        // div.classList.add('is-12');
-        // div.setAttribute("id", "result_number_" + tab_index);
         let metric = await metrics(y.arraySync(), predictedLabels.arraySync(), uniqueClasses)
+        let accuracy = metric[4].toFixed(2);
+        let f1Micro = metric[2].toFixed(2)
+        let f1Macro = metric[3].toFixed(2)
+
         let len = confusionMatrix[0].length
         let preceissions = [];
         let recalls = [];
@@ -1029,17 +1029,10 @@ export default class ChartController {
         tensorflow.dispose(y)
         tensorflow.dispose(predictedLabels)
         const metric_labels = ["Precession", "Recall", "F1 score", "Support"]
-        // labels.push("Precession")
         labels.push("Precession")
-        // labels.push("F1 score")
-        // labels.push("Support")
-        // confusionMatrix.push(preceissions)
         recalls.push(0)
         confusionMatrix.push(preceissions)
-        // confusionMatrix.push(f1s)
-        // confusionMatrix.push(supports)
         let items_labels = labels.filter(x => !metric_labels.includes(x))
-        // Substring template helper for the responsive labels
         Highcharts.Templating.helpers.substr = (s, from, length) =>
             s.substr(from, length);
         let formatted_matrix = []
@@ -1188,7 +1181,7 @@ export default class ChartController {
                 }]
             }
         });
-        return confusionMatrix
+        return [accuracy, f1Micro, f1Macro]
     }
     plot_regularization(weights, alphas, names, tab_index) {
         let content = `

@@ -224,7 +224,6 @@ export async function metrics(y, y_pred, labels) {
     try {
         const { results, error } = await asyncRun(script, context);
         if (results) {
-            console.log(results);
             return results;
         } else if (error) {
             throw error
