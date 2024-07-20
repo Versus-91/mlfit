@@ -17,47 +17,37 @@ import Boosting from "./classification/boosting";
 export var ModelFactory = function () {
     this.createModel = (modelName, options) => {
         console.log(options);
-        var model;
-        if (modelName === Settings.classification.logistic_regression.value) {
-            model = new LogisticRegression(options);
-        } else if (modelName === Settings.classification.k_nearest_neighbour.value) {
-            model = new KNNModel(options);
-        } else if (modelName === Settings.classification.random_forest.value) {
-            model = new RandomForest(options);
-        } else if (modelName === Settings.classification.support_vector_machine.value) {
-            model = new SupportVectorMachine(options);
+        switch (modelName) {
+            case Settings.classification.logistic_regression.value:
+                return new LogisticRegression(options);
+            case Settings.classification.k_nearest_neighbour.value:
+                return new KNNModel(options);
+            case Settings.classification.random_forest.value:
+                return new RandomForest(options);
+            case Settings.classification.support_vector_machine.value:
+                return new SupportVectorMachine(options);
+            case Settings.classification.boosting.value:
+                return new Boosting(options);
+            case Settings.classification.discriminant_analysis.value:
+                return new DiscriminantAnalysis(options);
+            case Settings.classification.naive_bayes.value:
+                return new NaiveBayes(options);
+            case Settings.regression.linear_regression.value:
+                return new LinearRegression(options);
+            case Settings.regression.k_nearest_neighbour.value:
+                return new KNNRegressor(options);
+            case Settings.regression.support_vector_machine.value:
+                return new SupportVectorMachine(options);
+            case Settings.regression.random_forest.value:
+                return new RandomForestRegressor(options);
+            case Settings.regression.polynomial_regression.value:
+                return new PolynomialRegression(options);
+            case Settings.regression.kernel_regression.value:
+                return new KernelRegression(options);
+            case Settings.regression.bspline_regression.value:
+                return new BSplineRegression(options);
+            default:
+                throw new Error("Model not supported.");
         }
-        else if (modelName === Settings.classification.boosting.value) {
-            model = new Boosting(options);
-        }
-        else if (modelName === Settings.classification.discriminant_analysis.value) {
-            model = new DiscriminantAnalysis(options);
-        } else if (modelName === Settings.regression.linear_regression.value) {
-            model = new LinearRegression(options);
-        } else if (modelName === Settings.classification.naive_bayes.value) {
-            model = new NaiveBayes(options);
-        }
-        else if (modelName === Settings.regression.k_nearest_neighbour.value) {
-            model = new KNNRegressor(options);
-        } else if (modelName === Settings.regression.support_vector_machine.value) {
-            model = new SupportVectorMachine(options);
-        }
-        // else if (modelName === Settings.regression.boosting.value) {
-        //     model = new BoostingRegression(options,chartControler);
-        // } 
-        else if (modelName === Settings.regression.random_forest.value) {
-            model = new RandomForestRegressor(options);
-        }
-        else if (modelName === Settings.regression.polynomial_regression.value) {
-            model = new PolynomialRegression(options);
-        } else if (modelName === Settings.regression.kernel_regression.value) {
-            model = new KernelRegression(options);
-        }
-        else if (modelName === Settings.regression.bspline_regression.value) {
-            model = new BSplineRegression(options);
-        } else {
-            throw "model not supported.";
-        }
-        return model;
     }
 }

@@ -32,7 +32,6 @@
                 </option>
             </b-select>
         </b-field>
-        {{ settings.datasetShape }}
     </div>
 </template>
 
