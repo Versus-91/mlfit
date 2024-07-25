@@ -892,37 +892,30 @@ export default class UI {
     //         window.dispatchEvent(new Event('resize'));
     //     });
     // }
-    // predictions_table_regression(x, y, predictions, tab_index) {
-    //     let content = `
-    //     <div class="column is-12">
-    //         <table id="predictions_table_${tab_index}" class="table is-bordered is-hoverable is-narrow display is-size-7" width="100%">
-    //        </table>
-    //     </div>`
-    //     $("#tabs_info li[data-index='" + tab_index + "'] #results_" + tab_index + "").append(content);
-    //     let table_columns = [];
-    //     x.addColumn("y", y, { inplace: true });
-    //     x.addColumn("predictions: ", predictions, { inplace: true });
-    //     x.columns.forEach(element => {
-    //         table_columns.push({ title: element });
-    //     });
-    //     new DataTable('#predictions_table_' + tab_index, {
-    //         pageLength: 10,
-    //         responsive: true,
-    //         paging: true,
-    //         columnDefs: [
-    //             {
-    //                 render: function (data, type, row) {
-    //                     return data.toFixed(2);
-    //                 },
-    //                 targets: "_all",
-    //             }
-    //         ],
-    //         "bPaginate": true,
-    //         columns: table_columns,
-    //         data: x.values,
-    //         bDestroy: true,
-    //     });
-    // }
+    predictions_table_regression(x, y, predictions, tab_index) {
+        x.addColumn("y", y, { inplace: true });
+        x.addColumn("predictions: ", predictions, { inplace: true });
+        x.columns.forEach(element => {
+            table_columns.push({ title: element });
+        });
+        new DataTable('#predictions_table_' + tab_index, {
+            pageLength: 10,
+            responsive: true,
+            paging: true,
+            columnDefs: [
+                {
+                    render: function (data, type, row) {
+                        return data.toFixed(2);
+                    },
+                    targets: "_all",
+                }
+            ],
+            "bPaginate": true,
+            columns: table_columns,
+            data: x.values,
+            bDestroy: true,
+        });
+    }
     predictions_table(x, y, predictions, probs = null, tab_index = 0) {
         let table_columns = [];
         if (probs !== null) {

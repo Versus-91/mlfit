@@ -1,6 +1,8 @@
 library(plotly)
 library(GGally)
 library(ggplot2)
+library(jsonlite)
+
 setwd("...")
 
 function(msg = "") {
@@ -8,13 +10,14 @@ function(msg = "") {
 }
 
 #* Plot out data from the iris dataset
-#* @param spec If provided, filter the data to only this species (e.g. 'setosa')
-#* @get /plot
+#* @param body:object
+#* @post /plot
+#* Request Body
 
-function(spec) {
+function(req) {
   # Prepare example dataset
-  data <- iris
-  data$Species <- as.factor(data$Species) # Ensuring 'Species' is a factor (nominal)
+  data <- fromJSON(txt = req$postBody) %>% as.data.frame()
+  data$species <- as.factor(data$species)
   str(data)
   summary(data)
   # Define custom function for KDE on the diagonal for numerical variables
@@ -28,13 +31,14 @@ function(spec) {
 
   # Define custom function for KDE in the lower panels for numerical variables
   kde_lower <- function(data, mapping, ...) {
-    if (is.numeric(data[[as_label(mapping$x)]]) && is.numeric(data[[as_label(mapping$y)]])) {
+    if (is.numeric(data[[as_label(mapping$x)]]) &&
+      is.numeric(data[[as_label(mapping$y)]])) {
       ggplot(data, mapping) +
         geom_density2d_filled(alpha = 0.5) +
         theme_bw()
     } else {
       ggplot(data, mapping) +
-        geom_point(alpha = 0.5, aes(color = Species)) +
+        geom_point(alpha = 0.5, aes(color = species)) +
         theme_bw()
     }
   }
@@ -42,16 +46,16 @@ function(spec) {
   # Define custom function for the lower panels
   custom_lower <- function(data, mapping, ...) {
     ggplot(data, mapping) +
-      geom_point(alpha = 0.5, aes(color = Species)) +
+      geom_point(alpha = 0.5, aes(color = species)) +
       theme_bw()
   }
 
   # Create scatterplot matrix
   p <- ggpairs(data,
-    aes(color = Species), # Color points by Species
+    aes(color = species), # Color points by species
     diag = list(
       continuous = kde_diag,
-      discrete = kde_diag # Use the same function for both continuous and discrete to handle both cases
+      discrete = kde_diag
     ),
     lower = list(
       continuous = custom_lower,

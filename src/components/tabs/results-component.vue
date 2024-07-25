@@ -1,28 +1,12 @@
 <template>
-    <section>
-        <b-tabs v-model="activeTab" @input="resize" v-if="this.settings.results?.length > 0">
+    <section v-if="this.settings.results?.length > 0">
+        <b-tabs v-model="settings.resultActiveTab">
             <b-tab-item v-for="result in this.settings.results" :label="result.name.toString()" :key="result.id">
                 <div class="columns is-multiline">
-                    <div class="column is-12">
-                        <b-message type="is-info" has-icon icon-pack="fas" class="has-text-left">
-                            <p>Target variable : {{ result.target }}</p>
-                            <p>Dataset Name : {{ result.target }}</p>
-                            <p>Categorical Features : {{ result.categoricalFeatures }}</p>
-                            <p>Numerical Features : {{ result.numericColumns }}</p>
-                            <p>Transformations :
-                                <span v-for="transformation in result.transformations" :key="transformation.name">
-                                    {{ transformation.name + ': ' + transformation.scaler + ',' }}
-                                </span>
-                            </p>
-                            <p>Accuracy : {{ result.metrics[3].toFixed(2) }}</p>
-                            <p>f1 micro : {{ result.metrics[4].toFixed(2) }}</p>
-                            <p> f1 macro :{{ result.metrics[2].toFixed(2) }}</p>
-                        </b-message>
-                    </div>
-                    <div class="column is-6" :id="'confusion_matrix_' + result.id"></div>
-                    <div class="column is-6" :id="'pca_results_' + result.id"></div>
-                    <div class="column is-6" :id="'knn_table_' + result.id"
-                        v-if="result.name.toString().includes('neighbour')"></div>
+                    <classification-view-component :result="result"
+                        v-if="result.modelTask"></classification-view-component>
+                    <regression-view-component :result="result" v-else>
+                    </regression-view-component>
                     <div class="column is-12">
                         <table :id="'predictions_table_' + result.id"
                             class="table is-bordered is-hoverable is-narrow display is-size-7" width="100%">
@@ -31,18 +15,28 @@
                 </div>
             </b-tab-item>
         </b-tabs>
-        <section v-else>
-            <b-message type="is-danger" has-icon icon-pack="fas">
-                No result to show.
-            </b-message>
-        </section>
+    </section>
+    <section v-else>
+        <b-message type="is-danger" has-icon icon-pack="fas">
+            No result to show.
+        </b-message>
     </section>
 </template>
 
 <script>
 import { settingStore } from '@/stores/settings'
+import ClassificationViewComponent from './classification-view-component.vue'
+import RegressionViewComponent from './regression-view-component.vue'
+import Plotly from 'plotly.js-dist-min';
+import $ from "jquery";
+
 
 export default {
+    components: {
+        'classification-view-component': ClassificationViewComponent,
+        'regression-view-component': RegressionViewComponent,
+
+    },
     setup() {
         const settings = settingStore()
         return { settings }
@@ -58,6 +52,10 @@ export default {
     methods: {
         resize() {
             window.dispatchEvent(new Event('resize'));
+            var doc = $(".tab-content .js-plotly-plot");
+            for (var i = 0; i < doc.length; i++) {
+                Plotly.relayout(doc[i], { autosize: true });
+            }
         }
     },
 }

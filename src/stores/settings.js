@@ -8,6 +8,8 @@ export const settingStore = defineStore({
         transformations: [],
         results: [],
         datasetName: '',
+        activeTab: 0,
+        resultActiveTab: 0,
         datasetShape: {
             count: 0,
             columns: 0
@@ -27,6 +29,9 @@ export const settingStore = defineStore({
         },
         getDatasetShape: (state) => {
             return state.datasetShape
+        },
+        currentTab: (state) => {
+            return state.activeTab
         },
         outputs: (state) => state.results,
         transformationsList: (state) => state.transformations,
@@ -91,6 +96,12 @@ export const settingStore = defineStore({
         },
         setmodelTask(type) {
             this.isClassification = type
+        },
+        setActiveTab(index) {
+            this.activeTab = index
+        },
+        setResultActiveTab(index) {
+            this.resultActiveTab = index
         }
     },
 })

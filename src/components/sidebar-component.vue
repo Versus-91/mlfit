@@ -270,19 +270,25 @@ export default {
                 let model = model_factory.createModel(this.modelOption, this.modelConfigurations)
                 model.id = this.settings.getCounter
                 this.toggleTraining()
-                let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test);
+                let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns);
                 let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
                 this.settings.addResult({
                     id: model.id,
                     name: this.modelName + this.seed,
-                    type: this.settings.modelTask,
+                    modelTask: this.settings.modelTask,
                     metrics: metrics,
                     options: this.modelConfigurations,
                     target: target,
                     categoricalFeatures: this.settings.items.filter(m => m.selected && m.type !== FeatureCategories.Numerical.id).map(m => m.name),
                     numericColumns: numericColumns,
-                    transformations: this.settings.transformationsList
+                    transformations: [...this.settings.transformationsList]
                 });
+                if (this.settings.currentTab !== 2) {
+                    this.settings.setActiveTab(2);
+                }
+                setTimeout(() => {
+                    this.settings.setResultActiveTab(model.id);
+                }, 1000);
                 await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder)
                 this.settings.increaseCounter();
                 this.toggleTraining();

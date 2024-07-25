@@ -1,7 +1,7 @@
 <template>
     <div class="column is-10">
         <section>
-            <b-tabs type="is-toggle" v-model="activeTab" :position="'is-centered'">
+            <b-tabs type="is-toggle" v-model="settings.activeTab" :position="'is-centered'">
                 <b-tab-item label="Data Anaysis">
                     <section v-if="this.settings.datasetShape?.count > 0">
                         <b-message title="Data summary" v-model="isActive" type="is-info" :closable="false">
@@ -94,7 +94,6 @@ export default {
             datasetColumns: [
             ],
             isActive: true,
-            activeTab: 0,
         }
     },
     methods: {
