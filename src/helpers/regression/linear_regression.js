@@ -4,10 +4,15 @@
 
 
 import Plotly from 'plotly.js-dist-min';
-export default class LinearRegression {
+import { ClassificationModel } from '../model';
+
+export default class LinearRegression extends ClassificationModel {
     constructor(options) {
+        super();
         this.options = options;
         this.model = null;
+        this.summary = null;
+        this.model_stats_matrix = null;
 
     }
 
@@ -177,29 +182,8 @@ export default class LinearRegression {
                     )
                     `);
         let results = await plotlyData.toArray()
-        let reg_plot = JSON.parse(await results[0].toString())
-        reg_plot.layout.legend["orientation"] = 'h'
-        reg_plot.layout['showlegend'] = false;
-        Plotly.newPlot(container_regularization, reg_plot, { staticPlot: true });
-        Plotly.newPlot(container_errors, JSON.parse(await results[1].toString()), { staticPlot: true });
-        Plotly.newPlot(qqplot_ols, JSON.parse(await results[27].toString()), { staticPlot: true });
-        Plotly.newPlot(qqplot_1se, JSON.parse(await results[28].toString()), { staticPlot: true });
-        Plotly.newPlot(qqplot_min, JSON.parse(await results[29].toString()), { staticPlot: true });
 
-        let coefs_plot = JSON.parse(await results[15].toString())
-        coefs_plot.layout.legend = {
-            x: 0,
-            y: 1,
-            traceorder: 'normal',
-            font: {
-                family: 'sans-serif',
-                size: 8,
-                color: '#000'
-            },
-        };
-        Plotly.newPlot(container_coefs, coefs_plot, { staticPlot: true });
-
-        let summary = {
+        this.summary = {
             params: await results[2].toArray(),
             bse: await results[4].toArray(),
             pvalues: await results[3].toArray(),
@@ -229,10 +213,112 @@ export default class LinearRegression {
                 pvalues: await results[13].toArray(),
             },
         };
+        this.model_stats_matrix = [];
+        let cols = [...labels]
+        cols.unshift("intercept")
+        let min_ols_columns = this.summary['best_fit_min'].names;
 
-        return summary;
+        min_ols_columns.unshift('intercept');
+        let se_ols_columns = this.summary['best_fit_1se'].names;
+        se_ols_columns.unshift('intercept');
 
+        for (let i = 0; i < cols.length; i++) {
+            let row = [];
+            row.push(cols[i])
+            row.push(this.summary['params'][i]?.toFixed(2) ?? ' ')
+            row.push(this.summary['bse'][i]?.toFixed(2) ?? ' ')
+            row.push(this.summary['pvalues'][i]?.toFixed(2) ?? ' ')
+            let index = min_ols_columns.findIndex(m => m === cols[i])
+            if (index !== -1) {
+                row.push(this.summary['best_fit_min']['coefs'][index]?.toFixed(2) ?? ' ')
+                row.push(this.summary['best_fit_min']['bse'][index]?.toFixed(2) ?? ' ')
+                row.push(this.summary['best_fit_min']['pvalues'][index]?.toFixed(2) ?? ' ')
+            } else {
+                row.push(' ')
+                row.push(' ')
+                row.push(' ')
+            }
+            index = se_ols_columns.findIndex(m => m === cols[i])
+            if (index !== -1) {
+                row.push(this.summary['best_fit_1se']['coefs'][index]?.toFixed(2) ?? ' ')
+                row.push(this.summary['best_fit_1se']['bse'][index]?.toFixed(2) ?? ' ')
+                row.push(this.summary['best_fit_1se']['pvalues'][index]?.toFixed(2) ?? ' ')
+            } else {
+                row.push(' ')
+                row.push(' ')
+                row.push(' ')
+            }
+            this.model_stats_matrix.push(row)
+        }
+        this.model_stats_matrix.reverse()
+        let reg_plot = JSON.parse(await results[0].toString())
+        reg_plot.layout.legend["orientation"] = 'h'
+        reg_plot.layout['showlegend'] = false;
 
+        let coefs_plot = JSON.parse(await results[15].toString())
+        coefs_plot.layout.legend = {
+            x: 0,
+            y: 1,
+            traceorder: 'normal',
+            font: {
+                family: 'sans-serif',
+                size: 8,
+                color: '#000'
+            },
+        };
+        this.summary.coefs_plot = coefs_plot;
+        this.summary.regularization_plot = reg_plot;
+        this.summary.regularization_plot.layout['autosize'] = true
+        this.summary.regularization_plot.layout['staticPlot'] = true
+        this.summary.regularization_plot.layout['responsive'] = true
+        this.summary.errors_plot = JSON.parse(await results[1].toString());
+        this.summary.qqplot_ols_plot = JSON.parse(await results[27].toString());
+        this.summary.qqplot_1se_plot = JSON.parse(await results[28].toString());
+        this.summary.qqplot_min_plot = JSON.parse(await results[29].toString());
+
+        return this.summary['predictions'];
+    }
+    async evaluateModel(y, predictions, uniqueClasses) {
+        return null;
+    }
+    async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
+        let current = this;
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                new DataTable('#metrics_table_' + current.id, {
+                    responsive: true,
+                    "footerCallback": function (row, data, start, end, display) {
+                        var api = this.api();
+                        $(api.column(2).footer()).html(
+                            'R2 : ' + current.summary.r2.toFixed(2) + ' AIC: ' + current.summary.aic.toFixed(2)
+                        );
+                        $(api.column(5).footer()).html(
+                            'R2 : ' + current.summary['best_fit_min'].r2.toFixed(2) + ' AIC: ' + current.summary['best_fit_min'].aic.toFixed(2)
+                        );
+                        $(api.column(8).footer()).html(
+                            'R2 : ' + current.summary['best_fit_1se'].r2.toFixed(2) + ' AIC: ' + current.summary['best_fit_1se'].aic.toFixed(2)
+                        );
+                    },
+                    data: current.model_stats_matrix,
+                    info: false,
+                    search: false,
+                    ordering: false,
+                    searching: false,
+                    paging: false,
+                    bDestroy: true,
+                });
+                Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { staticPlot: true });
+                Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { staticPlot: true });
+
+                Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { staticPlot: true });
+                Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { staticPlot: true });
+                Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { staticPlot: true });
+                Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { staticPlot: true });
+
+                // this.ui.predictions_table_regression(x_test, y_test, predictions, this.id)
+                resolve('resolved');
+            }, 1000);
+        });
 
     }
 
