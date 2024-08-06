@@ -1,6 +1,0 @@
-library(plumber)
-library(dplyr)
-library(ggplot2)
-library(gapminder)
-root <- pr("./server/test.r")
-root %>% pr_run()

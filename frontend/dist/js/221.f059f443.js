@@ -1,0 +1,2 @@
+(function(){async function s(){self.pyodide=await loadPyodide(),await self.pyodide.loadPackage(["numpy","statsmodels","pandas"])}importScripts("https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js");let e=s();self.onmessage=async s=>{await e;const{id:t,python:a,...o}=s.data;for(const e of Object.keys(o))self[e]=o[e];try{await self.pyodide.loadPackagesFromImports(a);let s=await self.pyodide.runPythonAsync(a);const e=s.toJs();self.postMessage({results:e,id:t})}catch(d){self.postMessage({error:d.message,id:t})}}})();
+//# sourceMappingURL=221.f059f443.js.map
