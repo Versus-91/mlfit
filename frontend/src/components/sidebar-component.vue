@@ -287,6 +287,7 @@ export default {
                 }
                 setTimeout(() => {
                     this.settings.setResultActiveTab(model.id);
+                    window.dispatchEvent(new Event('resize'));
                 }, 1000);
                 await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder)
                 this.settings.increaseCounter();

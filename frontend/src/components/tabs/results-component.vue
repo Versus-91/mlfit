@@ -1,6 +1,6 @@
 <template>
     <section v-if="this.settings.results?.length > 0">
-        <b-tabs v-model="settings.resultActiveTab">
+        <b-tabs v-model="settings.resultActiveTab" >
             <b-tab-item v-for="result in this.settings.results" :label="result.name.toString()" :key="result.id">
                 <div class="columns is-multiline">
                     <classification-view-component :result="result"
@@ -27,8 +27,6 @@
 import { settingStore } from '@/stores/settings'
 import ClassificationViewComponent from './classification-view-component.vue'
 import RegressionViewComponent from './regression-view-component.vue'
-import Plotly from 'plotly.js-dist-min';
-import $ from "jquery";
 
 
 export default {
@@ -46,15 +44,17 @@ export default {
     },
     data() {
         return {
-            activeTab: null
+            activeTab: null,
+            visitedTabs: []
         }
     },
     methods: {
-        resize() {
-            window.dispatchEvent(new Event('resize'));
-            var doc = $(".tab-content .js-plotly-plot");
-            for (var i = 0; i < doc.length; i++) {
-                Plotly.relayout(doc[i], { autosize: true });
+        resize(id) {
+            let isVisited = this.visitedTabs.findIndex(item => item === id);
+            console.log('cccccc', isVisited);
+            if (isVisited === -1) {
+                this.visitedTabs.push(id);
+                window.dispatchEvent(new Event('resize'));
             }
         }
     },
