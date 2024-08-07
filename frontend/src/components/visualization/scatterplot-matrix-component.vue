@@ -44,12 +44,15 @@ export default {
     },
     methods: {
         async dispalySPLOM(dataframe) {
+            this.isLoading = true;
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
             let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1).map(column => column.name);
             let features = numericColumns.concat(categorical_columns);
             dataframe.dropNa({ axis: 1, inplace: true })
             await chartController.ScatterplotMatrix(dataframe.loc({ columns: features }).values, features, this.dataframe.column(this.settings.modelTarget).values, categorical_columns.length,
                 this.settings.modelTask, numericColumns, categorical_columns, dataframe)
+            this.isLoading = false;
+
         },
         async scaleData(dataframe) {
             let validTransformations = this.features.filter(m => m.scaler !== 0);
@@ -79,6 +82,23 @@ export default {
             }
         })
         this.dispalySPLOM(this.dataframe.copy())
+    },
+    watch: {
+        dataframe: function (target, oldVal) {
+            if (target !== oldVal && target) {
+                let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
+                let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1).map(column => column.name);
+                let features = numericColumns.concat(categorical_columns);
+                this.features = features.map((feature, i) => {
+                    return {
+                        id: i,
+                        name: feature,
+                        scaler: 0
+                    }
+                })
+                this.dispalySPLOM(this.dataframe.copy())
+            }
+        },
     },
     computed: {
         column_width: {

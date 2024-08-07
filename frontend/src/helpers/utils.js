@@ -397,21 +397,25 @@ export function encode_dataset(data_frame, columns_types, model) {
     let df = data_frame.copy()
 
     let categorical_columns = columns_types.filter(column => column.type === FeatureCategories.Nominal.id || column.type === FeatureCategories.Ordinal.id)
+    let categoriclaFeaturesAfterEncoding = []
     categorical_columns.forEach((column) => {
         if (column.type === FeatureCategories.Ordinal.id) {
             let encoder = new LabelEncoder()
             encoder.fit(df[column.name])
             let encoded_column = encoder.transform(df[column.name])
             df.addColumn(column.name, encoded_column.values, { inplace: true })
+            categoriclaFeaturesAfterEncoding.push(column.name)
         } else {
             df = getDummies(df, { columns: [column.name] })
             if (model === Settings.classification.logistic_regression.label || model === Settings.regression.linear_regression.label) {
-                df.drop({ columns: [df.columns.find(m => m.includes(column.name + "_"))], inplace: true })
+                df.drop({ columns: [df.columns.find(m => m.includes(column.name + "_"))], inplace: true });
             }
+            categoriclaFeaturesAfterEncoding.push(...df.columns.filter(m => m.includes(column.name + "_")))
+
         }
     })
 
-    return df
+    return [df, categoriclaFeaturesAfterEncoding]
 }
 
 

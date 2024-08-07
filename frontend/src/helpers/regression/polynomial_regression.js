@@ -1,34 +1,46 @@
 
-import Plotly from 'plotly.js-dist-min';
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 
-export default class PolynomialRegression {
+
+import Plotly from 'plotly.js-dist-min';
+import { RegressionModel } from '../regression_model';
+
+export default class PolynomialRegression extends RegressionModel {
     constructor(options) {
+        super();
         this.options = options;
         this.model = null;
+        this.summary = null;
+        this.model_stats_matrix = null;
 
     }
-    async train_test(x_train, y_train, x_test, y_test, labels, container_regularization, container_errors, container_coefs) {
+
+    async train(x_train, y_train, x_test, y_test, labels, categorical_columns) {
         this.context = {
             X_train: x_train,
             y_train: y_train,
             y_test: y_test,
             X_test: x_test,
-            regularization_type: this.options.regularization === "Lasso" ? 1 : 0,
+            regularization_type: this.options?.regularization?.value === "Lasso" ? 1 : 0,
             labels: labels
         };
-        async ({ WebR }) => {
-            const webR = new WebR({ interactive: false });
-            await webR.init();
-            await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'tidyr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary'], { quiet: true });
-            await webR.objs.globalEnv.bind('xx', x_train);
-            await webR.objs.globalEnv.bind('x_test', x_test);
 
-            await webR.objs.globalEnv.bind('y', y_train);
-            await webR.objs.globalEnv.bind('names', labels);
-            await webR.objs.globalEnv.bind('is_lasso', this.context.regularization_type);
+        const webR = window.webr;
+        await webR.init();
+        await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'tidyr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary'], { quiet: true });
+        await webR.objs.globalEnv.bind('xx', x_train);
+        await webR.objs.globalEnv.bind('x_test', x_test);
+
+        await webR.objs.globalEnv.bind('y', y_train);
+        await webR.objs.globalEnv.bind('degree', 2);
+        await webR.objs.globalEnv.bind('names', labels);
+        await webR.objs.globalEnv.bind('categorical_columns', categorical_columns);
+
+        await webR.objs.globalEnv.bind('is_lasso', this.context.regularization_type);
 
 
-            const plotlyData = await webR.evalR(`
+        const plotlyData = await webR.evalR(`
                     library(plotly)
                     library(ggplot2)
                     library(tidyr)
@@ -36,12 +48,36 @@ export default class PolynomialRegression {
                     library(ggrepel)
                     library(modelsummary)
                     library(glmnet)
-                    degree <- 2
-                    x <-   as.matrix(xx)
 
-                    lam = 10 ^ seq (-2,3, length =100)    
-                    cvfit = cv.glmnet(x, y, alpha = is_lasso)
+                    # Select all columns except the first as predictors. 
+                    add_powers <- function(df, degree,columns) {
+                            new_df <- df  # Copy the original data frame
+                            for (col in columns) {
+                                new_col_name <- paste0(col, "_", degree)
+                                new_df[[new_col_name]] <- df[[col]]^degree
+                            }
+                            return(new_df)
+                            }
+                        
+                    x <- as.matrix(xx)  
+                    colnames(x) <- names
+                    cols_numerical <- setdiff(names, categorical_columns)
+
+                    df_main <- add_powers(as.data.frame(x), degree,cols_numerical)
+                    scale_df <- add_powers(as.data.frame(x), degree,cols_numerical)
+                    x <- as.matrix(x_test)  
+                    colnames(x) <- names
+                    df_test <- add_powers(as.data.frame(x), degree,cols_numerical)
+
                     
+                    base_model = cv.glmnet(as.matrix(scale_df), y)
+                    weights <- 1 / abs(coef(base_model)[-1])
+                    x <- as.matrix(df_main)
+                    if(is_lasso){
+                        cvfit = cv.glmnet(x, y, alpha = 1)
+                    }else{
+                       cvfit = cv.glmnet(x, y, alpha = 0)
+                    }
                     betas = as.matrix(cvfit$glmnet.fit$beta)
                     lambdas = cvfit$lambda
                     names(lambdas) = colnames(betas)
@@ -70,12 +106,12 @@ export default class PolynomialRegression {
                                 linetype="dashed")+
                     theme_bw()
 
+ 
                     model <- lm(y ~ ., data = as.data.frame(x))
-                    x <- as.matrix(x_test)  
+                    x <- as.matrix(df_test)  
                     predictions <- predict(model, newdata = as.data.frame(x))
                     # Get coefficients, p-values, and standard errors
                     coefs <- coef(model)
-                    print(coefs)
                     pvals <- summary(model)$coefficients[,4]
                     std_error <- summary(model)$coefficients[,2]
                     aic_value <- AIC(model)
@@ -86,7 +122,7 @@ export default class PolynomialRegression {
 
 
                     best_lambda <- cvfit$lambda.min
-                    x <- as.matrix(xx)
+                    x <- as.matrix(df_main) 
                     # Get the coefficients for the best lambda
                     best_model <- glmnet(x, y, alpha =is_lasso, lambda = best_lambda)
                     coefficients <- as.matrix(coef(best_model))
@@ -108,25 +144,25 @@ export default class PolynomialRegression {
                     coefficients <- as.matrix(coef(best_model))
                     residuals_min <- resid(linear_model_min)
                     fitted_values_min <- fitted(linear_model_min)
-                    x <- as.matrix(x_test)
+                    x <- as.matrix(df_test)  
                     x <- x[, nonzero_features]
                     predictions_min <- predict(linear_model_min, newdata = as.data.frame(x))
-                    x <- as.matrix(xx)
+                    x <- as.matrix(df_main)  
                     nonzero_coef <- coefficients[coefficients != 0]
                     
                     nonzero_features <- rownames(coefficients)[coefficients != 0 & rownames(coefficients) != "(Intercept)"]
                     X_reduced <- x[, nonzero_features]
                     linear_model_1se_features <- nonzero_features
                     linear_model_1se <- lm(y ~ ., data = as.data.frame(X_reduced))
-                    print(coef(linear_model_1se))
                     coefs_1se <- coef(linear_model_1se)
+                    print(coefs_1se)
                     pvals_1se <- summary(linear_model_1se)$coefficients[,4]
                     aic_1se<- AIC(linear_model_1se)
                     rsquared_1se <- summary(linear_model_1se)$r.squared
                     std_error_1se <- summary(linear_model_1se)$coefficients[,2]
                     residuals_1se <- resid(linear_model_1se)
                     fitted_values_1se <- fitted(linear_model_1se)
-                    x <- as.matrix(x_test)
+                    x <- as.matrix(df_test)  
                     x <- x[, nonzero_features]
                     predictions_1se <- predict(linear_model_1se, newdata = as.data.frame(x))
                     models <- list(
@@ -135,7 +171,6 @@ export default class PolynomialRegression {
                         "1se OLS" = linear_model_1se
                         )
                     z <- modelplot(models =models,coef_omit = 'Interc')
-                    term_labels <- attr(terms(model), "term.labels")
                     qqplot_ols <-ggplot(data.frame(residuals = residuals_ols), aes(sample = residuals_ols)) +
                         stat_qq() +
                         stat_qq_line(col = "red") +
@@ -157,69 +192,159 @@ export default class PolynomialRegression {
                             x = "Theoretical Quantiles",
                             y = "Sample Quantiles") +
                         theme_minimal()
-                    list(plotly_json(p, pretty = FALSE),plotly_json(p2, pretty = FALSE),coefs,pvals,std_error,predictions,aic_value,bic_value,rsquared,coefs_min,pvals_min,std_error_min
+                    list(plotly_json(p, pretty = FALSE),plotly_json(p2, pretty = FALSE),coefs,
+                    pvals,std_error,predictions,aic_value,bic_value,rsquared
+                    ,coefs_min,pvals_min,std_error_min
                     ,coefs_1se,pvals_1se,std_error_1se,plotly_json(z, pretty = FALSE),linear_model_min_features,linear_model_1se_features
-                    ,residuals_ols,residuals_1se,residuals_min,predictions_1se,predictions_min,rsquared_1se,aic_1se,rsquared_min,aic_min,term_labels
+                    ,residuals_ols,residuals_1se,residuals_min,predictions_1se,predictions_min,rsquared_1se,aic_1se,rsquared_min,aic_min
                     ,plotly_json(qqplot_ols, pretty = FALSE)
                     ,plotly_json(qqplot_1se, pretty = FALSE)
-                    ,plotly_json(qqplot_min, pretty = FALSE))
+                    ,plotly_json(qqplot_min, pretty = FALSE)
+                    
+                    )
                     `);
-            let results = await plotlyData.toArray()
-            let reg_plot = JSON.parse(await results[0].toString())
-            reg_plot.layout.legend["orientation"] = 'h'
-            reg_plot.layout['showlegend'] = false;
-            Plotly.newPlot(container_regularization, reg_plot, {
-            });
-            Plotly.newPlot(container_errors, JSON.parse(await results[1].toString()), {});
-            let coefs_plot = JSON.parse(await results[15].toString())
-            coefs_plot.layout.legend = {
-                x: 0,
-                y: 1,
-                traceorder: 'normal',
-                font: {
-                    family: 'sans-serif',
-                    size: 8,
-                    color: '#000'
-                },
-            };
-            Plotly.newPlot(container_coefs, coefs_plot, {});
+        let results = await plotlyData.toArray()
 
-            let summary = {
-                labels: await results[27].toArray(),
-                params: await results[2].toArray(),
-                bse: await results[4].toArray(),
-                pvalues: await results[3].toArray(),
-                predictions: await results[5].toArray(),
-                predictions1se: await results[21].toArray(),
-                predictionsmin: await results[22].toArray(),
-                residuals_ols: await results[18].toArray(),
-                residuals_1se: await results[19].toArray(),
-                residuals_min: await results[20].toArray(),
-                aic: await results[6].toNumber(),
-                bic: await results[7].toNumber(),
-                r2: await results[8].toNumber(),
-                best_fit_min: {
-                    r2: await results[25].toNumber(),
-                    aic: await results[26].toNumber(),
-                    names: await results[16].toArray(),
-                    coefs: await results[9].toArray(),
-                    bse: await results[11].toArray(),
-                    pvalues: await results[10].toArray(),
-                },
-                best_fit_1se: {
-                    r2: await results[23].toNumber(),
-                    aic: await results[24].toNumber(),
-                    names: await results[17].toArray(),
-                    coefs: await results[12].toArray(),
-                    bse: await results[14].toArray(),
-                    pvalues: await results[13].toArray(),
-                },
-            };
-            return summary;
+        this.summary = {
+            params: await results[2].toArray(),
+            bse: await results[4].toArray(),
+            pvalues: await results[3].toArray(),
+            predictions: await results[5].toArray(),
+            predictions1se: await results[21].toArray(),
+            predictionsmin: await results[22].toArray(),
+            residuals_ols: await results[18].toArray(),
+            residuals_1se: await results[19].toArray(),
+            residuals_min: await results[20].toArray(),
+            aic: await results[6].toNumber(),
+            bic: await results[7].toNumber(),
+            r2: await results[8].toNumber(),
+            best_fit_min: {
+                r2: await results[25].toNumber(),
+                aic: await results[26].toNumber(),
+                names: await results[16].toArray(),
+                coefs: await results[9].toArray(),
+                bse: await results[11].toArray(),
+                pvalues: await results[10].toArray(),
+            },
+            best_fit_1se: {
+                r2: await results[23].toNumber(),
+                aic: await results[24].toNumber(),
+                names: await results[17].toArray(),
+                coefs: await results[12].toArray(),
+                bse: await results[14].toArray(),
+                pvalues: await results[13].toArray(),
+            },
+        };
+        this.model_stats_matrix = [];
+        let cols = [...labels]
+        cols.unshift("intercept")
+        let min_ols_columns = this.summary['best_fit_min'].names;
+
+        min_ols_columns.unshift('intercept');
+        let se_ols_columns = this.summary['best_fit_1se'].names;
+        se_ols_columns.unshift('intercept');
+
+        for (let i = 0; i < cols.length; i++) {
+            let row = [];
+            row.push(cols[i])
+            row.push(this.summary['params'][i]?.toFixed(2) ?? ' ')
+            row.push(this.summary['bse'][i]?.toFixed(2) ?? ' ')
+            row.push(this.summary['pvalues'][i]?.toFixed(2) ?? ' ')
+            let index = min_ols_columns.findIndex(m => m === cols[i])
+            if (index !== -1) {
+                row.push(this.summary['best_fit_min']['coefs'][index]?.toFixed(2) ?? ' ')
+                row.push(this.summary['best_fit_min']['bse'][index]?.toFixed(2) ?? ' ')
+                row.push(this.summary['best_fit_min']['pvalues'][index]?.toFixed(2) ?? ' ')
+            } else {
+                row.push(' ')
+                row.push(' ')
+                row.push(' ')
+            }
+            index = se_ols_columns.findIndex(m => m === cols[i])
+            if (index !== -1) {
+                row.push(this.summary['best_fit_1se']['coefs'][index]?.toFixed(2) ?? ' ')
+                row.push(this.summary['best_fit_1se']['bse'][index]?.toFixed(2) ?? ' ')
+                row.push(this.summary['best_fit_1se']['pvalues'][index]?.toFixed(2) ?? ' ')
+            } else {
+                row.push(' ')
+                row.push(' ')
+                row.push(' ')
+            }
+            this.model_stats_matrix.push(row)
         }
+        this.model_stats_matrix.reverse()
+        let reg_plot = JSON.parse(await results[0].toString())
+        reg_plot.layout.legend["orientation"] = 'h'
+        reg_plot.layout['showlegend'] = false;
+
+        let coefs_plot = JSON.parse(await results[15].toString())
+        coefs_plot.layout.legend = {
+            x: 0,
+            y: 1,
+            traceorder: 'normal',
+            font: {
+                family: 'sans-serif',
+                size: 8,
+                color: '#000'
+            },
+        };
+        this.summary.coefs_plot = coefs_plot;
+        this.summary.regularization_plot = reg_plot;
+        this.summary.regularization_plot.layout['autosize'] = true
+        this.summary.regularization_plot.layout['staticPlot'] = true
+        this.summary.regularization_plot.layout['responsive'] = true
+        this.summary.errors_plot = JSON.parse(await results[1].toString());
+        this.summary.qqplot_ols_plot = JSON.parse(await results[27].toString());
+        this.summary.qqplot_1se_plot = JSON.parse(await results[28].toString());
+        this.summary.qqplot_min_plot = JSON.parse(await results[29].toString());
+
+        return this.summary['predictions'];
     }
-    predict(x_test) {
-        const result = this.model.predict(x_test);
-        return result
+    async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
+        let current = this;
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                new DataTable('#metrics_table_' + current.id, {
+                    responsive: true,
+                    "footerCallback": function (row, data, start, end, display) {
+                        var api = this.api();
+                        $(api.column(2).footer()).html(
+                            'R2 : ' + current.summary.r2.toFixed(2) + ' AIC: ' + current.summary.aic.toFixed(2)
+                        );
+                        $(api.column(5).footer()).html(
+                            'R2 : ' + current.summary['best_fit_min'].r2.toFixed(2) + ' AIC: ' + current.summary['best_fit_min'].aic.toFixed(2)
+                        );
+                        $(api.column(8).footer()).html(
+                            'R2 : ' + current.summary['best_fit_1se'].r2.toFixed(2) + ' AIC: ' + current.summary['best_fit_1se'].aic.toFixed(2)
+                        );
+                    },
+                    data: current.model_stats_matrix,
+                    info: false,
+                    search: false,
+                    ordering: false,
+                    searching: false,
+                    paging: false,
+                    bDestroy: true,
+                });
+
+                Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { staticPlot: true });
+                Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { staticPlot: false });
+
+                Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { staticPlot: true });
+                Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { staticPlot: true });
+                Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { staticPlot: true });
+                Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { staticPlot: true });
+                current.ui.yhat_plot(y_test.values, this.summary['predictions'], 'regression_y_yhat_' + + current.id, 'OLS predictions')
+                current.ui.yhat_plot(y_test.values, this.summary['predictionsmin'], 'regression_y_yhat_min_' + + current.id, 'OLS min predictions')
+                current.ui.yhat_plot(y_test.values, this.summary['predictions1se'], 'regression_y_yhat_1se_' + + current.id, 'OLS 1se predictions')
+                current.ui.residual_plot(y_test.values, this.summary['residuals_ols'], 'regression_residual_' + + current.id, 'OLS residuals')
+                current.ui.residual_plot(y_test.values, this.summary['residuals_min'], 'regression_residual_min_' + + current.id, 'OLS min residuals')
+                current.ui.residual_plot(y_test.values, this.summary['residuals_1se'], 'regression_residual_1se_' + + current.id, 'OLS 1se residuals')
+                this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
+                resolve('resolved');
+            }, 1000);
+        });
+
     }
+
 }

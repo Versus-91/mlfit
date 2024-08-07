@@ -16,7 +16,7 @@ export default class LinearRegression extends RegressionModel {
 
     }
 
-    async train(x_train, y_train, x_test, y_test, labels,) {
+    async train(x_train, y_train, x_test, y_test, labels, categorical_columns) {
         this.context = {
             X_train: x_train,
             y_train: y_train,
@@ -34,6 +34,8 @@ export default class LinearRegression extends RegressionModel {
 
         await webR.objs.globalEnv.bind('y', y_train);
         await webR.objs.globalEnv.bind('names', labels);
+        await webR.objs.globalEnv.bind('categorical_columns', categorical_columns);
+
         await webR.objs.globalEnv.bind('is_lasso', this.context.regularization_type);
 
 
@@ -45,14 +47,22 @@ export default class LinearRegression extends RegressionModel {
                     library(ggrepel)
                     library(modelsummary)
                     library(glmnet)
-                    data(mtcars)  
+
                     # Select all columns except the first as predictors. 
                     x <- as.matrix(xx)  
                     colnames(x) <- names
+                    scale_df <- as.data.frame(x)
 
-                    lam = 10 ^ seq (-2,3, length =100)    
-                    cvfit = cv.glmnet(x, y, alpha = is_lasso)
+                    cols_to_scale <- setdiff(names, categorical_columns)
+                    scale_df[cols_to_scale] <- scale(scale_df[cols_to_scale])
                     
+                    base_model = cv.glmnet(as.matrix(scale_df), y)
+                    weights <- 1 / abs(coef(base_model)[-1])
+                    if(is_lasso){
+                        cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 1,penalty.factor = weights)
+                    }else{
+                       cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 0)
+                    }
                     betas = as.matrix(cvfit$glmnet.fit$beta)
                     lambdas = cvfit$lambda
                     names(lambdas) = colnames(betas)
@@ -81,13 +91,13 @@ export default class LinearRegression extends RegressionModel {
                                 linetype="dashed")+
                     theme_bw()
 
+ 
                     model <- lm(y ~ ., data = as.data.frame(x))
                     x <- as.matrix(x_test)  
                     colnames(x) <- names
                     predictions <- predict(model, newdata = as.data.frame(x))
                     # Get coefficients, p-values, and standard errors
                     coefs <- coef(model)
-                    print(coefs)
                     pvals <- summary(model)$coefficients[,4]
                     std_error <- summary(model)$coefficients[,2]
                     aic_value <- AIC(model)
@@ -133,8 +143,8 @@ export default class LinearRegression extends RegressionModel {
                     X_reduced <- x[, nonzero_features]
                     linear_model_1se_features <- nonzero_features
                     linear_model_1se <- lm(y ~ ., data = as.data.frame(X_reduced))
-                    print(coef(linear_model_1se))
                     coefs_1se <- coef(linear_model_1se)
+                    print(coefs_1se)
                     pvals_1se <- summary(linear_model_1se)$coefficients[,4]
                     aic_1se<- AIC(linear_model_1se)
                     rsquared_1se <- summary(linear_model_1se)$r.squared
@@ -172,7 +182,9 @@ export default class LinearRegression extends RegressionModel {
                             x = "Theoretical Quantiles",
                             y = "Sample Quantiles") +
                         theme_minimal()
-                    list(plotly_json(p, pretty = FALSE),plotly_json(p2, pretty = FALSE),coefs,pvals,std_error,predictions,aic_value,bic_value,rsquared,coefs_min,pvals_min,std_error_min
+                    list(plotly_json(p, pretty = FALSE),plotly_json(p2, pretty = FALSE),coefs,
+                    pvals,std_error,predictions,aic_value,bic_value,rsquared
+                    ,coefs_min,pvals_min,std_error_min
                     ,coefs_1se,pvals_1se,std_error_1se,plotly_json(z, pretty = FALSE),linear_model_min_features,linear_model_1se_features
                     ,residuals_ols,residuals_1se,residuals_min,predictions_1se,predictions_min,rsquared_1se,aic_1se,rsquared_min,aic_min
                     ,plotly_json(qqplot_ols, pretty = FALSE)
@@ -278,15 +290,12 @@ export default class LinearRegression extends RegressionModel {
 
         return this.summary['predictions'];
     }
-    async evaluateModel(y, predictions, uniqueClasses) {
-        return null;
-    }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
         let current = this;
         return new Promise((resolve) => {
             setTimeout(() => {
                 new DataTable('#metrics_table_' + current.id, {
-                    responsive: true,
+                    responsive: false,
                     "footerCallback": function (row, data, start, end, display) {
                         var api = this.api();
                         $(api.column(2).footer()).html(
@@ -307,13 +316,19 @@ export default class LinearRegression extends RegressionModel {
                     paging: false,
                     bDestroy: true,
                 });
-                Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { staticPlot: true });
-                Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { staticPlot: true });
 
+                Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { staticPlot: false });
+                Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { staticPlot: true });
                 Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { staticPlot: true });
                 Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { staticPlot: true });
                 Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { staticPlot: true });
                 Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { staticPlot: true });
+                current.ui.yhat_plot(y_test, this.summary['predictions'], 'regression_y_yhat_' + + current.id, 'OLS predictions')
+                current.ui.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + + current.id, 'OLS min predictions')
+                current.ui.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + + current.id, 'OLS 1se predictions')
+                current.ui.residual_plot(y_test, this.summary['residuals_ols'], 'regression_residual_' + + current.id, 'OLS residuals')
+                current.ui.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + + current.id, 'OLS min residuals')
+                current.ui.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + + current.id, 'OLS 1se residuals')
                 this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
                 resolve('resolved');
             }, 1000);

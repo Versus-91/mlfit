@@ -3,23 +3,37 @@
         <div class="columns is-multiline">
             <div class="column is-12">
                 <b-message type="is-info" has-icon icon-pack="fas" class="has-text-left">
-                    <p>Target variable : {{ result.target }}</p>
-                    <p>Dataset Name : {{ result.target }}</p>
-                    <p>Categorical Features : {{ result.categoricalFeatures }}</p>
-                    <p>Numerical Features : {{ result.numericColumns }}</p>
-                    <p>Transformations :
+                    <p class="my-1">
+                        <span>Dataset Name : {{ result.datasetName }} , </span>
+                        <span> Target variable : {{ result.target }}</span>
+                    </p>
+
+                    <p class="subtitle is-6 my-1">Features :</p>
+                    <p class="ml-2 my-1 subtitle is-6 ">Categorical Features : <span
+                            v-for="feature in result.categoricalFeatures " :key="feature">
+                            {{ feature + ', ' }}
+                        </span>
+                    </p>
+                    <p class="ml-2 my-1 subtitle is-6 ">Numerical Features : <span
+                            v-for="feature in result.numericColumns " :key="feature">
+                            {{ feature + ', ' }}
+                        </span></p>
+                    <p class="ml-2 my-1 subtitle is-6 ">Transformations :
                         <span v-for="transformation in result.transformations" :key="transformation.name">
                             {{ transformation.name + ': ' + transformation.scaler + ',' }}
                         </span>
                     </p>
-                    <p>Accuracy : {{ result.metrics[3].toFixed(2) }}</p>
-                    <p>f1 micro : {{ result.metrics[4].toFixed(2) }}</p>
-                    <p> f1 macro :{{ result.metrics[2].toFixed(2) }}</p>
+                    <hr class="has-background-dark	my-2">
+                    <p class="subtitle is-6 my-1">Goodness of Fit :</p>
+                    <p class="ml-2 my-1 subtitle is-6 ">Accuracy : {{ result.metrics[3].toFixed(2) }}</p>
+                    <p class="ml-2 my-1 subtitle is-6 ">f1 micro : {{ result.metrics[4].toFixed(2) }}</p>
+                    <p class="ml-2 my-1 subtitle is-6 "> f1 macro :{{ result.metrics[2].toFixed(2) }}</p>
                 </b-message>
             </div>
-            <div class="column is-6" :id="'confusion_matrix_' + result.id"></div>
-            <div class="column is-6" :id="'pca_results_' + result.id"></div>
-            <div class="column is-6" :id="'knn_table_' + result.id" v-if="result.name.toString().includes('neighbour')">
+            <div class="column is-6" style="height: 4%;" :id="'confusion_matrix_' + result.id"></div>
+            <div class="column is-6" style="height: 400px;" :id="'pca_results_' + result.id"></div>
+            <div class="column is-6" style="height: 300px;" :id="'knn_table_' + result.id"
+                v-if="result.name.toString().includes('neighbour')">
             </div>
         </div>
     </section>

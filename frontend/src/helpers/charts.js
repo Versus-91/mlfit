@@ -1652,7 +1652,6 @@ export default class ChartController {
                     staticPlot: true
                 })
                 resolve()
-
             }, 1000);
         })
     }
@@ -1734,7 +1733,7 @@ export default class ChartController {
                     y1: max_y,
                     line: {
                         color: 'rgb(55, 128, 191)',
-                        width: 3
+                        width: 1
                     }
                 }, {
                     type: 'line',
@@ -1744,7 +1743,7 @@ export default class ChartController {
                     y1: max_y,
                     line: {
                         color: 'rgb(55, 128, 191)',
-                        width: 3
+                        width: 1
                     }
                 },]
         };

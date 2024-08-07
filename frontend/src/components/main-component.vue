@@ -1,11 +1,16 @@
 <template>
     <div class="column is-10">
         <section>
-            <b-tabs type="is-toggle" v-model="settings.activeTab" :position="'is-centered'">
+            <b-tabs type="is-toggle" v-model="settings.activeTab" :position="'is-centered'" :animated="false">
                 <b-tab-item label="Data Anaysis">
                     <section v-if="this.settings.datasetShape?.count > 0">
                         <b-message title="Data summary" v-model="isActive" type="is-info" :closable="false">
                             <div class="columns is-multiline">
+                                <div class="column is-12 has-text-left">
+                                    <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
+                                        this.settings.datasetShape.columns
+                                        }})</p>
+                                </div>
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Continuous Features :</h5>
                                     <b-table class="is-size-7" :data="continuousFeaturesStats"
@@ -23,9 +28,10 @@
                                 </div>
                             </div>
                         </b-message>
-                        <section>
-                            <scatterplot-matrix-component :dataframe="dataframe?.copy()"></scatterplot-matrix-component>
-                        </section>
+                        <!-- <section>
+                            <scatterplot-matrix-component v-if="this.settings.df"
+                                :dataframe="this.settings.df?.copy()"></scatterplot-matrix-component>
+                        </section> -->
                     </section>
                     <section v-else>
                         <b-message type="is-danger" has-icon icon-pack="fas">
@@ -36,7 +42,7 @@
                 </b-tab-item>
 
                 <b-tab-item label="Dimensionality Reduction">
-                    <dmensionality-reduction-component :dataframe="dataframe"
+                    <dmensionality-reduction-component :dataframe="this.settings.df"
                         :columns="selectedFeatures"></dmensionality-reduction-component>
                 </b-tab-item>
                 <b-tab-item label="Results Analysis">
@@ -58,7 +64,6 @@
 import UI from '@/helpers/ui';
 import { toJSON } from 'danfojs';
 import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
-import ScatterplotMatrixComponent from './visualization/scatterplot-matrix-component.vue'
 import ResultsComponent from './tabs/results-component.vue'
 import { settingStore } from '@/stores/settings'
 
@@ -67,7 +72,6 @@ export default {
     name: 'MainComponent',
     components: {
         'dmensionality-reduction-component': PCAComponent,
-        'scatterplot-matrix-component': ScatterplotMatrixComponent,
         'results-component': ResultsComponent,
     },
     setup() {
@@ -101,19 +105,21 @@ export default {
     },
     watch: {
         dataframe: async function (val) {
-            let datasetStats = ui.renderDatasetStats(val);
-            this.continuousFeaturesColumns = datasetStats[0];
-            this.continuousFeaturesStats = datasetStats[1];
-            this.categoricalFeaturesColumns = datasetStats[2];
-            this.categoricalFeaturesStats = datasetStats[3];
-            this.datasetColumns = val.columns.map(column => {
-                return {
-                    field: column,
-                    label: column
+            if (val) {
+                let datasetStats = ui.renderDatasetStats(val);
+                this.continuousFeaturesColumns = datasetStats[0];
+                this.continuousFeaturesStats = datasetStats[1];
+                this.categoricalFeaturesColumns = datasetStats[2];
+                this.categoricalFeaturesStats = datasetStats[3];
+                this.datasetColumns = val.columns.map(column => {
+                    return {
+                        field: column,
+                        label: column
 
-                }
-            });
-            this.sampleData = toJSON(val.head(5));
+                    }
+                });
+                this.sampleData = toJSON(val.head(5));
+            }
         }
     },
 }

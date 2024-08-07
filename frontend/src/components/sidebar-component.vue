@@ -1,8 +1,9 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
     <div class="column is-2">
+        <button @click="impute()">Impute</button>
         <section v-if="!configureFeatures">
-            <upload-component @dataframe="generateTargetDropdown"></upload-component>
+            <upload-component @uploaded="generateTargetDropdown"></upload-component>
             <div class="column is-12">
                 <b-field>
                     <b-button @click="configureFeatures = !configureFeatures" size="is-small" type="is-primary is-light"
@@ -118,8 +119,10 @@ import { settingStore } from '@/stores/settings'
 import UI from '@/helpers/ui';
 import { applyDataTransformation, handle_missing_values, encode_dataset, evaluate_classification } from '@/helpers/utils';
 import { LabelEncoder, tensorflow } from 'danfojs/dist/danfojs-base';
-import ChartController from '@/helpers/charts';
+import { toJSON, DataFrame } from 'danfojs';
 
+import ChartController from '@/helpers/charts';
+import axios from "axios";
 let chartController = new ChartController();
 let ui = new UI(null, null)
 
@@ -208,18 +211,17 @@ export default {
             this.tuneModel = !this.tuneModel;
             this.getDefaultModelConfiguration()
         },
-        generateTargetDropdown(e) {
-            this.columns = e.columns;
+        generateTargetDropdown() {
+            this.dataframe = this.settings.getDataset;
+            this.columns = this.dataframe.columns;
             this.featureSettings = this.columns.map((column, index) => {
                 return {
                     name: column,
                     selected: true,
-                    type: e.dtypes[index] === 'string' ? FeatureCategories.Nominal.id : FeatureCategories.Numerical.id
+                    type: this.dataframe.dtypes[index] === 'string' ? FeatureCategories.Nominal.id : FeatureCategories.Numerical.id
                 }
             })
-            this.modelTarget = e.columns[e.columns.length - 1];
-            this.dataframe = e;
-            this.$emit('dataframe', e)
+            this.modelTarget = this.dataframe.columns[this.dataframe.columns.length - 1];
             let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
             for (let i = 0; i < selectedFeatures.length; i++) {
                 this.settings.addFeature(selectedFeatures[i])
@@ -241,6 +243,7 @@ export default {
                 }
                 let len = this.dataframe.$data.length;
                 let seed = this.seed;
+                let categoricalFeatures = []
                 let dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
                 let numericColumns = this.settings.items.filter(m => m.selected && m.type === FeatureCategories.Numerical.id).map(m => m.name);
                 let model_name = this.modelOption;
@@ -256,12 +259,14 @@ export default {
                 const targets = filterd_dataset.column(target)
                 filterd_dataset.drop({ columns: target, inplace: true })
                 const cross_validation_setting = this.crossValidationOption;
-                filterd_dataset = encode_dataset(filterd_dataset, this.settings.items.filter(m => m.selected).filter(m => m.name !== this.settings.modelTarget).map(m => {
+                [filterd_dataset, categoricalFeatures] = encode_dataset(filterd_dataset, this.settings.items.filter(m => m.selected).filter(m => m.name !== this.settings.modelTarget).map(m => {
                     return {
                         name: m.name,
                         type: m.type
                     }
-                }), model_name)
+                }), this.modelName)
+                console.log(categoricalFeatures);
+
                 let [x_train, y_train, x_test, y_test] = this.splitData(cross_validation_setting, filterd_dataset, targets, len);
                 let uniqueLabels = [...new Set(y_train.values)];
                 let [labelEncoder, encoded_y, encoded_y_test] = this.encodeTarget(y_train.values, y_test.values)
@@ -269,11 +274,12 @@ export default {
                 let model = model_factory.createModel(this.modelOption, this.modelConfigurations)
                 model.id = this.settings.getCounter
                 this.toggleTraining()
-                let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns);
+                let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures);
                 let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
                 this.settings.addResult({
                     id: model.id,
                     name: this.modelName,
+                    datasetName: this.settings.getDatasetName,
                     modelTask: this.settings.modelTask,
                     metrics: metrics,
                     options: this.modelConfigurations,
@@ -282,20 +288,36 @@ export default {
                     numericColumns: numericColumns,
                     transformations: [...this.settings.transformationsList]
                 });
-                if (this.settings.currentTab !== 2) {
-                    this.settings.setActiveTab(2);
-                }
-                setTimeout(() => {
+                this.settings.setActiveTab(2);
+                setTimeout(async () => {
                     this.settings.setResultActiveTab(model.id);
                     window.dispatchEvent(new Event('resize'));
-                }, 1000);
+                }, 500);
                 await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder)
                 this.settings.increaseCounter();
                 this.toggleTraining();
             } catch (error) {
                 this.training = false;
+                this.$buefy.toast.open(
+                    {
+                        duration: 3000,
+                        message: ' failed to fit the model',
+                        type: 'is-warning',
+                    })
                 throw error;
             }
+        },
+        impute() {
+            this.training = true;
+            axios.post('http://127.0.0.1:5000/missforest', {
+                data: toJSON(this.dataframe),
+                categoricalFeatures: this.settings.items.filter(m => m.selected && m.type !== FeatureCategories.Numerical.id).map(m => m.name)
+            }).then(res => {
+                let df = new DataFrame(res.data);
+                this.dataframe = df
+                this.settings.setDataframe(df);
+                this.training = false;
+            })
         }
     },
     created: function () {
@@ -337,7 +359,7 @@ export default {
         },
         modelOption: function () {
             this.modelConfigurations = null
-        }
+        },
 
 
     }

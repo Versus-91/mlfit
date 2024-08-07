@@ -1,20 +1,21 @@
 import { asyncRun } from "@/helpers/py-worker";
+import { RegressionModel } from "../regression_model";
 
 
-export default class BSplineRegression {
+export default class BSplineRegression extends RegressionModel {
     constructor(options) {
+        super();
         this.options = options;
         this.model = null;
-
     }
-    async train_test(x_train, y_train, x_test, y_test, labels) {
+    async train(x_train, y_train, x_test, y_test, labels) {
         this.context = {
             X_train: x_train,
             y_train: y_train,
             X_test: x_test,
             Y_test: y_test,
-            knots: this.options.knots,
-            degree: this.options.degree,
+            knots: this.options.knots.value,
+            degree: this.options.degree.value,
             labels: labels
 
         };

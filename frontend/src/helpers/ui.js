@@ -5,6 +5,7 @@ import { MinMaxScaler, StandardScaler } from 'danfojs/dist/danfojs-base';
 import { calculateRSquared, calculateMSE, encode_name } from './utils';
 import $ from "jquery";
 import { FeatureCategories, Settings } from "./settings.js";
+import Plotly from 'plotly.js-dist-min';
 
 export default class UI {
     constructor(parser, chart_controller) {
@@ -465,7 +466,7 @@ export default class UI {
                 continuousFeaturesStats.push({
                     name: column,
                     min: data.column(column).min(),
-                    max: data.column(column).min(),
+                    max: data.column(column).max(),
                     median: data.column(column).median().toFixed(2),
                     mean: data.column(column).mean().toFixed(2),
                     std: data.column(column).std().toFixed(2),
@@ -474,8 +475,6 @@ export default class UI {
             }
         }
 
-        // document.getElementById("data_details_div").innerHTML = '<h2 class="subtitle"> Data shape : (' + data.shape[0] + ',' + data.shape[1] + ')</h2>'
-        //build categorical feature table table
 
         data.columns.forEach((column, i) => {
             const key = encode_name(column)
@@ -742,110 +741,7 @@ export default class UI {
     //     $("#tabs_info li[data-index='" + index + "']").addClass("is-active");
     //     $("#tabs_content li[data-index='" + index + "']").addClass("is-active");
     // }
-    init_regression_results_tab_linear_regression(index) {
-        let content = `
-        <div class="column is-7">
-            <div class="table-container">
-            <table
-                class="table has-text-centered nowrap is-striped is-bordered is-narrow is-hoverable is-size-7"
-                id="metrics_table_${index}" >
-                        <thead>
-            <tr>
-                <th colspan="1"></th>
-                <th colspan="3">OLS</th>
-                <th colspan="3">lambda min</th>
-                <th colspan="3">lambda 1se</th>
-            </tr>
-            <tr>
-                <th>name</th>
-                <th>coef</th>
-                <th>st.d.</th>
-                <th><i>p</i>-value</th>
-                <th>coef</th>
-                <th>st.d.</th>
-                <th><i>p</i>-value</th>
-                <th>coef</th>
-                <th>st.d.</th>
-                <th><i>p</i>-value</th>
-            </tr>
-        </thead>
-          <tfoot class="has-text-centered" style=" font-weight: normal">
-    <tr>
-      <th></th>
-      <th colspan="3"></th>
-      <th colspan="3"></th>
-      <th colspan="3"></th>
 
-    </tr>
-  </tfoot>
-            </table>
-           </div>
-        </div>        
-        <div class="column is-5 mt-4" style="height:400px;" id="parameters_plot_${index}">
-        </div>
-        <div class="column is-12" id="metrics_${index}">
-        </div>
-
-        <div class="column is-3">
-            <div id="errors_${index}" width="100%" style="height:200px"></div>
-        </div>
-        <div class="column is-3">
-            <div id="regression_y_yhat_${index}" width="100%" style="height:200px">
-           </div>
-        </div>
-        <div class="column is-3">
-            <div id="regression_y_yhat_min_${index}" width="100%" style="height:200px">
-           </div>
-        </div>
-        <div class="column is-3">
-            <div id="regression_y_yhat_1se_${index}" width="100%" style="height:200px">
-           </div>
-        </div>
-        <div class="column is-3">
-            <div id="regularization_${index}" width="100%" style="height:200px"></div>
-        </div>
-        <div class="column is-3">
-            <div id="regression_residual_${index}" width="100%" style="height:200px">
-           </div>
-        </div>
-        <div class="column is-3">
-            <div id="regression_residual_min_${index}" width="100%" style="height:200px">
-           </div>
-        </div>
-        <div class="column is-3">
-            <div id="regression_residual_1se_${index}" width="100%" style="height:200px">
-           </div>
-        </div>
-        <div class="column is-3">
-        </div>
-        <div class="column is-3">
-            <div id="qqplot_ols_${index}" width="100%" style="height:200px">
-           </div>
-        </div>
-        <div class="column is-3">
-            <div id="qqplot_min_${index}" width="100%" style="height:200px">
-           </div>
-        </div>
-        <div class="column is-3">
-            <div id="qqplot_1se_${index}" width="100%" style="height:200px">
-           </div>
-        </div>
-`
-        // $("#tabs_info li[data-index='" + index + "'] #results_" + index + "").append(content);
-    }
-    //     init_regression_results_tab(index) {
-    //         let content = `
-    //         <div class="column is-12">
-    //             <div id="metrics_${index}">
-    //            </div>
-    //         </div>
-    //         <div class="column is-6">
-    //             <div id="regression_y_yhat_${index}" width="100%" style="height:200px">
-    //            </div>
-    //         </div>
-    // `
-    //         $("#tabs_info li[data-index='" + index + "'] #results_" + index + "").append(content);
-    //     }
     init_tooltips(tippy) {
         tippy('#kde_help', {
             interactive: true,
@@ -961,13 +857,115 @@ export default class UI {
             }
         });
     }
-    // regression_metrics_display(y_test, predictions, tab_index) {
-    //     let r2 = calculateRSquared(y_test.values, predictions);
-    //     let mse = calculateMSE(y_test.values, predictions);
-    //     let content = `
-    //                     <p>R squared : ${r2.toFixed(2)}</p>
-    //                     <p>Mean Squared Error: ${mse.toFixed(2)}</p>
-    //                  `;
-    //     $("#metrics_" + tab_index).append(content);
-    // }
+    yhat_plot(y_test, predictions, container, title = '') {
+        Plotly.newPlot(container, [{
+            x: y_test,
+            y: predictions,
+            type: 'scatter',
+            name: "y",
+            mode: 'markers',
+            marker: {
+                color: 'black',
+                size: 2
+            },
+        }, {
+            x: y_test,
+            y: y_test,
+            mode: 'lines',
+            type: 'scatter',
+            line: { color: 'red', dash: 'dash' },
+            name: 'y = x line'
+        }], {
+            title: {
+                text: title,
+                font: {
+                    family: 'Courier New, monospace',
+                    size: 10
+                },
+                xref: 'paper',
+                x: 0.05,
+            },
+            showlegend: false,
+            xaxis: {
+                title: {
+                    text: 'y',
+                    font: {
+                        family: 'Courier New, monospace',
+                        size: 14,
+                        color: '#7f7f7f'
+                    }
+                },
+            },
+            yaxis: {
+                title: {
+                    text: 'predictions',
+                    font: {
+                        family: 'Courier New, monospace',
+                        size: 14,
+                        color: '#7f7f7f'
+                    }
+                }
+            },
+            margin: {
+                l: 40,
+                r: 10,
+                b: 40,
+                t: 20,
+                pad: 0
+            }
+        }, {
+            responsive: true, staticPlot: false,
+        });
+    }
+    residual_plot(y, residuals, container, title = '') {
+        Plotly.newPlot(container, [{
+            x: y,
+            y: residuals,
+            type: 'scatter',
+            name: "y",
+            mode: 'markers',
+            marker: {
+                color: 'black',
+                size: 2
+            },
+        }], {
+            title: {
+                text: title,
+                font: {
+                    family: 'Courier New, monospace',
+                    size: 10
+                },
+                xref: 'paper',
+                x: 0.05,
+            },
+            showlegend: false,
+            xaxis: {
+                title: {
+                    text: 'y',
+                    font: {
+                        family: 'Courier New, monospace',
+                        size: 14,
+                        color: '#7f7f7f'
+                    }
+                },
+            },
+            yaxis: {
+                title: {
+                    text: 'residuals',
+                    font: {
+                        family: 'Courier New, monospace',
+                        size: 14,
+                        color: '#7f7f7f'
+                    }
+                }
+            },
+            margin: {
+                l: 40,
+                r: 10,
+                b: 40,
+                t: 20,
+                pad: 0
+            }
+        }, { responsive: true, });
+    }
 }

@@ -32,9 +32,6 @@ export default class BoostingRegression extends RegressionModel {
         }).then(() => this.model.predict(x_test))
 
     }
-    async evaluateModel(y, predictions, uniqueClasses) {
-        return null;
-    }
     async predict(x_test) {
         if (!this.model) {
             await this.init(this.options);

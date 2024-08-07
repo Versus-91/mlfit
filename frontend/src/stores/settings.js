@@ -4,6 +4,7 @@ export const settingStore = defineStore({
     id: 'cart',
     state: () => ({
         counter: 0,
+        df: {},
         features: [],
         transformations: [],
         results: [],
@@ -29,6 +30,9 @@ export const settingStore = defineStore({
         },
         getDatasetShape: (state) => {
             return state.datasetShape
+        },
+        getDataset: (state) => {
+            return state.df;
         },
         currentTab: (state) => {
             return state.activeTab
@@ -62,6 +66,9 @@ export const settingStore = defineStore({
         increaseCounter() {
             this.counter++;
         },
+        setDataframe(data) {
+            this.df = data;
+        },
         addFeature(feature) {
             let index = this.features.findIndex(m => m.name === feature.name);
             if (index !== -1) {
@@ -80,6 +87,9 @@ export const settingStore = defineStore({
         },
         addResult(result) {
             this.results.push(result)
+        },
+        resetDF() {
+            this.df = {}
         },
         updateFeature(feature) {
             let index = this.features.findIndex(m => m.name === feature.name);

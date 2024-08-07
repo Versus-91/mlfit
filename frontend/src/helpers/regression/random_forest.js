@@ -47,9 +47,7 @@ export default class RandomForestRegressor extends RegressionModel {
         }
 
     }
-    async evaluateModel(y, predictions, uniqueClasses) {
-        return null;
-    }
+
     predict(x_test) {
         const result = this.model.predict(x_test);
         return result

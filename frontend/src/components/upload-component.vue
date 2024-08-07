@@ -110,7 +110,8 @@ export default {
                 this.settings.resetFeatures();
                 this.settings.setDatasetName(val.name.split('.')[0]);
                 this.settings.setDatasetShape({ count: dataset.$data.length, columns: dataset.columns.length });
-                this.$emit('dataframe', dataset)
+                this.settings.setDataframe(dataset)
+                this.$emit('uploaded', true)
             } catch (error) {
                 this.$buefy.toast.open('Failed to parse the dataset.')
             }
@@ -118,9 +119,6 @@ export default {
         }
     },
     methods: {
-        clickMe() {
-            this.$buefy.notification.open('Clicked!!')
-        },
         async process_file(file, type) {
             let options = {
                 separator: this.separator,

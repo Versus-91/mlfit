@@ -3,6 +3,8 @@ import LogisticRegression from "./classification/logistic_regression";
 import LinearRegression from "./regression/linear_regression";
 import BSplineRegression from "./regression/bspline_regression";
 import SupportVectorMachine from './classification/svm';
+import SupportVectorMachineRegression from './regression/svm';
+
 import KNNModel from './classification/knn';
 import KNNRegressor from './regression/knn_regressor';
 import RandomForest from "./classification/random_forest";
@@ -41,7 +43,7 @@ export var ModelFactory = function () {
             case Settings.regression.k_nearest_neighbour.value:
                 return new KNNRegressor(options);
             case Settings.regression.support_vector_machine.value:
-                return new SupportVectorMachine(options);
+                return new SupportVectorMachineRegression(options);
             case Settings.regression.random_forest.value:
                 return new RandomForestRegressor(options);
             case Settings.regression.polynomial_regression.value:
