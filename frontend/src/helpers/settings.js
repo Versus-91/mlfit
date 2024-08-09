@@ -54,7 +54,7 @@ export const Settings = {
                     "type": "select",
                     default: "no",
                     value: "no",
-                    "values": [{ label: "No", value: "no" }, { label: "lasso", value: "lasso" }, { label: "ridge", value: "ridge" }]
+                    "values": [{ label: "No", value: "no" }, { label: "adaptive lasso", value: "lasso" }, { label: "ridge", value: "ridge" }]
                 }
             }
         },
@@ -124,7 +124,7 @@ export const Settings = {
                     default: 0
                 },
                 "degree": {
-                    label: 'degeree',
+                    label: 'degree',
                     type: "number",
                     for: ["Polynomial"],
                     default: 3
@@ -167,18 +167,22 @@ export const Settings = {
             "options": {
                 "booster": {
                     type: "select",
+                    label: "booster",
                     default: "gbtree",
                     values: [{ label: "gbtree", value: "gbtree" }, { label: "gblinear", value: "gblinear" }, { label: "dart", value: "dart" }]
                 },
                 "eta": {
+                    label: "learning rate",
                     type: "number",
                     default: 0.3
                 },
                 "iterations": {
+                    label: "max iterations",
                     type: "number",
                     default: 200
                 },
                 "depth": {
+                    label: "depth",
                     type: "number",
                     default: 5
                 },
@@ -191,14 +195,17 @@ export const Settings = {
             "id": 7,
             "options": {
                 "laplace": {
+                    label: "laplace smoothing",
                     type: "number",
                     default: 0.05
                 },
                 "priors": {
+                    label: "priors",
                     type: "text",
                     placeholder: "comma separated priors"
                 },
                 "type": {
+                    label: "type",
                     type: "select",
                     default: "Gaussian",
                     values: [{ label: "Gaussian", value: "Gaussian" }, { label: "Multinomial", value: "Multinomial" }, { label: "Bernoulli", value: "Bernoulli" }]
@@ -217,9 +224,10 @@ export const Settings = {
             "criteria": ["AIC", "BIC", "AR2",],
             "options": {
                 "regularization": {
+                    label: "regularization",
                     type: "select",
                     default: "Lasso",
-                    values: [{ label: "Lasso", value: "Lasso" }, { label: "Ridge", value: "Ridge" }]
+                    values: [{ label: "adaptive lasso", value: "Lasso" }, { label: "Ridge", value: "Ridge" }]
                 }
             }
         },
@@ -227,22 +235,15 @@ export const Settings = {
             "label": "Polynomial Regression",
             "value": 14,
             "id": 14,
-
             "feature_selection": ["no", "Lasso", "ridge"],
             "criteria": ["AIC", "BIC", "AR2",],
             "options": {
-                "alpha": {
-                    type: "number",
-                    default: 0.0
-                },
-                "l1": {
-                    type: "number",
-                    default: 0.0
-                },
-                "degree": {
-                    type: "number",
-                    default: 2
-                },
+                "regularization": {
+                    label: "regularization",
+                    type: "select",
+                    default: "Lasso",
+                    values: [{ label: "Lasso", value: "Lasso" }, { label: "Ridge", value: "Ridge" }]
+                }
             }
         },
         "k_nearest_neighbour": {
@@ -251,10 +252,12 @@ export const Settings = {
             "id": 10,
             "options": {
                 "min": {
+                    label: "min",
                     type: "number",
                     default: 3
                 },
                 "max": {
+                    label: "max",
                     type: "number",
                     default: 9
                 },
@@ -266,19 +269,23 @@ export const Settings = {
             "id": 11,
             "options": {
                 "booster": {
+                    label: "booster",
                     type: "select",
                     default: "gbtree",
                     values: [{ label: "gbtree", value: "gbtree" }, { label: "gblinear", value: "gblinear" }, { label: "dart", value: "dart" }]
                 },
                 "eta": {
+                    label: "learning rate",
                     type: "number",
                     default: 0.3
                 },
                 "iterations": {
+                    label: "iterations",
                     type: "number",
                     default: 200
                 },
                 "depth": {
+                    label: "depth",
                     type: "number",
                     default: 5
                 },
@@ -291,22 +298,26 @@ export const Settings = {
             "id": 12,
             "options": {
                 "kernel": {
+                    label: "kernel",
                     type: "select",
                     default: "RBF",
                     values: [{ label: "RBF", value: "RBF" }, { label: "Linear", value: "Linear" }, { label: "Polynomial", value: "Polynomial" }
                         , { label: "Sigmoid", value: "Sigmoid" }]
                 },
                 "gamma": {
+                    label: "gamma",
                     type: "number",
                     for: ["RBF", "Sigmoid", "Polynomial"],
                     default: 1
                 },
                 "bias": {
+                    label: "bias",
                     type: "number",
                     for: ["Sigmoid", "Sigmoid"],
                     default: 0
                 },
                 "degree": {
+                    label: "degree polynomial",
                     type: "number",
                     for: ["Polynomial"],
                     default: 3
@@ -319,19 +330,23 @@ export const Settings = {
             "id": 13,
             "options": {
                 "estimators": {
+                    label: "boostnumber of estimators",
                     type: "number",
                     default: 100
                 },
                 "features": {
+                    label: "features length",
                     type: "number",
                     default: "sqrt"
                 },
                 "depth": {
+                    label: "depth",
                     type: "number",
                     default: 5
                 },
                 "criteria": {
                     type: "select",
+                    label: "criteria",
                     default: "squared_error",
                     "values": [{ label: "squared_error", value: "squared_error" }, { label: "absolute_error", value: "absolute_error" },
                     { label: "friedman_mse", value: "friedman_mse" }, { label: "poisson", value: "poisson" }]
@@ -356,10 +371,12 @@ export const Settings = {
 
             "options": {
                 "knots": {
+                    label: "knots",
                     type: "number",
                     default: 5
                 },
                 "degree": {
+                    label: "degree",
                     type: "number",
                     default: 3
                 },

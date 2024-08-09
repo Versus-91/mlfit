@@ -30,7 +30,7 @@ export class RegressionModel {
                 console.log(residuals);
 
                 current.ui.yhat_plot(y, predictions, 'regression_y_yhat_' + + current.id, 'OLS predictions')
-                current.ui.residual_plot(residuals, predictions, 'errors_' + + current.id, 'Residuals')
+                current.ui.residual_plot(predictions,residuals,'errors_' + + current.id, 'Residuals')
                 this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
                 resolve('resolved');
             }, 1000);

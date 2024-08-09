@@ -407,7 +407,7 @@ export function encode_dataset(data_frame, columns_types, model) {
             categoriclaFeaturesAfterEncoding.push(column.name)
         } else {
             df = getDummies(df, { columns: [column.name] })
-            if (model === Settings.classification.logistic_regression.label || model === Settings.regression.linear_regression.label) {
+            if (model === Settings.classification.logistic_regression.label || model === Settings.regression.linear_regression.label || model === Settings.regression.polynomial_regression.label) {
                 df.drop({ columns: [df.columns.find(m => m.includes(column.name + "_"))], inplace: true });
             }
             categoriclaFeaturesAfterEncoding.push(...df.columns.filter(m => m.includes(column.name + "_")))

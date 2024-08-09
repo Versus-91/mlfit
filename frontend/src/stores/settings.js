@@ -40,7 +40,7 @@ export const settingStore = defineStore({
         outputs: (state) => state.results,
         transformationsList: (state) => state.transformations,
         modelTarget: (state) => state.target,
-        modelTask: (state) => state.isClassification,
+        classificationTask: (state) => state.isClassification,
     },
     actions: {
         setDatasetName(name) {

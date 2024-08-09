@@ -74,9 +74,9 @@ export default class PolynomialRegression extends RegressionModel {
                     weights <- 1 / abs(coef(base_model)[-1])
                     x <- as.matrix(df_main)
                     if(is_lasso){
-                        cvfit = cv.glmnet(x, y, alpha = 1)
+                        cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 1)
                     }else{
-                       cvfit = cv.glmnet(x, y, alpha = 0)
+                       cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 0)
                     }
                     betas = as.matrix(cvfit$glmnet.fit$beta)
                     lambdas = cvfit$lambda
@@ -93,7 +93,8 @@ export default class PolynomialRegression extends RegressionModel {
                                        aes(label=variable),nudge_x=-0.5) +
                       geom_vline(xintercept=c(cvfit$lambda.1se,cvfit$lambda.min),
                                 linetype="dashed")+
-                      scale_x_log10()
+                      scale_x_log10() +
+                      labs(y = "Coefficient")
                     
                     df = with(cvfit,
                             data.frame(lambda = lambdas,MSE = cvm,MSEhi=cvup,MSElow=cvlo))
@@ -305,7 +306,7 @@ export default class PolynomialRegression extends RegressionModel {
         return new Promise((resolve) => {
             setTimeout(() => {
                 new DataTable('#metrics_table_' + current.id, {
-                    responsive: true,
+                    responsive: false,
                     "footerCallback": function (row, data, start, end, display) {
                         var api = this.api();
                         $(api.column(2).footer()).html(
@@ -334,12 +335,12 @@ export default class PolynomialRegression extends RegressionModel {
                 Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { staticPlot: true });
                 Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { staticPlot: true });
                 Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { staticPlot: true });
-                current.ui.yhat_plot(y_test.values, this.summary['predictions'], 'regression_y_yhat_' + + current.id, 'OLS predictions')
-                current.ui.yhat_plot(y_test.values, this.summary['predictionsmin'], 'regression_y_yhat_min_' + + current.id, 'OLS min predictions')
-                current.ui.yhat_plot(y_test.values, this.summary['predictions1se'], 'regression_y_yhat_1se_' + + current.id, 'OLS 1se predictions')
-                current.ui.residual_plot(y_test.values, this.summary['residuals_ols'], 'regression_residual_' + + current.id, 'OLS residuals')
-                current.ui.residual_plot(y_test.values, this.summary['residuals_min'], 'regression_residual_min_' + + current.id, 'OLS min residuals')
-                current.ui.residual_plot(y_test.values, this.summary['residuals_1se'], 'regression_residual_1se_' + + current.id, 'OLS 1se residuals')
+                current.ui.yhat_plot(y_test, this.summary['predictions'], 'regression_y_yhat_' + + current.id, 'OLS predictions')
+                current.ui.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + + current.id, 'OLS min predictions')
+                current.ui.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + + current.id, 'OLS 1se predictions')
+                current.ui.residual_plot(y_test, this.summary['residuals_ols'], 'regression_residual_' + + current.id, 'OLS residuals')
+                current.ui.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + + current.id, 'OLS min residuals')
+                current.ui.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + + current.id, 'OLS 1se residuals')
                 this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
                 resolve('resolved');
             }, 1000);

@@ -1,6 +1,6 @@
 <template>
     <section v-if="this.settings.results?.length > 0">
-        <b-tabs v-model="settings.resultActiveTab" >
+        <b-tabs v-model="settings.resultActiveTab">
             <b-tab-item v-for="result in this.settings.results" :label="result.name.toString()" :key="result.id">
                 <div class="columns is-multiline">
                     <classification-view-component :result="result"

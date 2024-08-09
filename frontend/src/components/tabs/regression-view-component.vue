@@ -1,5 +1,5 @@
 <template>
-    <div class="columns is-multiline">
+    <div class="column is-12">
         <div class="column is-12">
             <b-message type="is-info" has-icon icon-pack="fas" class="has-text-left">
                 <p class="my-1">
@@ -29,7 +29,7 @@
 
             </b-message>
         </div>
-        <div class="columns is-multiline "
+        <div class="columns is-multiline is-gapless"
             v-if="result.name === 'Linear Regression' || result.name === 'Polynomial Regression'">
             <div class="column is-7">
                 <div class="table-container">

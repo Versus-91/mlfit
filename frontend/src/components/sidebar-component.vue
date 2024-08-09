@@ -265,11 +265,16 @@ export default {
                         type: m.type
                     }
                 }), this.modelName)
-                console.log(categoricalFeatures);
 
                 let [x_train, y_train, x_test, y_test] = this.splitData(cross_validation_setting, filterd_dataset, targets, len);
                 let uniqueLabels = [...new Set(y_train.values)];
-                let [labelEncoder, encoded_y, encoded_y_test] = this.encodeTarget(y_train.values, y_test.values)
+                let labelEncoder, encoded_y, encoded_y_test;
+                if (this.settings.classificationTask) {
+                    [labelEncoder, encoded_y, encoded_y_test] = this.encodeTarget(y_train.values, y_test.values)
+                } else {
+                    encoded_y = y_train.values;
+                    encoded_y_test = y_test.values;
+                }
                 let model_factory = new ModelFactory();
                 let model = model_factory.createModel(this.modelOption, this.modelConfigurations)
                 model.id = this.settings.getCounter
@@ -280,7 +285,7 @@ export default {
                     id: model.id,
                     name: this.modelName,
                     datasetName: this.settings.getDatasetName,
-                    modelTask: this.settings.modelTask,
+                    modelTask: this.settings.classificationTask,
                     metrics: metrics,
                     options: this.modelConfigurations,
                     target: target,
