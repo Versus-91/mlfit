@@ -8,9 +8,11 @@
                     <regression-view-component :result="result" v-else>
                     </regression-view-component>
                     <div class="column is-12">
-                        <table :id="'predictions_table_' + result.id"
-                            class="table is-bordered is-hoverable is-narrow display is-size-7" width="100%">
-                        </table>
+                        <div class="table-container">
+                            <table :id="'predictions_table_' + result.id"
+                                class="table is-bordered is-hoverable is-narrow display is-size-7" width="100%">
+                            </table>
+                        </div>
                     </div>
                 </div>
             </b-tab-item>

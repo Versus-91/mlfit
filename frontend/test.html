@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3x3 Subplot Grid with Grouped Box Plots and Subsets</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+
+    <div id="plot"></div>
+
+    <script>
+        // Define subplot layout
+        const layout = {
+            grid: { rows: 3, columns: 3, pattern: 'independent' },
+            height: 600,
+            width: 900,
+            title: '3x3 Subplot Grid with Grouped Box Plots and Subsets in Last Column'
+        };
+
+        const data = [];
+
+        // Add scatter plots to the first two columns
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 2; col++) {
+                data.push({
+                    x: [1, 2, 3],
+                    y: [Math.random() * 10, Math.random() * 10, Math.random() * 10],
+                    type: 'scatter',
+                    mode: 'markers',
+                    name: `Scatter R${row + 1}C${col + 1}`,
+                    xaxis: `x${row * 3 + col + 1}`,
+                    yaxis: `y${row * 3 + col + 1}`
+                });
+            }
+        }
+
+        // Grouped box plots with subsets for the last column (column 3)
+        const groups = ['Group 1', 'Group 2'];
+        const subsets = ['Subset A', 'Subset B'];
+
+        // Generate data for each subset within each group in each row of the last column
+        for (let row = 0; row < 3; row++) {
+            groups.forEach((group) => {
+                subsets.forEach((subset) => {
+                    data.push({
+                        y: Array.from({ length: 10 }, () => Math.random() * 10 + row * 10),
+                        type: 'box',
+                        name: `${group} - ${subset} R${row + 1}`,
+                        marker: { color: group === 'Group 1' ? 'red' : 'blue' },
+                        x: group,
+                        xaxis: `x${row * 3 + 3}`,
+                        yaxis: `y${row * 3 + 3}`
+                    });
+                });
+            });
+        }
+
+        // Render the plot
+        Plotly.newPlot('plot', data, layout);
+    </script>
+
+</body>
+
+</html>

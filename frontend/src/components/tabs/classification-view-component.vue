@@ -32,7 +32,7 @@
             </div>
             <div class="column is-6" style="height: 4%;" :id="'confusion_matrix_' + result.id"></div>
             <div class="column is-6" style="height: 400px;" :id="'pca_results_' + result.id"></div>
-            <div class="column is-6" style="height: 300px;" :id="'knn_table_' + result.id"
+            <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
                 v-if="result.name.toString().includes('neighbour')">
             </div>
         </div>

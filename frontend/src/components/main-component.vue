@@ -28,10 +28,10 @@
                                 </div>
                             </div>
                         </b-message>
-                        <!-- <section>
+                        <section>
                             <scatterplot-matrix-component v-if="this.settings.df"
                                 :dataframe="this.settings.df?.copy()"></scatterplot-matrix-component>
-                        </section> -->
+                        </section>
                     </section>
                     <section v-else>
                         <b-message type="is-danger" has-icon icon-pack="fas">
@@ -65,6 +65,8 @@ import UI from '@/helpers/ui';
 import { toJSON } from 'danfojs';
 import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
 import ResultsComponent from './tabs/results-component.vue'
+import SPLOMComponent from './visualization/scatterplot-matrix-component.vue'
+
 import { settingStore } from '@/stores/settings'
 
 let ui = new UI(null, null)
@@ -73,6 +75,8 @@ export default {
     components: {
         'dmensionality-reduction-component': PCAComponent,
         'results-component': ResultsComponent,
+        'scatterplot-matrix-component': SPLOMComponent,
+
     },
     setup() {
         const settings = settingStore()

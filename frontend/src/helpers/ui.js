@@ -797,7 +797,7 @@ export default class UI {
         });
         new DataTable('#predictions_table_' + tab_index, {
             pageLength: 10,
-            responsive: true,
+            responsive: false,
             paging: true,
             columnDefs: [
                 {
@@ -825,7 +825,7 @@ export default class UI {
         });
         new DataTable('#predictions_table_' + tab_index, {
             pageLength: 10,
-            responsive: true,
+            responsive: false,
             paging: true,
             "bPaginate": true,
             columns: table_columns,

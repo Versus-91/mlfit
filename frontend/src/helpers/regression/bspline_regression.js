@@ -14,8 +14,8 @@ export default class BSplineRegression extends RegressionModel {
             y_train: y_train,
             X_test: x_test,
             Y_test: y_test,
-            knots: this.options.knots.value,
-            degree: this.options.degree.value,
+            knots: +this.options.knots.value,
+            degree: +this.options.degree.value,
             labels: labels
 
         };

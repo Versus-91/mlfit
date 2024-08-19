@@ -1530,11 +1530,18 @@ export default class ChartController {
                                 })
                             } else {
                                 let boxplot_labels = [...new Set(items.map(m => m[j]))]
+                                console.log(boxplot_labels);
+
                                 for (let m = 0; m < unique_labels.length; m++) {
                                     for (let n = 0; n < boxplot_labels.length; n++) {
                                         let box_items = items.filter(item => item[j] === boxplot_labels[n] && item[features.length - 1] === unique_labels[m])
+                                        console.log(box_items);
+
                                         if (box_items) {
                                             traces.push({
+                                                orientation: 'v',
+                                                offsetgroup: "1",
+
                                                 name: boxplot_labels[n],
                                                 y: box_items.map(item => item[i]),
                                                 marker: {
@@ -1597,8 +1604,9 @@ export default class ChartController {
                     height: features.length * 100,
                     spacing: 0,
                     showlegend: false,
+                    boxmode: "group",
                     grid: { rows: features.length, columns: features.length, pattern: 'independent' },
-                    margin: {  r: 10, t: 10, pad: 5 },
+                    margin: { r: 10, t: 10, pad: 5 },
 
                 };
                 for (var i = 0; i < features.length; i++) {

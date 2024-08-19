@@ -19,9 +19,9 @@ export default class RandomForestRegressor extends RegressionModel {
             y_train: y_train,
             X_test: x_test,
             rf_type: this.options.criteria.value,
-            max_features: this.options.features.value,
-            num_estimators: this.options.estimators.value <= 0 || !this.options.estimators.value ? 100 : this.options.estimators.value,
-            max_depth: this.options.depth.value <= 0 ? 5 : this.options.depth.value
+            max_features: +this.options.features.value,
+            num_estimators: this.options.estimators.value <= 0 || !this.options.estimators.value ? 100 : +this.options.estimators.value,
+            max_depth: this.options.depth.value <= 0 ? 5 : +this.options.depth.value
         };
         const script = `
             from sklearn.model_selection import train_test_split

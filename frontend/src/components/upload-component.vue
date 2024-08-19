@@ -52,6 +52,7 @@ export default {
     },
     data() {
         return {
+            sampleDataset: 0,
             file: null,
             separator: 2,
             header: true,
@@ -100,7 +101,6 @@ export default {
                         name: 'diabetes',
                     }]
             ,
-            sampleDataset: null
         }
     },
     watch: {
@@ -126,6 +126,8 @@ export default {
                 header: this.header
             }
             let processdDataset = await ParserFactory.createParser(type, options).parse(file)
+            console.log('parse');
+
             if (processdDataset.length > DATASET_SIZE) {
                 processdDataset = processdDataset.slice(0, DATASET_SIZE)
             }

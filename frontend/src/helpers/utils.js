@@ -328,7 +328,7 @@ export function applyDataTransformation(dataset, column_names, transformations) 
     }
     return dataset
 }
-export function handle_missing_values(data_frame, impute = true) {
+export function handle_missing_values(data_frame, impute = false) {
     // to do normalization
     if (impute) {
         let string_columns = []
@@ -343,7 +343,7 @@ export function handle_missing_values(data_frame, impute = true) {
             }
         })
         string_columns.forEach(element => {
-            let mode = getCategoricalMode(element).mode
+            let mode = getCategoricalMode(data_frame.column(element).values).mode
             string_column_modes.push(mode)
         });
         numeric_columns.forEach(element => {
@@ -352,7 +352,6 @@ export function handle_missing_values(data_frame, impute = true) {
         });
         data_frame = data_frame.fillNa(string_column_modes, { columns: string_columns })
         data_frame = data_frame.fillNa(numeric_column_means, { columns: numeric_columns })
-
     } else {
         data_frame.dropNa({ axis: 1, inplace: true })
     }

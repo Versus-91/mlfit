@@ -5,10 +5,10 @@ export default class SupportVectorMachineRegression extends RegressionModel {
         super();
         let options = {
             kernel: SVM.KERNEL_TYPES[opt.kernel.value.toUpperCase()],
-            type: SVM.SVM_TYPES.C_SVC,
-            coef0: opt.bias.value,
-            gamma: opt.gamma.value,
-            degree: opt.degree.value,
+            type: SVM.SVM_TYPES.EPSILON_SVR,
+            coef0: +opt.bias.value,
+            gamma: +opt.gamma.value,
+            degree: +opt.degree.value,
             quiet: true
         }
         this.model = new SVM(options);
