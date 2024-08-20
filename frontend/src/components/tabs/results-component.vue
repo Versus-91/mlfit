@@ -1,10 +1,11 @@
 <template>
     <section v-if="this.settings.results?.length > 0">
         <b-tabs v-model="settings.resultActiveTab">
-            <b-tab-item v-for="result in this.settings.results" :label="result.name.toString()" :key="result.id">
+            <b-tab-item v-for="result in this.settings.results" :label="result.name.toString()" :key="result.id"
+                ref="resultContents">
                 <div class="columns is-multiline">
                     <classification-view-component :result="result"
-                        v-if="result.modelTask"></classification-view-component>
+                        v-if="result.isClassification"></classification-view-component>
                     <regression-view-component :result="result" v-else>
                     </regression-view-component>
                     <div class="column is-12">
@@ -29,6 +30,7 @@
 import { settingStore } from '@/stores/settings'
 import ClassificationViewComponent from './classification-view-component.vue'
 import RegressionViewComponent from './regression-view-component.vue'
+import { jsPDF } from "jspdf";
 
 
 export default {
@@ -58,6 +60,17 @@ export default {
                 this.visitedTabs.push(id);
                 window.dispatchEvent(new Event('resize'));
             }
+        },
+        exportToPDF() {
+            var pdf = new jsPDF('p', 'pt', 'letter');
+            pdf.html(this.$el.innerHTML, {
+                callback: function (pdf) {
+                    var iframe = document.createElement('iframe');
+                    iframe.setAttribute('style', 'position:absolute;right:0; top:0; bottom:0; height:100%; width:500px');
+                    document.body.appendChild(iframe);
+                    iframe.src = pdf.output('datauristring');
+                }
+            });
         }
     },
 }

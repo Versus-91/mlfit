@@ -73,7 +73,7 @@ export default {
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
             console.log(numericColumns);
             await chartController.draw_pca(this.dataframe.loc({ columns: numericColumns }).values,
-                this.settings.modelTask ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [],
+                this.settings.isClassification ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [],
                 this.dataframe.loc({ columns: [this.settings.modelTarget] }).values
                 , this.pcaX, this.pcaY)
             this.findingPCA = false;
@@ -84,7 +84,7 @@ export default {
             this.findingTSNE = true;
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
             await chartController.plot_tsne(this.dataframe.loc({ columns: numericColumns }).values,
-                this.settings.modelTask ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [], this.dataframe.loc({ columns: [this.settings.modelTarget] }).values);
+                this.settings.isClassification ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [], this.dataframe.loc({ columns: [this.settings.modelTarget] }).values);
             this.findingTSNE = false;
 
         }

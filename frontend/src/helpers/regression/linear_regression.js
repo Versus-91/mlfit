@@ -113,12 +113,12 @@ export default class LinearRegression extends RegressionModel {
                     # Get the coefficients for the best lambda
                     best_model <- glmnet(x, y, alpha =is_lasso, lambda = best_lambda)
                     coefficients <- as.matrix(coef(best_model))
-                    
                     nonzero_coef <- coefficients[coefficients != 0]
-                    
                     nonzero_features <- rownames(coefficients)[coefficients != 0 & rownames(coefficients) != "(Intercept)"]
+
                     X_reduced <- x[, nonzero_features]
                     linear_model_min_features <- nonzero_features
+
                     # Fit a linear regression model using the non-zero features
                     linear_model_min <- lm(y ~ ., data = as.data.frame(X_reduced))
                     coefs_min <- coef(linear_model_min)
@@ -131,6 +131,8 @@ export default class LinearRegression extends RegressionModel {
                     coefficients <- as.matrix(coef(best_model))
                     residuals_min <- resid(linear_model_min)
                     fitted_values_min <- fitted(linear_model_min)
+
+
                     x <- as.matrix(x_test)  
                     colnames(x) <- names
                     x <- x[, nonzero_features]
@@ -155,6 +157,8 @@ export default class LinearRegression extends RegressionModel {
                     colnames(x) <- names
                     x <- x[, nonzero_features]
                     predictions_1se <- predict(linear_model_1se, newdata = as.data.frame(x))
+
+
                     models <- list(
                         "OLS" = model,
                         "Min OLS" = linear_model_min,
@@ -287,8 +291,6 @@ export default class LinearRegression extends RegressionModel {
         this.summary.qqplot_ols_plot = JSON.parse(await results[27].toString());
         this.summary.qqplot_1se_plot = JSON.parse(await results[28].toString());
         this.summary.qqplot_min_plot = JSON.parse(await results[29].toString());
-        console.log(this.summary.qqplot_min_plot);
-
         this.summary.qqplot_ols_plot.layout.title.font = {
             family: 'Courier New, monospace',
             size: 10
@@ -344,6 +346,32 @@ export default class LinearRegression extends RegressionModel {
                     searching: false,
                     paging: false,
                     bDestroy: true,
+                    columnDefs: [
+                        {
+                            "targets": 3,
+                            "createdCell": function (td, cellData, rowData, row, col) {
+                                if (rowData[3] <= 0.05) {
+                                    $(td).css('color', 'green')
+                                }
+                            }
+                        },
+                        {
+                            "targets": 6,
+                            "createdCell": function (td, cellData, rowData, row, col) {
+                                if (rowData[6] <= 0.05) {
+                                    $(td).css('color', 'green')
+                                }
+                            }
+                        },
+                        {
+                            "targets": 9,
+                            "createdCell": function (td, cellData, rowData, row, col) {
+                                if (rowData[7] <= 0.05) {
+                                    $(td).css('color', 'green')
+                                }
+                            }
+                        }
+                    ],
                 });
 
                 Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { staticPlot: false });

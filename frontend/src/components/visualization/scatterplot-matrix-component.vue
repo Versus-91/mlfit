@@ -50,7 +50,7 @@ export default {
             let features = numericColumns.concat(categorical_columns);
             dataframe.dropNa({ axis: 1, inplace: true })
             await chartController.ScatterplotMatrix(dataframe.loc({ columns: features }).values, features, this.dataframe.column(this.settings.modelTarget).values, categorical_columns.length,
-                this.settings.modelTask, numericColumns, categorical_columns, dataframe)
+                this.settings.isClassification, numericColumns, categorical_columns, dataframe)
             this.isLoading = false;
 
         },

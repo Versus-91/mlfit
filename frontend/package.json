@@ -19,6 +19,7 @@
     "d3-scale-chromatic": "^3.0.0",
     "danfojs": "^1.1.2",
     "jquery": "^3.7.1",
+    "jspdf": "^2.5.1",
     "libsvm-js": "^0.2.1",
     "ml-random-forest": "^2.1.0",
     "ml-xgboost": "^1.1.2",

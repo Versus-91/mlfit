@@ -35,7 +35,7 @@ export default class PolynomialRegression extends RegressionModel {
         await webR.objs.globalEnv.bind('y', y_train);
         await webR.objs.globalEnv.bind('degree', 2);
         await webR.objs.globalEnv.bind('names', labels);
-        await webR.objs.globalEnv.bind('categorical_columns', categorical_columns);
+        await webR.objs.globalEnv.bind('categorical_columns', categorical_columns?.length === 0 ? ['empty'] : categorical_columns);
 
         await webR.objs.globalEnv.bind('is_lasso', this.context.regularization_type);
 
@@ -299,6 +299,34 @@ export default class PolynomialRegression extends RegressionModel {
         this.summary.qqplot_1se_plot = JSON.parse(await results[28].toString());
         this.summary.qqplot_min_plot = JSON.parse(await results[29].toString());
 
+        this.summary.qqplot_ols_plot.layout.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
+        this.summary.qqplot_ols_plot.data[0].marker.size = 2;
+        this.summary.qqplot_ols_plot.layout.xaxis.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
+        this.summary.qqplot_1se_plot.layout.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
+        this.summary.qqplot_1se_plot.data[0].marker.size = 2;
+
+        this.summary.qqplot_1se_plot.layout.xaxis.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
+        this.summary.qqplot_min_plot.layout.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
+        this.summary.qqplot_min_plot.layout.xaxis.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
+        this.summary.qqplot_min_plot.data[0].marker.size = 2;
         return this.summary['predictions'];
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
@@ -326,6 +354,32 @@ export default class PolynomialRegression extends RegressionModel {
                     searching: false,
                     paging: false,
                     bDestroy: true,
+                    columnDefs: [
+                        {
+                            "targets": 3,
+                            "createdCell": function (td, cellData, rowData, row, col) {
+                                if (rowData[3] <= 0.05) {
+                                    $(td).css('color', 'green')
+                                }
+                            }
+                        },
+                        {
+                            "targets": 6,
+                            "createdCell": function (td, cellData, rowData, row, col) {
+                                if (rowData[6] <= 0.05) {
+                                    $(td).css('color', 'green')
+                                }
+                            }
+                        },
+                        {
+                            "targets": 9,
+                            "createdCell": function (td, cellData, rowData, row, col) {
+                                if (rowData[7] <= 0.05) {
+                                    $(td).css('color', 'green')
+                                }
+                            }
+                        }
+                    ],
                 });
 
                 Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { staticPlot: true });
