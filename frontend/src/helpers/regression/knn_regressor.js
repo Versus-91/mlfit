@@ -37,7 +37,7 @@ export default class KNNRegressor extends RegressionModel {
                         this.optimalTrainSpec = this.results[0];
                         this.results.forEach(element => {
                             if (element.evaluation > this.optimalTestSpec.evaluation) {
-                                this.optimalTestSpe = element
+                                this.optimalTestSpec = element
                             }
                             if (element.evaluation_train > this.optimalTrainSpec.evaluation_train) {
                                 this.optimalTrainSpec = element

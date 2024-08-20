@@ -243,6 +243,11 @@ export const Settings = {
                     type: "select",
                     default: "Lasso",
                     values: [{ label: "Lasso", value: "Lasso" }, { label: "Ridge", value: "Ridge" }]
+                },
+                "degree": {
+                    label: "Degree",
+                    type: "number",
+                    default: 2,
                 }
             }
         },

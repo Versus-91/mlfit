@@ -50,7 +50,7 @@ export default class KNNModel extends ClassificationModel {
 
         this.results.forEach(element => {
             if (element.evaluation.accuracy > this.optimalTestSpec.evaluation.accuracy) {
-                this.optimalTestSpe = element
+                this.optimalTestSpec = element
             }
             if (element.evaluation_train.accuracy > this.optimalTrainSpec.evaluation_train.accuracy) {
                 this.optimalTrainSpec = element

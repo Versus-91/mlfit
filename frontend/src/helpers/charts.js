@@ -1814,7 +1814,8 @@ export default class ChartController {
 
         })
         var layout = {
-            title: 'Goodness of fit ',
+            showlegend: true,
+            legend: { "orientation": "h" },
             xaxis: {
                 title: {
                     text: 'K',

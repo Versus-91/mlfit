@@ -17,14 +17,9 @@ export default class PolynomialRegression extends RegressionModel {
     }
 
     async train(x_train, y_train, x_test, y_test, labels, categorical_columns) {
-        this.context = {
-            X_train: x_train,
-            y_train: y_train,
-            y_test: y_test,
-            X_test: x_test,
-            regularization_type: this.options?.regularization?.value === "Lasso" ? 1 : 0,
-            labels: labels
-        };
+
+        let regularization_type = this.options?.regularization?.value === "Lasso" ? 1 : 0;
+        let degree = +this.options?.degree?.value;
 
         const webR = window.webr;
         await webR.init();
@@ -33,11 +28,11 @@ export default class PolynomialRegression extends RegressionModel {
         await webR.objs.globalEnv.bind('x_test', x_test);
 
         await webR.objs.globalEnv.bind('y', y_train);
-        await webR.objs.globalEnv.bind('degree', 2);
+        await webR.objs.globalEnv.bind('degree', degree);
         await webR.objs.globalEnv.bind('names', labels);
         await webR.objs.globalEnv.bind('categorical_columns', categorical_columns?.length === 0 ? ['empty'] : categorical_columns);
 
-        await webR.objs.globalEnv.bind('is_lasso', this.context.regularization_type);
+        await webR.objs.globalEnv.bind('is_lasso', regularization_type);
 
 
         const plotlyData = await webR.evalR(`
@@ -62,14 +57,15 @@ export default class PolynomialRegression extends RegressionModel {
                     x <- as.matrix(xx)  
                     colnames(x) <- names
                     cols_numerical <- setdiff(names, categorical_columns)
-
                     df_main <- add_powers(as.data.frame(x), degree,cols_numerical)
                     scale_df <- add_powers(as.data.frame(x), degree,cols_numerical)
+                    all_column_names <- colnames(scale_df)
+                    cols_to_scale <- setdiff(all_column_names, categorical_columns)
+                    scale_df[cols_to_scale] <- scale(scale_df[cols_to_scale])
+                    
                     x <- as.matrix(x_test)  
                     colnames(x) <- names
                     df_test <- add_powers(as.data.frame(x), degree,cols_numerical)
-
-                    
                     base_model = cv.glmnet(as.matrix(scale_df), y)
                     weights <- 1 / abs(coef(base_model)[-1])
                     x <- as.matrix(df_main)
@@ -201,7 +197,7 @@ export default class PolynomialRegression extends RegressionModel {
                     ,plotly_json(qqplot_ols, pretty = FALSE)
                     ,plotly_json(qqplot_1se, pretty = FALSE)
                     ,plotly_json(qqplot_min, pretty = FALSE)
-                    
+                    ,all_column_names
                     )
                     `);
         let results = await plotlyData.toArray()
@@ -235,9 +231,10 @@ export default class PolynomialRegression extends RegressionModel {
                 bse: await results[14].toArray(),
                 pvalues: await results[13].toArray(),
             },
+            columnNames: await results[30].toArray()
         };
         this.model_stats_matrix = [];
-        let cols = [...labels]
+        let cols = this.summary.columnNames
         cols.unshift("intercept")
         let min_ols_columns = this.summary['best_fit_min'].names;
 
@@ -384,7 +381,6 @@ export default class PolynomialRegression extends RegressionModel {
 
                 Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { staticPlot: true });
                 Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { staticPlot: false });
-
                 Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { staticPlot: true });
                 Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { staticPlot: true });
                 Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { staticPlot: true });
