@@ -1721,7 +1721,15 @@ export default class ChartController {
 
         })
         var layout = {
-            title: 'Goodness of fit ',
+            showlegend: true,
+            legend: {
+                "orientation": "h",
+                font: {
+                    family: 'sans-serif',
+                    size: 8,
+                    color: '#000'
+                },
+            },
             xaxis: {
                 title: {
                     text: 'K',
@@ -1815,7 +1823,14 @@ export default class ChartController {
         })
         var layout = {
             showlegend: true,
-            legend: { "orientation": "h" },
+            legend: {
+                "orientation": "h",
+                font: {
+                    family: 'sans-serif',
+                    size: 8,
+                    color: '#000'
+                },
+            },
             xaxis: {
                 title: {
                     text: 'K',

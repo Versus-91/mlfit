@@ -5,7 +5,7 @@
                 ref="resultContents">
                 <div class="columns is-multiline">
                     <classification-view-component :result="result"
-                        v-if="result.isClassification"></classification-view-component>
+                        v-if="result.modelTask"></classification-view-component>
                     <regression-view-component :result="result" v-else>
                     </regression-view-component>
                     <div class="column is-12">
