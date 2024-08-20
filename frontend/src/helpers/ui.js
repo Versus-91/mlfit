@@ -445,7 +445,7 @@ export default class UI {
         string = string.replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')
         return string;
     }
-    renderDatasetStats(data) {
+    renderDatasetStats(data, continuousFeatures, categoricalFeatures) {
         //build numerical feature table table
         let continuousFeaturesStats = []
         let categoricalFeaturesStats = []
@@ -459,36 +459,31 @@ export default class UI {
                 , { field: 'missingVlauesCount', label: '# NAs' }
             ];
 
-        for (let i = 0; i < data.columns.length; i++) {
-            const column = data.columns[i];
-            const key = encode_name(column)
-            if (data.dtypes[i] !== 'string') {
-                continuousFeaturesStats.push({
-                    name: column,
-                    min: data.column(column).min(),
-                    max: data.column(column).max(),
-                    median: data.column(column).median().toFixed(2),
-                    mean: data.column(column).mean().toFixed(2),
-                    std: data.column(column).std().toFixed(2),
-                    missingVlauesCount: data.column(column).isNa().sum()
-                })
-            }
+        for (let i = 0; i < continuousFeatures.length; i++) {
+            const column = continuousFeatures[i];
+            continuousFeaturesStats.push({
+                name: column,
+                min: data.column(column).min(),
+                max: data.column(column).max(),
+                median: data.column(column).median().toFixed(2),
+                mean: data.column(column).mean().toFixed(2),
+                std: data.column(column).std().toFixed(2),
+                missingVlauesCount: data.column(column).isNa().sum()
+            })
         }
 
 
-        data.columns.forEach((column, i) => {
-            const key = encode_name(column)
-            if (data.dtypes[i] === 'string') {
-                const shape = [...new Set(data.column(key).values)];
-                const category_info = this.getCategoricalMode(data.column(key).values)
-                categoricalFeaturesStats.push({
-                    name: column,
-                    shape: shape.length,
-                    mode: category_info['mode'],
-                    percentage: ((category_info[category_info['mode']] / category_info['total'])).toFixed(2),
-                    missingVlauesCount: data.column(column).isNa().sum()
-                })
-            }
+        categoricalFeatures.forEach((column, i) => {
+            const shape = [...new Set(data.column(column).values)];
+            const category_info = this.getCategoricalMode(data.column(column).values)
+            categoricalFeaturesStats.push({
+                name: column,
+                shape: shape.length,
+                mode: category_info['mode'],
+                percentage: ((category_info[category_info['mode']] / category_info['total'])).toFixed(2),
+                missingVlauesCount: data.column(column).isNa().sum()
+            })
+
         });
         return [
             continuousHeaders,

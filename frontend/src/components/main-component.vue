@@ -9,7 +9,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                    }})</p>
+                                        }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Continuous Features :</h5>
@@ -66,6 +66,7 @@ import { toJSON } from 'danfojs';
 import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
 import ResultsComponent from './tabs/results-component.vue'
 import SPLOMComponent from './visualization/scatterplot-matrix-component.vue'
+import { FeatureCategories } from '../helpers/settings'
 
 import { settingStore } from '@/stores/settings'
 
@@ -84,7 +85,6 @@ export default {
     },
     props: {
         msg: String,
-        dataframe: Object,
         selectedFeatures: []
     },
     data() {
@@ -105,27 +105,26 @@ export default {
         }
     },
     methods: {
+        renderStats() {
+            let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
+            let categoricalColumns = this.settings.items.filter(m => m.type !== FeatureCategories.Numerical.id).map(m => m.name);
 
-    },
-    watch: {
-        dataframe: async function (val) {
-            if (val) {
-                let datasetStats = ui.renderDatasetStats(val);
-                this.continuousFeaturesColumns = datasetStats[0];
-                this.continuousFeaturesStats = datasetStats[1];
-                this.categoricalFeaturesColumns = datasetStats[2];
-                this.categoricalFeaturesStats = datasetStats[3];
-                this.datasetColumns = val.columns.map(column => {
-                    return {
-                        field: column,
-                        label: column
+            let datasetStats = ui.renderDatasetStats(this.settings.df, numericColumns, categoricalColumns);
+            this.continuousFeaturesColumns = datasetStats[0];
+            this.continuousFeaturesStats = datasetStats[1];
+            this.categoricalFeaturesColumns = datasetStats[2];
+            this.categoricalFeaturesStats = datasetStats[3];
+            this.datasetColumns = this.settings.df.columns.map(column => {
+                return {
+                    field: column,
+                    label: column
 
-                    }
-                });
-                this.sampleData = toJSON(val.head(5));
-            }
+                }
+            });
+            this.sampleData = toJSON(this.settings.df.head(5));
         }
     },
+
 }
 </script>
 

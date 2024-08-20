@@ -1,8 +1,9 @@
 <template>
   <div class="container">
     <div class="columns is-multiline" id="app">
-      <SidebarComponent @dataframe="setDataframePorp" @selected-features="setSelectedFeatures"></SidebarComponent>
-      <MainComponent :dataframe="this.settings.df" :selectedFeatures="selectedFeatures"></MainComponent>
+      <SidebarComponent @updateFeatures="updateFeatureStats" @selected-features="setSelectedFeatures">
+      </SidebarComponent>
+      <MainComponent ref="main" :dataframe="this.settings.df" :selectedFeatures="selectedFeatures"></MainComponent>
     </div>
   </div>
 </template>
@@ -33,8 +34,8 @@ export default {
     reset() {
       this.settings.resetDF();
     },
-    setDataframePorp(e) {
-      this.dataframe = e
+    updateFeatureStats() {
+      this.$refs.main.renderStats()
     },
     setSelectedFeatures(e) {
       this.selectedFeatures = e

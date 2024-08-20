@@ -1033,8 +1033,6 @@ export default class ChartController {
         recalls.push(0)
         confusionMatrix.push(preceissions)
         let items_labels = labels.filter(x => !metric_labels.includes(x))
-        Highcharts.Templating.helpers.substr = (s, from, length) =>
-            s.substr(from, length);
         let formatted_matrix = []
         for (let i = 0; i < confusionMatrix.length; i++) {
             const element = confusionMatrix[i];

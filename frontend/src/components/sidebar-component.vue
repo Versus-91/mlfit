@@ -6,7 +6,7 @@
             <upload-component @uploaded="generateTargetDropdown"></upload-component>
             <div class="column is-12">
                 <b-field>
-                    <b-button @click="configureFeatures = !configureFeatures" size="is-small" type="is-primary is-light"
+                    <b-button @click="configureFeatures = true" size="is-small" type="is-primary is-light"
                         icon-pack="fas" icon-left="cog">Select Features {{ featureSettings.filter(feature =>
                             feature.selected).length }}</b-button>
                 </b-field>
@@ -69,9 +69,9 @@
             </div>
         </section>
         <section v-else>
-            <b-button @click="configureFeatures = !configureFeatures" size="is-small" icon-pack="fas"
-                icon-left="arrow-left" type="is-primary is-light">Select
-                Features</b-button>
+            <b-button @click="updateFeatures()" size="is-small" icon-pack="fas" icon-left="arrow-left"
+                type="is-primary is-light">Select Features
+            </b-button>
             <section>
                 Configure Features :
                 <table class="table is-narrow is-size-7 is-fullwidth">
@@ -186,6 +186,10 @@ export default {
         }
     },
     methods: {
+        updateFeatures() {
+            this.configureFeatures = false;
+            this.$emit('updateFeatures', true)
+        },
         toggleTraining() {
             this.training = !this.training;
             this.$buefy.toast.open(
@@ -226,6 +230,8 @@ export default {
             for (let i = 0; i < selectedFeatures.length; i++) {
                 this.settings.addFeature(selectedFeatures[i])
             }
+            this.$emit('updateFeatures', true)
+
         },
         checkmodelTask() {
             let targetFeature = this.featureSettings.find(feature => feature.name == this.modelTarget);
@@ -246,7 +252,6 @@ export default {
                 let categoricalFeatures = []
                 let dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
                 let numericColumns = this.settings.items.filter(m => m.selected && m.type === FeatureCategories.Numerical.id).map(m => m.name);
-                let model_name = this.modelOption;
                 const target = this.settings.modelTarget;
                 dataset = handle_missing_values(dataset)
                 dataset = applyDataTransformation(dataset, numericColumns, this.settings.transformationsList);
