@@ -73,47 +73,46 @@
             <div class="column is-12" :id="'metrics_' + result.id">
             </div>
 
-            <div class="column is-3">
-                <div :id="'errors_' + result.id" width="100%" style="height:200px"></div>
+            <div class="column is-6">
+                <div :id="'errors_' + result.id" width="100%" style="height:250px"></div>
             </div>
-            <div class="column is-3">
+            <div class="column is-6">
+                <div :id="'regularization_' + result.id" width="100%" style="height:250px"></div>
+            </div>
+            <div class="column is-4">
                 <div :id="'regression_y_yhat_' + result.id" width="100%" style="height:200px">
                 </div>
             </div>
-            <div class="column is-3">
+            <div class="column is-4">
                 <div :id="'regression_y_yhat_min_' + result.id" width="100%" style="height:200px">
                 </div>
             </div>
-            <div class="column is-3">
+            <div class="column is-4">
                 <div :id="'regression_y_yhat_1se_' + result.id" width="100%" style="height:200px">
                 </div>
             </div>
-            <div class="column is-3">
-                <div :id="'regularization_' + result.id" width="100%" style="height:200px"></div>
-            </div>
-            <div class="column is-3">
+
+            <div class="column is-4">
                 <div :id="'regression_residual_' + result.id" width="100%" style="height:200px">
                 </div>
             </div>
-            <div class="column is-3">
+            <div class="column is-4">
                 <div :id="'regression_residual_min_' + result.id" width="100%" style="height:200px">
                 </div>
             </div>
-            <div class="column is-3">
+            <div class="column is-4">
                 <div :id="'regression_residual_1se_' + result.id" width="100%" style="height:200px">
                 </div>
             </div>
-            <div class="column is-3">
-            </div>
-            <div class="column is-3">
+            <div class="column is-4">
                 <div :id="'qqplot_ols_' + result.id" width="100%" style="height:200px">
                 </div>
             </div>
-            <div class="column is-3">
+            <div class="column is-4">
                 <div :id="'qqplot_min_' + result.id" width="100%" style="height:200px">
                 </div>
             </div>
-            <div class="column is-3">
+            <div class="column is-4">
                 <div :id="'qqplot_1se_' + result.id" width="100%" style="height:200px">
                 </div>
             </div>

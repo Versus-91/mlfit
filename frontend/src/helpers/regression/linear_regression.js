@@ -78,8 +78,7 @@ export default class LinearRegression extends RegressionModel {
                                        aes(label=variable),nudge_x=-0.5) +
                       geom_vline(xintercept=c(cvfit$lambda.1se,cvfit$lambda.min),
                                 linetype="dashed")+
-                      scale_x_log10()
-                    
+                      scale_x_log10()+ labs(y = "Coefficients")
                     df = with(cvfit,
                             data.frame(lambda = lambdas,MSE = cvm,MSEhi=cvup,MSElow=cvlo))
 
