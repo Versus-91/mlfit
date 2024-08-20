@@ -127,6 +127,9 @@
                 <div class="column is-6">
                     <div :id="'errors_' + result.id" width="100%" style="height:300px"></div>
                 </div>
+                <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
+                    v-if="result.name.toString().includes('neighbour')">
+                </div>
             </div>
         </div>
     </div>

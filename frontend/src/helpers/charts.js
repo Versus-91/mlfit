@@ -1757,5 +1757,97 @@ export default class ChartController {
         };
         Plotly.newPlot("knn_table_" + id, traces, layout);
     }
+    KNNPerformancePlotRegression(results, optimalTrainSpec, optimalTestSpec, id) {
+        let traces = []
+        traces.push({
+            x: results.map(m => m.k),
+            y: results.filter(n => n.metric === 'manhattan').map(m => Number((m.evaluation).toFixed(2))),
+            mode: 'lines',
+            name: 'manhattan test set',
+            line: {
+                color: 'rgb(55, 128, 191)',
+                width: 2
+            }
+        });
 
+        traces.push({
+            x: results.map(m => m.k),
+            y: results.filter(n => n.metric === 'euclidean').map(m => Number((m.evaluation).toFixed(2))),
+            mode: 'lines',
+            name: 'euclidean test set',
+            line: {
+                color: 'rgb(219, 64, 82)',
+                width: 2
+            }
+        });
+        traces.push({
+            x: results.map(m => m.k),
+            y: results.filter(n => n.metric === 'manhattan').map(m => Number((m.evaluation_train).toFixed(2))),
+            mode: 'lines',
+            name: 'manhattan train set',
+            line: {
+                color: 'rgb(55, 128, 191)',
+                width: 1
+            }
+        });
+        traces.push({
+            x: results.map(m => m.k),
+            y: results.filter(n => n.metric === 'euclidean').map(m => Number((m.evaluation_train).toFixed(2))),
+            mode: 'lines',
+            name: 'euclidean train set',
+            line: {
+                color: 'rgb(219, 64, 82)',
+                width: 1
+            }
+        });
+        var min_y = Number.POSITIVE_INFINITY;
+        var max_y = Number.NEGATIVE_INFINITY;
+        traces.forEach(trace => {
+            let min = Math.min(...trace.y)
+            let max = Math.max(...trace.y)
+            if (min < min_y) {
+                min_y = min
+            }
+            if (max > max_y) {
+                max_y = max
+            }
+
+        })
+        var layout = {
+            title: 'Goodness of fit ',
+            xaxis: {
+                title: {
+                    text: 'K',
+                },
+            },
+            yaxis: {
+                title: {
+                    text: 'MSE',
+                }
+            },
+            shapes: [
+                {
+                    type: 'line',
+                    x0: optimalTrainSpec.k,
+                    y0: min_y,
+                    x1: optimalTrainSpec.k,
+                    y1: max_y,
+                    line: {
+                        color: 'rgb(55, 128, 191)',
+                        width: 1
+                    }
+                }, {
+                    type: 'line',
+                    x0: optimalTestSpec.k,
+                    y0: min_y,
+                    x1: optimalTestSpec.k,
+                    y1: max_y,
+                    line: {
+                        color: 'rgb(55, 128, 191)',
+                        width: 1
+                    }
+                },]
+        };
+        Plotly.newPlot("knn_table_" + id, traces, layout);
+    }
 }
