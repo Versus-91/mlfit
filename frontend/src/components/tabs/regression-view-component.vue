@@ -22,7 +22,9 @@
                         {{ transformation.name + ': ' + transformation.scaler + ',' }}
                     </span>
                 </p>
-                <hr class="has-background-dark	my-2">
+                <p v-for="(value, key) in result.options" :key="key">
+                    {{ key }}: {{ value['value'] }}
+                </p>
                 <p class="subtitle is-6 my-1">Goodness of Fit :</p>
                 <p class="ml-2 my-1 subtitle is-6 ">MSE : {{ result.metrics[0].toFixed(2) }}</p>
                 <p class="ml-2 my-1 subtitle is-6 ">R2 : {{ result.metrics[1].toFixed(2) }}</p>

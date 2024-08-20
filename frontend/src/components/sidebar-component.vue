@@ -286,6 +286,8 @@ export default {
                 this.toggleTraining()
                 let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures);
                 let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
+                console.log(this.modelConfigurations);
+
                 this.settings.addResult({
                     id: model.id,
                     name: this.modelName,

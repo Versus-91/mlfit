@@ -272,8 +272,16 @@ export default class PolynomialRegression extends RegressionModel {
         }
         this.model_stats_matrix.reverse()
         let reg_plot = JSON.parse(await results[0].toString())
-        reg_plot.layout.legend["orientation"] = 'h'
-        reg_plot.layout['showlegend'] = false;
+        reg_plot.layout['showlegend'] = true;
+        reg_plot.layout['staticPlot'] = false;
+
+        reg_plot.layout.legend = {
+            font: {
+                family: 'sans-serif',
+                size: 8,
+                color: '#000'
+            },
+        };
 
         let coefs_plot = JSON.parse(await results[15].toString())
         coefs_plot.layout.legend = {
@@ -288,9 +296,6 @@ export default class PolynomialRegression extends RegressionModel {
         };
         this.summary.coefs_plot = coefs_plot;
         this.summary.regularization_plot = reg_plot;
-        this.summary.regularization_plot.layout['autosize'] = true
-        this.summary.regularization_plot.layout['staticPlot'] = true
-        this.summary.regularization_plot.layout['responsive'] = true
         this.summary.errors_plot = JSON.parse(await results[1].toString());
         this.summary.qqplot_ols_plot = JSON.parse(await results[27].toString());
         this.summary.qqplot_1se_plot = JSON.parse(await results[28].toString());
@@ -305,6 +310,10 @@ export default class PolynomialRegression extends RegressionModel {
             family: 'Courier New, monospace',
             size: 10
         };
+        this.summary.qqplot_ols_plot.layout.yaxis.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
         this.summary.qqplot_1se_plot.layout.title.font = {
             family: 'Courier New, monospace',
             size: 10
@@ -315,11 +324,19 @@ export default class PolynomialRegression extends RegressionModel {
             family: 'Courier New, monospace',
             size: 10
         };
+        this.summary.qqplot_1se_plot.layout.yaxis.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
         this.summary.qqplot_min_plot.layout.title.font = {
             family: 'Courier New, monospace',
             size: 10
         };
         this.summary.qqplot_min_plot.layout.xaxis.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
+        this.summary.qqplot_min_plot.layout.yaxis.title.font = {
             family: 'Courier New, monospace',
             size: 10
         };

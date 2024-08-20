@@ -267,9 +267,15 @@ export default class LinearRegression extends RegressionModel {
         }
         this.model_stats_matrix.reverse()
         let reg_plot = JSON.parse(await results[0].toString())
-        reg_plot.layout.legend["orientation"] = 'h'
-        reg_plot.layout['showlegend'] = false;
 
+        reg_plot.layout['showlegend'] = true;
+        reg_plot.layout.legend = {
+            font: {
+                family: 'sans-serif',
+                size: 8,
+                color: '#000'
+            },
+        };
         let coefs_plot = JSON.parse(await results[15].toString())
         coefs_plot.layout.legend = {
             x: 0,
@@ -299,6 +305,10 @@ export default class LinearRegression extends RegressionModel {
             family: 'Courier New, monospace',
             size: 10
         };
+        this.summary.qqplot_ols_plot.layout.yaxis.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
         this.summary.qqplot_1se_plot.layout.title.font = {
             family: 'Courier New, monospace',
             size: 10
@@ -309,11 +319,19 @@ export default class LinearRegression extends RegressionModel {
             family: 'Courier New, monospace',
             size: 10
         };
+        this.summary.qqplot_1se_plot.layout.yaxis.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
         this.summary.qqplot_min_plot.layout.title.font = {
             family: 'Courier New, monospace',
             size: 10
         };
         this.summary.qqplot_min_plot.layout.xaxis.title.font = {
+            family: 'Courier New, monospace',
+            size: 10
+        };
+        this.summary.qqplot_min_plot.layout.yaxis.title.font = {
             family: 'Courier New, monospace',
             size: 10
         };
@@ -374,7 +392,7 @@ export default class LinearRegression extends RegressionModel {
                 });
 
                 Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { staticPlot: false });
-                Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { staticPlot: true });
+                Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { staticPlot: false });
                 Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { staticPlot: true });
                 Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { staticPlot: true });
                 Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { staticPlot: true });
