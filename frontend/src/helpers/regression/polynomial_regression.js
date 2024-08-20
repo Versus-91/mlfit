@@ -374,7 +374,7 @@ export default class PolynomialRegression extends RegressionModel {
                         {
                             "targets": 9,
                             "createdCell": function (td, cellData, rowData, row, col) {
-                                if (rowData[7] <= 0.05) {
+                                if (rowData[9] <= 0.05) {
                                     $(td).css('color', 'green')
                                 }
                             }
