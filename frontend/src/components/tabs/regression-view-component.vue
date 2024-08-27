@@ -1,23 +1,23 @@
 <template>
     <div class="column is-12">
         <div class="column is-12">
-            <b-message type="is-info" has-icon icon-pack="fas" class="has-text-left">
+            <b-message type="is-info is-size-7	" has-icon icon-pack="fas" class="has-text-left">
                 <p class="my-1">
                     <span>Dataset Name : {{ result.datasetName }} , </span>
                     <span> Target variable : {{ result.target }}</span>
                 </p>
 
-                <p class="subtitle is-6 my-1">Features :</p>
-                <p class="ml-2 my-1 subtitle is-6 ">Categorical Features : <span
+                <p class="subtitle is-size-7 my-1">Features :</p>
+                <p class="ml-2 my-1 subtitle is-size-7 ">Categorical Features : <span
                         v-for="feature in result.categoricalFeatures " :key="feature">
                         {{ feature + ', ' }}
                     </span>
                 </p>
-                <p class="ml-2 my-1 subtitle is-6 ">Numerical Features : <span v-for="feature in result.numericColumns "
-                        :key="feature">
+                <p class="ml-2 my-1 subtitle is-size-7 ">Numerical Features : <span
+                        v-for="feature in result.numericColumns " :key="feature">
                         {{ feature + ', ' }}
                     </span></p>
-                <p class="ml-2 my-1 subtitle is-6 ">Transformations :
+                <p class="ml-2 my-1 subtitle is-size-7 ">Transformations :
                     <span v-for="transformation in result.transformations" :key="transformation.name">
                         {{ transformation.name + ': ' + transformation.scaler + ',' }}
                     </span>
@@ -25,9 +25,9 @@
                 <p v-for="(value, key) in result.options" :key="key">
                     {{ key }}: {{ value['value'] }}
                 </p>
-                <p class="subtitle is-6 my-1">Goodness of Fit :</p>
-                <p class="ml-2 my-1 subtitle is-6 ">MSE : {{ result.metrics[0].toFixed(2) }}</p>
-                <p class="ml-2 my-1 subtitle is-6 ">R2 : {{ result.metrics[1].toFixed(2) }}</p>
+                <p class="subtitle is-size-7 my-1">Goodness of Fit :</p>
+                <p class="ml-2 my-1 subtitle is-size-7 ">MSE : {{ result.metrics[0].toFixed(2) }}</p>
+                <p class="ml-2 my-1 subtitle is-size-7 ">R2 : {{ result.metrics[1].toFixed(2) }}</p>
 
             </b-message>
         </div>
