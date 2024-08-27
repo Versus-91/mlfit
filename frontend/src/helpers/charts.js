@@ -1864,4 +1864,62 @@ export default class ChartController {
         };
         Plotly.newPlot("knn_table_" + id, traces, layout);
     }
+    correlationHeatmap(id, correlations, names, title) {
+        var data = [
+            {
+                z: correlations,
+                x: names,
+                y: names,
+                type: 'heatmap',
+                hoverongaps: false,
+                colorscale: 'Jet',
+                showscale: false
+
+            }
+        ];
+        var layout = {
+            responsive: true,
+            title: title,
+            annotations: [],
+            xaxis: {
+                ticks: '',
+                side: 'top'
+            },
+            yaxis: {
+                ticks: '',
+                ticksuffix: ' ',
+                width: 700,
+                height: 700,
+                autosize: false
+            }
+        };
+        for (var i = 0; i < names.length; i++) {
+            for (var j = 0; j < names.length; j++) {
+                var currentValue = correlations[i][j];
+                let textColor
+                if (currentValue != 0.0) {
+                    textColor = 'white';
+                } else {
+                    textColor = 'black';
+                }
+                var result = {
+                    xref: 'x1',
+                    yref: 'y1',
+                    x: names[j],
+                    y: names[i],
+                    text: correlations[i][j].toFixed(2),
+                    font: {
+                        family: 'Arial',
+                        size: 8,
+                        color: textColor
+                    },
+                    showarrow: false,
+                };
+                layout.annotations.push(result);
+            }
+        }
+
+        Plotly.newPlot(id, data, layout);
+
+    }
 }

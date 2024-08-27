@@ -9,7 +9,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                    }})</p>
+                                        }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Continuous Features :</h5>
@@ -31,6 +31,18 @@
                         <section>
                             <scatterplot-matrix-component v-if="this.settings.df"
                                 :dataframe="this.settings.df?.copy()"></scatterplot-matrix-component>
+                        </section>
+                        <section>
+                            <div class="column is-12"> <button class="button is-success" :disabled="loading"
+                                    @click="correlationMatrix">Correlation Matrix</button>
+                            </div>
+                            <b-message v-show="hasCorrelationMatrix">
+                                <div class="columns is-multiline is-centered mb-2">
+                                    <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
+                                    <div class="column is-5" id="correlation_matrix_clustered" style="height: 400px;">
+                                    </div>
+                                </div>
+                            </b-message>
                         </section>
                     </section>
                     <section v-else>
@@ -67,10 +79,12 @@ import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
 import ResultsComponent from './tabs/results-component.vue'
 import SPLOMComponent from './visualization/scatterplot-matrix-component.vue'
 import { FeatureCategories } from '../helpers/settings'
-
+import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
+import CorrelationMatrix from '@/helpers/correaltion/correlation-matrix';
+let ui = new UI(null, null);
+let chartController = new ChartController(null, null);
 
-let ui = new UI(null, null)
 export default {
     name: 'MainComponent',
     components: {
@@ -102,6 +116,8 @@ export default {
             datasetColumns: [
             ],
             isActive: true,
+            hasCorrelationMatrix: false,
+            loading: false
         }
     },
     methods: {
@@ -122,6 +138,21 @@ export default {
                 }
             });
             this.sampleData = toJSON(this.settings.df.head(5));
+        },
+        async correlationMatrix() {
+            this.loading = true;
+            let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
+            let values = this.settings.df.loc({ columns: numericColumns }).values
+            let correlation_matrix = new CorrelationMatrix()
+            let [correlationValues, columns, correlationsClusterd, clusteredColumnNames] = await correlation_matrix.train(values, numericColumns)
+            this.hasCorrelationMatrix = true;
+
+            setTimeout(() => {
+                chartController.correlationHeatmap('correlation_matrix', correlationValues, columns, 'Correlation Matrix');
+                chartController.correlationHeatmap('correlation_matrix_clustered', correlationsClusterd, clusteredColumnNames, 'Clustered Correlation Matrix');
+                this.loading = false;
+            }, 500);
+
         }
     },
 

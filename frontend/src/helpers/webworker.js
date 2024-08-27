@@ -9,7 +9,7 @@ importScripts("https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js");
 async function loadPyodideAndPackages() {
   // eslint-disable-next-line no-undef
   self.pyodide = await loadPyodide();
-  await self.pyodide.loadPackage(["numpy", "statsmodels", "pandas"]);
+  await self.pyodide.loadPackage(["numpy", "statsmodels", "pandas", "scipy"]);
 }
 let pyodideReadyPromise = loadPyodideAndPackages();
 
@@ -27,6 +27,7 @@ self.onmessage = async (event) => {
     await self.pyodide.loadPackagesFromImports(python);
     let results = await self.pyodide.runPythonAsync(python);
     const result = results.toJs()
+    results.destroy()
     self.postMessage({ results: result, id });
   } catch (error) {
     self.postMessage({ error: error.message, id });
