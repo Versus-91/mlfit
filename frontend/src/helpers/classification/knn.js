@@ -71,7 +71,9 @@ export default class KNNModel extends ClassificationModel {
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
-        this.chartController.KNNPerformancePlot(this.results, this.optimalTrainSpec, this.optimalTestSpec, this.id)
+        this.chartController.KNNPerformancePlot(this.results, this.optimalTrainSpec, this.optimalTestSpec, this.id);
+        this.plots.push('knn_table_' + this.id);
+
     }
 
 }

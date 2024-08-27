@@ -4,9 +4,9 @@
             <b-tab-item v-for="result in this.settings.results" :label="result.name.toString()" :key="result.id"
                 ref="resultContents">
                 <div class="columns is-multiline">
-                    <classification-view-component :result="result"
+                    <classification-view-component @delete-result="deleteResult" :result="result"
                         v-if="result.modelTask"></classification-view-component>
-                    <regression-view-component :result="result" v-else>
+                    <regression-view-component @delete-result="deleteResult" :result="result" v-else>
                     </regression-view-component>
                     <div class="column is-12">
                         <div class="table-container">
@@ -31,6 +31,9 @@ import { settingStore } from '@/stores/settings'
 import ClassificationViewComponent from './classification-view-component.vue'
 import RegressionViewComponent from './regression-view-component.vue'
 import { jsPDF } from "jspdf";
+import Plotly from 'plotly.js-dist-min';
+import UI from '@/helpers/ui';
+let ui = new UI(null, null)
 
 
 export default {
@@ -53,6 +56,19 @@ export default {
         }
     },
     methods: {
+
+        deleteResult(id) {
+            // eslint-disable-next-line no-unused-vars
+            let [tables, plots] = this.settings.getResultVisualizations(id);
+            tables.forEach(table => {
+                ui.removeTable(table)
+            });
+            plots.forEach(plot => {
+                Plotly.purge(plot);
+            });
+            this.settings.removeResult(id);
+
+        },
         resize(id) {
             let isVisited = this.visitedTabs.findIndex(item => item === id);
             console.log('cccccc', isVisited);

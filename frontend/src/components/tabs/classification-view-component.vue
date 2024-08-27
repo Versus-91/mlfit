@@ -30,6 +30,8 @@
                     <p class="ml-2 my-1 subtitle is-size-7">Accuracy : {{ result.metrics[3].toFixed(2) }}</p>
                     <p class="ml-2 my-1 subtitle is-size-7">f1 micro : {{ result.metrics[4].toFixed(2) }}</p>
                     <p class="ml-2 my-1 subtitle is-size-7"> f1 macro :{{ result.metrics[2].toFixed(2) }}</p>
+                    <button class="button is-link is-outlined" @click="deleteTab()">Delete the Results</button>
+
                 </b-message>
             </div>
             <div class="column is-6" style="height: 4%;" :id="'confusion_matrix_' + result.id"></div>
@@ -51,6 +53,11 @@ export default {
         return { settings }
     },
     name: 'ClassificationViewComponent',
+    methods: {
+        deleteTab() {
+            this.$emit("delete-result", this.result.id)
+        }
+    },
     props: {
         result: {}
     },

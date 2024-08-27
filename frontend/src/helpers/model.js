@@ -12,6 +12,8 @@ export class ClassificationModel {
         this.ui = new UI(null, null)
         this.task = null;
         this.predictions = [];
+        this.plots = [];
+        this.tables = [];
         this.id = null;
     }
     async train(x, y, x_test, y_test) {
@@ -26,5 +28,8 @@ export class ClassificationModel {
         await this.chartController.plotConfusionMatrix(tensorflow.tensor(predictions), tensorflow.tensor(y_test), classes, Object.values(encoder.$labels), this.id);
         await this.chartController.classificationPCA(x_test.values, encoder.inverseTransform(y_test), evaluation_result, uniqueLabels, this.id);
         this.ui.predictions_table(x_test, encoder.inverseTransform(y_test), encoder.inverseTransform(predictions), null, this.id);
+        this.plots.push('pca_results_' + this.id);
+        this.tables.push('#predictions_table_' + this.id);
+
     }
 }

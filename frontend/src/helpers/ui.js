@@ -3,7 +3,6 @@
 
 import { MinMaxScaler, StandardScaler } from 'danfojs/dist/danfojs-base';
 import { calculateRSquared, calculateMSE, encode_name } from './utils';
-import $ from "jquery";
 import { FeatureCategories, Settings } from "./settings.js";
 import Plotly from 'plotly.js-dist-min';
 
@@ -802,11 +801,15 @@ export default class UI {
                     targets: "_all",
                 }
             ],
-            "bPaginate": true,
+            bPaginate: true,
             columns: table_columns,
             data: x.values,
             bDestroy: true,
         });
+    }
+    removeTable(tableId) {
+        $(tableId).DataTable().destroy()
+
     }
     predictions_table(x, y, predictions, probs = null, tab_index = 0) {
         let table_columns = [];

@@ -116,15 +116,10 @@ import UploadComponent from "./upload-component.vue";
 import { Settings, FeatureCategories, CV_OPTIONS } from '../helpers/settings'
 import { ModelFactory } from "@/helpers/model_factory";
 import { settingStore } from '@/stores/settings'
-import UI from '@/helpers/ui';
 import { applyDataTransformation, handle_missing_values, encode_dataset, evaluate_classification } from '@/helpers/utils';
 import { LabelEncoder, tensorflow } from 'danfojs/dist/danfojs-base';
 import { toJSON, DataFrame } from 'danfojs';
-
-import ChartController from '@/helpers/charts';
 import axios from "axios";
-let chartController = new ChartController();
-let ui = new UI(null, null)
 
 export default {
     name: 'SidebarComponent',
@@ -298,7 +293,10 @@ export default {
                     target: target,
                     categoricalFeatures: this.settings.items.filter(m => m.selected && m.type !== FeatureCategories.Numerical.id).map(m => m.name),
                     numericColumns: numericColumns,
-                    transformations: [...this.settings.transformationsList]
+                    transformations: [...this.settings.transformationsList],
+                    tables: model.tables,
+                    plots: model.plots,
+
                 });
                 this.settings.setActiveTab(2);
                 setTimeout(async () => {

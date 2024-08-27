@@ -88,6 +88,20 @@ export const settingStore = defineStore({
         addResult(result) {
             this.results.push(result)
         },
+        removeResult(id) {
+            const i = this.results.findIndex(m => m.id === id)
+            if (i > -1) {
+                this.results.splice(i, 1);
+            }
+        },
+        getResultVisualizations(id) {
+            const i = this.results.findIndex(m => m.id === id)
+            if (i > -1) {
+                let tables = this.results[i].tables;
+                let plots = this.results[i].plots;
+                return [tables, plots]
+            }
+        },
         resetDF() {
             this.df = {}
         },

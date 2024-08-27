@@ -28,6 +28,7 @@
                 <p class="subtitle is-size-7 my-1">Goodness of Fit :</p>
                 <p class="ml-2 my-1 subtitle is-size-7 ">MSE : {{ result.metrics[0].toFixed(2) }}</p>
                 <p class="ml-2 my-1 subtitle is-size-7 ">R2 : {{ result.metrics[1].toFixed(2) }}</p>
+                <button class="button is-link is-outlined" @click="deleteTab()">Delete the Results</button>
 
             </b-message>
         </div>
@@ -146,6 +147,11 @@ export default {
         return { settings }
     },
     name: 'regression-view-component',
+    methods: {
+        deleteTab() {
+            this.$emit("delete-result", this.result.id)
+        }
+    },
     props: {
         result: {}
     },
