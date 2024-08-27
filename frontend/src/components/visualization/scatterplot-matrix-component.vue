@@ -86,17 +86,17 @@ export default {
     watch: {
         dataframe: function (target, oldVal) {
             if (target !== oldVal && target) {
-                let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
-                let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1).map(column => column.name);
-                let features = numericColumns.concat(categorical_columns);
-                this.features = features.map((feature, i) => {
-                    return {
-                        id: i,
-                        name: feature,
-                        scaler: 0
-                    }
-                })
-                this.dispalySPLOM(this.dataframe.copy())
+                // let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
+                // let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1).map(column => column.name);
+                // let features = numericColumns.concat(categorical_columns);
+                // this.features = features.map((feature, i) => {
+                //     return {
+                //         id: i,
+                //         name: feature,
+                //         scaler: 0
+                //     }
+                // })
+                // this.dispalySPLOM(this.dataframe.copy())
             }
         },
     },

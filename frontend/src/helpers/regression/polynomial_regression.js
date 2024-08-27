@@ -295,6 +295,9 @@ export default class PolynomialRegression extends RegressionModel {
             },
         };
         this.summary.coefs_plot = coefs_plot;
+        this.summary.coefs_plot.layout.xaxis.title.font = {
+            size: 10
+        };
         this.summary.regularization_plot = reg_plot;
         this.summary.errors_plot = JSON.parse(await results[1].toString());
         this.summary.qqplot_ols_plot = JSON.parse(await results[27].toString());

@@ -28,7 +28,7 @@ export default class LinearRegression extends RegressionModel {
 
         const webR = window.webr;
         await webR.init();
-        await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'tidyr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary'], { quiet: true });
+        await webR.installPackages(['jsonlite', 'iml', 'ggplot2', 'plotly', 'tidyr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary'], { quiet: true });
         await webR.objs.globalEnv.bind('xx', x_train);
         await webR.objs.globalEnv.bind('x_test', x_test);
 
@@ -43,6 +43,7 @@ export default class LinearRegression extends RegressionModel {
                     library(plotly)
                     library(ggplot2)
                     library(tidyr)
+                    library(iml)
                     library(dplyr)
                     library(ggrepel)
                     library(modelsummary)
@@ -55,13 +56,13 @@ export default class LinearRegression extends RegressionModel {
 
                     cols_to_scale <- setdiff(names, categorical_columns)
                     scale_df[cols_to_scale] <- scale(scale_df[cols_to_scale])
-                    
-                    base_model = cv.glmnet(as.matrix(scale_df), y)
+                    scaled_y <- scale(y)
+                    base_model = cv.glmnet(as.matrix(scale_df), scaled_y)
                     weights <- 1 / abs(coef(base_model)[-1])
                     if(is_lasso){
-                        cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 1,penalty.factor = weights)
+                        cvfit = cv.glmnet(as.matrix(scale_df), scaled_y, alpha = 1,penalty.factor = weights)
                     }else{
-                       cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 0)
+                       cvfit = cv.glmnet(as.matrix(scale_df), scaled_y, alpha = 0)
                     }
                     betas = as.matrix(cvfit$glmnet.fit$beta)
                     lambdas = cvfit$lambda
@@ -185,6 +186,10 @@ export default class LinearRegression extends RegressionModel {
                             x = "Theoretical Quantiles",
                             y = "Sample Quantiles") +
                         theme_minimal()
+                        
+
+
+
                     list(plotly_json(p, pretty = FALSE),plotly_json(p2, pretty = FALSE),coefs,
                     pvals,std_error,predictions,aic_value,bic_value,rsquared
                     ,coefs_min,pvals_min,std_error_min
@@ -288,6 +293,9 @@ export default class LinearRegression extends RegressionModel {
             },
         };
         this.summary.coefs_plot = coefs_plot;
+        this.summary.coefs_plot.layout.xaxis.title.font = {
+            size: 10
+        };
         this.summary.regularization_plot = reg_plot;
         this.summary.regularization_plot.layout['autosize'] = true
         this.summary.regularization_plot.layout['staticPlot'] = true

@@ -23,7 +23,9 @@
                             {{ transformation.name + ': ' + transformation.scaler + ',' }}
                         </span>
                     </p>
-                    <hr class="has-background-dark	my-2">
+                    <p v-for="(value, key) in result.options" :key="key">
+                        {{ key }}: {{ value['value'] }}
+                    </p>
                     <p class="subtitle is-6 my-1">Goodness of Fit :</p>
                     <p class="ml-2 my-1 subtitle is-6 ">Accuracy : {{ result.metrics[3].toFixed(2) }}</p>
                     <p class="ml-2 my-1 subtitle is-6 ">f1 micro : {{ result.metrics[4].toFixed(2) }}</p>

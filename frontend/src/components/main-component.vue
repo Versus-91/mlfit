@@ -9,7 +9,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                        }})</p>
+                                    }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Continuous Features :</h5>
@@ -28,7 +28,7 @@
                                 </div>
                             </div>
                         </b-message>
-                        <section v-if="false">
+                        <section>
                             <scatterplot-matrix-component v-if="this.settings.df"
                                 :dataframe="this.settings.df?.copy()"></scatterplot-matrix-component>
                         </section>
