@@ -15,7 +15,7 @@ Plotly.setPlotConfig({
 });
 
 
-sk.setBackend(tensorflow)
+sk.setBackend(tensorflow);
 Vue.config.productionTip = false
 Vue.prototype.window = window;
 

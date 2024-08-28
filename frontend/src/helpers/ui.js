@@ -877,7 +877,7 @@ export default class UI {
             title: {
                 text: title,
                 font: {
-                    family: 'Courier New, monospace',
+                    family: 'sans-serif',
                     size: 10
                 },
                 xref: 'paper',
@@ -885,20 +885,26 @@ export default class UI {
             },
             showlegend: false,
             xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: {
                     text: 'y',
                     font: {
-                        family: 'Courier New, monospace',
+                        family: 'sans-serif',
                         size: 14,
                         color: '#7f7f7f'
                     }
                 },
             },
             yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: {
                     text: 'predictions',
                     font: {
-                        family: 'Courier New, monospace',
+                        family: 'sans-serif',
                         size: 14,
                         color: '#7f7f7f'
                     }
@@ -930,7 +936,7 @@ export default class UI {
             title: {
                 text: title,
                 font: {
-                    family: 'Courier New, monospace',
+                    family: 'sans-serif',
                     size: 10
                 },
                 xref: 'paper',
@@ -938,20 +944,26 @@ export default class UI {
             },
             showlegend: false,
             xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: {
                     text: 'y',
                     font: {
-                        family: 'Courier New, monospace',
+                        family: 'sans-serif',
                         size: 14,
                         color: '#7f7f7f'
                     }
                 },
             },
             yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: {
                     text: 'residuals',
                     font: {
-                        family: 'Courier New, monospace',
+                        family: 'sans-serif',
                         size: 14,
                         color: '#7f7f7f'
                     }

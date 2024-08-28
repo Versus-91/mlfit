@@ -275,10 +275,20 @@ export default class ChartController {
             showlegend: true,
             margin: {
                 l: 50,
-                r: 20,
+                r: 40,
                 b: 50,
-                t: 20,
-                pad: 30
+                t: 40,
+                pad: 20
+            },
+            xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+            },
+            yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
             },
             legend: {
                 x: 1,
@@ -682,10 +692,15 @@ export default class ChartController {
                 y: 1
             },
             xaxis: {
-
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: 'PC1'
             },
             yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: 'PC2'
             }
         }, { staticPlot: false, responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
@@ -763,6 +778,9 @@ export default class ChartController {
                 floating: true,
             },
             yAxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 min: 0,
                 max: 1,
                 title: {
@@ -790,6 +808,7 @@ export default class ChartController {
 
             },
             xAxis: {
+
                 labels: {
                     enabled: true,
                     formatter: function () {
@@ -816,10 +835,10 @@ export default class ChartController {
         Plotly.newPlot('pca-1', traces1, {
             showlegend: true,
             margin: {
-                l: 50,
+                l: 40,
                 r: 40,
-                b: 60,
-                t: 10,
+                b: 40,
+                t: 40,
                 pad: 10
             },
             legend: {
@@ -828,9 +847,15 @@ export default class ChartController {
                 y: 1
             },
             xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: 'PC' + x_axis
             },
             yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: 'PC' + y_axis
             }
         }, { responsive: true });
@@ -1263,7 +1288,7 @@ export default class ChartController {
             title: {
                 text: title,
                 font: {
-                    family: 'Courier New, monospace',
+                    family: 'sans-serif',
                     size: 10
                 },
                 xref: 'paper',
@@ -1271,20 +1296,26 @@ export default class ChartController {
             },
             showlegend: false,
             xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: {
                     text: 'y',
                     font: {
-                        family: 'Courier New, monospace',
+                        family: 'sans-serif',
                         size: 14,
                         color: '#7f7f7f'
                     }
                 },
             },
             yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: {
                     text: 'predictions',
                     font: {
-                        family: 'Courier New, monospace',
+                        family: 'sans-serif',
                         size: 14,
                         color: '#7f7f7f'
                     }
@@ -1314,7 +1345,7 @@ export default class ChartController {
             title: {
                 text: title,
                 font: {
-                    family: 'Courier New, monospace',
+                    family: 'sans-serif',
                     size: 10
                 },
                 xref: 'paper',
@@ -1322,20 +1353,26 @@ export default class ChartController {
             },
             showlegend: false,
             xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: {
                     text: 'y',
                     font: {
-                        family: 'Courier New, monospace',
+                        family: 'sans-serif',
                         size: 14,
                         color: '#7f7f7f'
                     }
                 },
             },
             yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: {
                     text: 'residuals',
                     font: {
-                        family: 'Courier New, monospace',
+                        family: 'sans-serif',
                         size: 14,
                         color: '#7f7f7f'
                     }

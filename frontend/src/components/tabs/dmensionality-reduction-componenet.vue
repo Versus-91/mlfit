@@ -19,14 +19,22 @@
             </div>
         </b-message>
         <b-message title="t-distributed stochastic neighbor embedding" type="is-info" :closable="false">
+            <b-button @click="findTSNE" size="is-small" type="is-info" :loading="findingTSNE" label="find t-SNE" />
             <div class="column is-6" id="dimensionality_reduction_panel_tsne">
-                <b-field position="is-left">
-                    <p class="control">
-                        <b-button @click="findTSNE" size="is-small" type="is-info" :loading="findingTSNE"
-                            label="Find PCA" />
-                    </p>
-                </b-field>
                 <div id="tsne">
+                </div>
+            </div>
+        </b-message>
+        <b-message title="Auto Encoder" type="is-info" :closable="false">
+            <b-field>
+                <b-input v-model="pcaX" size="is-small" type="number" placeholder="Hidden layer size"></b-input>
+                <p class="control">
+                    <b-button size="is-small" @click="autoEncoder" type="is-info" :loading="findingPCA"
+                        label="Find Auto Encoder" />
+                </p>
+            </b-field>
+            <div class="column is-6" id="dimensionality_reduction_panel_tsne">
+                <div id="autoencoder">
                 </div>
             </div>
         </b-message>
@@ -41,6 +49,8 @@
 <script>
 import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
+import { tensorflow } from 'danfojs/dist/danfojs-base';
+import { FeatureCategories } from '@/helpers/settings'
 
 // eslint-disable-next-line no-unused-vars
 let chartController = new ChartController();
@@ -86,6 +96,39 @@ export default {
             await chartController.plot_tsne(this.dataframe.loc({ columns: numericColumns }).values,
                 this.settings.isClassification ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [], this.dataframe.loc({ columns: [this.settings.modelTarget] }).values);
             this.findingTSNE = false;
+        },
+        async autoEncoder() {
+            const model = tensorflow.sequential();
+            let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
+            let values = this.settings.df.loc({ columns: numericColumns }).values
+            const encoder = tensorflow.layers.dense({
+                units: 3,
+                batchInputShape: [null, numericColumns.length],
+                activation: 'relu',
+                kernelInitializer: "randomNormal",
+                biasInitializer: "ones"
+            });
+            const decoder = tensorflow.layers.dense({ units: numericColumns.length, activation: 'relu' });
+            model.add(encoder);
+            model.add(decoder);
+            await model.compile({ optimizer: 'sgd', loss: 'meanSquaredError' });
+            console.log('compliled');
+
+            const xs = tensorflow.tensor2d(values);
+            // eslint-disable-next-line no-unused-vars
+            let h = await model.fit(xs, xs, { epochs: 5, batchSize: 15, shuffle: true, validationSpit: 0.1 });
+            xs.dispose();
+            const tidyWrapper = tensorflow.tidy(() => {
+                const predictor = tensorflow.sequential();
+                predictor.add(encoder);
+                let xs = tensorflow.tensor2d(values);
+                let ret = predictor.predict(xs);
+                xs.dispose();
+                return ret.arraySync();
+            });
+            // eslint-disable-next-line no-unused-vars
+            let data = tidyWrapper;
+            console.log(await data);
 
         }
     }

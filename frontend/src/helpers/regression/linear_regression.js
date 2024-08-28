@@ -79,7 +79,7 @@ export default class LinearRegression extends RegressionModel {
                                        aes(label=variable),nudge_x=-0.5) +
                       geom_vline(xintercept=c(cvfit$lambda.1se,cvfit$lambda.min),
                                 linetype="dashed")+
-                      scale_x_log10()+ labs(y = "Coefficients")
+                      scale_x_log10()+ labs(y = "Coefficients") + theme_bw()
                     df = with(cvfit,
                             data.frame(lambda = lambdas,MSE = cvm,MSEhi=cvup,MSElow=cvlo))
 
@@ -171,21 +171,21 @@ export default class LinearRegression extends RegressionModel {
                         labs(title = "QQ Plot of Residuals",
                             x = "Theoretical Quantiles",
                             y = "Sample Quantiles") +
-                        theme_minimal()
+                        theme_bw()
                     qqplot_1se <-ggplot(data.frame(residuals = residuals_1se), aes(sample = residuals_1se)) +
                         stat_qq() +
                         stat_qq_line(col = "red") +
                         labs(title = "QQ Plot of Residuals",
                             x = "Theoretical Quantiles",
                             y = "Sample Quantiles") +
-                        theme_minimal()
+                        theme_bw()
                     qqplot_min <-ggplot(data.frame(residuals = residuals_min), aes(sample = residuals_min)) +
                         stat_qq() +
                         stat_qq_line(col = "red") +
                         labs(title = "QQ Plot of Residuals",
                             x = "Theoretical Quantiles",
                             y = "Sample Quantiles") +
-                        theme_minimal()
+                        theme_bw()
                         
 
 
@@ -305,42 +305,42 @@ export default class LinearRegression extends RegressionModel {
         this.summary.qqplot_1se_plot = JSON.parse(await results[28].toString());
         this.summary.qqplot_min_plot = JSON.parse(await results[29].toString());
         this.summary.qqplot_ols_plot.layout.title.font = {
-            family: 'Courier New, monospace',
+            family: 'sans-serif',
             size: 10
         };
         this.summary.qqplot_ols_plot.data[0].marker.size = 2;
         this.summary.qqplot_ols_plot.layout.xaxis.title.font = {
-            family: 'Courier New, monospace',
+            family: 'sans-serif',
             size: 10
         };
         this.summary.qqplot_ols_plot.layout.yaxis.title.font = {
-            family: 'Courier New, monospace',
+            family: 'sans-serif',
             size: 10
         };
         this.summary.qqplot_1se_plot.layout.title.font = {
-            family: 'Courier New, monospace',
+            family: 'sans-serif',
             size: 10
         };
         this.summary.qqplot_1se_plot.data[0].marker.size = 2;
 
         this.summary.qqplot_1se_plot.layout.xaxis.title.font = {
-            family: 'Courier New, monospace',
+            family: 'sans-serif',
             size: 10
         };
         this.summary.qqplot_1se_plot.layout.yaxis.title.font = {
-            family: 'Courier New, monospace',
+            family: 'sans-serif',
             size: 10
         };
         this.summary.qqplot_min_plot.layout.title.font = {
-            family: 'Courier New, monospace',
+            family: 'sans-serif',
             size: 10
         };
         this.summary.qqplot_min_plot.layout.xaxis.title.font = {
-            family: 'Courier New, monospace',
+            family: 'sans-serif',
             size: 10
         };
         this.summary.qqplot_min_plot.layout.yaxis.title.font = {
-            family: 'Courier New, monospace',
+            family: 'sans-serif',
             size: 10
         };
         this.summary.qqplot_min_plot.data[0].marker.size = 2;
@@ -376,7 +376,7 @@ export default class LinearRegression extends RegressionModel {
                             "targets": 3,
                             "createdCell": function (td, cellData, rowData, row, col) {
                                 if (rowData[3] <= 0.05) {
-                                    $(td).css('color', 'green')
+                                    $(td).css('color', 'red')
                                 }
                             }
                         },
@@ -384,7 +384,7 @@ export default class LinearRegression extends RegressionModel {
                             "targets": 6,
                             "createdCell": function (td, cellData, rowData, row, col) {
                                 if (rowData[6] <= 0.05) {
-                                    $(td).css('color', 'green')
+                                    $(td).css('color', 'red')
                                 }
                             }
                         },
@@ -392,7 +392,7 @@ export default class LinearRegression extends RegressionModel {
                             "targets": 9,
                             "createdCell": function (td, cellData, rowData, row, col) {
                                 if (rowData[9] <= 0.05) {
-                                    $(td).css('color', 'green')
+                                    $(td).css('color', 'red')
                                 }
                             }
                         }

@@ -10,7 +10,7 @@ df = pd.DataFrame(data.data, columns=data.feature_names)
 
 # Compute the correlation matrix
 corr_matrix = df.corr()
-print(corr_matrix)
+print(corr_matrix.columns)
 
 # Compute the distance matrix
 dist_matrix = 1 - corr_matrix.abs()
