@@ -26,8 +26,8 @@
             </b-select>
         </b-field>
         <b-field label="Sample data" :label-position="'on-border'">
-            <b-select :expanded="true" v-model="sampleDataset" size="is-small">
-                <option v-for="option in samplDataOptions" :value="option.id" :key="option.id">
+            <b-select :expanded="true" @input="handleFileSelect" size="is-small">
+                <option v-for="option in samplDataOptions" :value="option.name" :key="option.id">
                     {{ option.name }}
                 </option>
             </b-select>
@@ -107,18 +107,22 @@ export default {
         file: async function (val) {
             try {
                 let dataset = await this.process_file(val, val.name.split('.')[1])
-                this.settings.resetFeatures();
-                this.settings.setDatasetName(val.name.split('.')[0]);
-                this.settings.setDatasetShape({ count: dataset.$data.length, columns: dataset.columns.length });
-                this.settings.setDataframe(dataset)
-                this.$emit('uploaded', true)
+                this.initDataframe(dataset, val.name.split('.')[0])
             } catch (error) {
                 this.$buefy.toast.open('Failed to parse the dataset.')
             }
 
         }
     },
+
     methods: {
+        initDataframe(dataset, name) {
+            this.settings.resetFeatures();
+            this.settings.setDatasetName(name);
+            this.settings.setDatasetShape({ count: dataset.$data.length, columns: dataset.columns.length });
+            this.settings.setDataframe(dataset)
+            this.$emit('uploaded', true)
+        },
         async process_file(file, type) {
             let options = {
                 separator: this.separator,
@@ -126,35 +130,26 @@ export default {
                 header: this.header
             }
             let processdDataset = await ParserFactory.createParser(type, options).parse(file)
-            console.log('parse');
-
             if (processdDataset.length > DATASET_SIZE) {
                 processdDataset = processdDataset.slice(0, DATASET_SIZE)
             }
             let dataFrame = new DataFrame(processdDataset)
             return dataFrame
         },
-        async handleFileSelect(evt, url) {
-            var target = evt?.target || evt?.srcElement;
+        async handleFileSelect(name) {
+            name += '.csv';
+            let current = this;
             let file;
-            if (target?.value.length == 0) {
-                return;
-            }
-            if (!url) {
-                file = evt.target.files[0];
-                await this.process_file(file, file.name.split('.')[1])
-            } else {
-                fetch(url)
-                    .then(response => response.blob())
-                    .then(async blob => {
-                        file = new File([blob], url);
-                        await this.process_file(file, 'csv')
-                    })
-                    .catch(error => {
-                        console.error('Error fetching the file:', error);
-                    });
-            }
-
+            fetch('/' + name)
+                .then(response => response.blob())
+                .then(async blob => {
+                    file = new File([blob], name);
+                    let dataframe = await this.process_file(file, 'csv');
+                    current.initDataframe(dataframe, name.split('.')[0])
+                })
+                .catch(error => {
+                    console.error('Error fetching the file:', error);
+                });
         },
     }
 }
