@@ -1766,11 +1766,17 @@ export default class ChartController {
                 },
             },
             xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: {
                     text: 'K',
                 },
             },
             yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
                 title: {
                     text: 'Accuracy',
                 }
