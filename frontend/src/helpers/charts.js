@@ -1963,6 +1963,39 @@ export default class ChartController {
         }
 
         Plotly.newPlot(id, data, layout);
+    }
+    PFIBoxplot(id, importances) {
+        let traces = []
+        importances.forEach((importance, index) => {
+            traces.push(
+                {
+                    x: Array.from(importance),
+                    type: 'box',
+                    name: index
+                }
+            )
+        });
 
+        var layout = {
+            title: 'Permutation Feature Importance',
+            xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: {
+                    text: 'Imporetance',
+                },
+            },
+            yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: {
+                    text: 'Feature',
+                }
+            },
+        };
+
+        Plotly.newPlot('pfi_boxplot_' + id, traces, layout);
     }
 }
