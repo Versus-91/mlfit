@@ -41,7 +41,7 @@
     </section>
     <section v-else>
         <b-message type="is-danger" has-icon icon-pack="fas">
-            Not enough data fro drawing plots.
+            There is no data to show.
         </b-message>
     </section>
 </template>
