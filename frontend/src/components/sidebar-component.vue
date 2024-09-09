@@ -311,7 +311,7 @@ export default {
                 this.$buefy.toast.open(
                     {
                         duration: 3000,
-                        message: ' failed to fit the model',
+                        message: 'Failed to fit the model',
                         type: 'is-warning',
                     })
                 throw error;

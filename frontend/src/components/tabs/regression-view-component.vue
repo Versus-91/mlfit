@@ -1,5 +1,5 @@
 <template>
-    <div class="column is-12">
+    <div class="columns is-multiline">
         <div class="column is-12">
             <b-message type="is-info is-size-7	" has-icon icon-pack="fas" class="has-text-left">
                 <p class="my-1">
