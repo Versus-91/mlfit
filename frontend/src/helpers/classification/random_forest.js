@@ -31,9 +31,11 @@ export default class RandomForest extends ClassificationModel {
 
             classifier = RandomForestClassifier(criterion=rf_type,max_features = max_features,n_estimators=num_estimators,max_depth = max_depth, random_state=42)
             classifier.fit(X_train, y_train)
-            pdp_results = partial_dependence(classifier, X_train, [0])
             y_pred = classifier.predict(X_test)
+
+            pdp_results = partial_dependence(classifier, X_train, [0])
             fi = permutation_importance(classifier,X_test,y_test)
+            
             y_pred,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
         `;
         try {
