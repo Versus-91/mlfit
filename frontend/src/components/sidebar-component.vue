@@ -303,7 +303,7 @@ export default {
                     this.settings.setResultActiveTab(model.id);
                     window.dispatchEvent(new Event('resize'));
                 }, 500);
-                await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder)
+                await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, selected_columns)
                 this.settings.increaseCounter();
                 this.toggleTraining();
             } catch (error) {

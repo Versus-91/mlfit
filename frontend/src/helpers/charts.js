@@ -940,7 +940,6 @@ export default class ChartController {
             }
             subsets[true_label].push(probs[i]);
         });
-        console.log(subsets);
         // Generate box plots for each true label class
         for (let true_label in subsets) {
             let subset = subsets[true_label];
@@ -1020,8 +1019,6 @@ export default class ChartController {
         Plotly.newPlot('probs_violin_plot', traces, layout);
     }
     async plotConfusionMatrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
-        console.log(labels);
-        console.log(uniqueClasses);
 
         const confusionMatrix = await tfvis.metrics.confusionMatrix(y, predictedLabels);
         let metric = await metrics(y.arraySync(), predictedLabels.arraySync(), uniqueClasses)
@@ -1565,13 +1562,9 @@ export default class ChartController {
                                 })
                             } else {
                                 let boxplot_labels = [...new Set(items.map(m => m[j]))]
-                                console.log(boxplot_labels);
-
                                 for (let m = 0; m < unique_labels.length; m++) {
                                     for (let n = 0; n < boxplot_labels.length; n++) {
                                         let box_items = items.filter(item => item[j] === boxplot_labels[n] && item[features.length - 1] === unique_labels[m])
-                                        console.log(box_items);
-
                                         if (box_items) {
                                             traces.push({
                                                 orientation: 'v',
@@ -1948,9 +1941,9 @@ export default class ChartController {
                 var result = {
                     xref: 'x1',
                     yref: 'y1',
-                    x: names[j],
-                    y: names[i],
-                    text: correlations[i][j].toFixed(2),
+                    x: names[i],
+                    y: names[j],
+                    text: currentValue.toFixed(2),
                     font: {
                         family: 'Arial',
                         size: 8,
@@ -1964,19 +1957,22 @@ export default class ChartController {
 
         Plotly.newPlot(id, data, layout);
     }
-    PFIBoxplot(id, importances) {
+    PFIBoxplot(id, importances, columns) {
         let traces = []
         importances.forEach((importance, index) => {
             traces.push(
                 {
                     x: Array.from(importance),
                     type: 'box',
-                    name: index
+                    name: columns[index],
+                    marker: { color: '#43a047' },
+
                 }
             )
         });
-
         var layout = {
+            autosize: true,
+
             title: 'Permutation Feature Importance',
             xaxis: {
                 linecolor: 'black',
@@ -1996,6 +1992,43 @@ export default class ChartController {
             },
         };
 
-        Plotly.newPlot('pfi_boxplot_' + id, traces, layout);
+        Plotly.newPlot('pfi_boxplot_' + id, traces, layout, { responsive: true });
+    }
+    plotPDP(id, averages, grid, labels, column) {
+
+        let traces = []
+        averages.forEach((average, index) => {
+            traces.push(
+                {
+                    x: grid,
+                    y: Array.from(average),
+                    mode: 'line',
+                    name: labels[index],
+                    marker: { color: this.indexToColor(index) }
+                }
+            )
+        });
+        var layout = {
+            autosize: true,
+            title: 'Partial Dependence Plot',
+            xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: {
+                    text: column,
+                },
+            },
+            yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: {
+                    text: 'Feature',
+                }
+            },
+        };
+
+        Plotly.newPlot('pdp_plot_' + id, traces, layout, { responsive: true });
     }
 }

@@ -47,7 +47,7 @@ export default class DiscriminantAnalysis extends ClassificationModel {
             const { results, error } = await asyncRun(script, this.context);
             if (results) {
                 this.predictions = Array.from(results[0]);
-                this.pdp_avergages = Array.from(results[1]);
+                this.pdp_averages = Array.from(results[1]);
                 this.pdp_grid = Array.from(results[2]);
                 this.importances = Array.from(results[3]);
                 return Array.from(results[0]);
@@ -60,9 +60,10 @@ export default class DiscriminantAnalysis extends ClassificationModel {
             );
         }
     }
-    async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
+    async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
-        this.chartController.PFIBoxplot(this.id, this.importances)
+        this.chartController.PFIBoxplot(this.id, this.importances, columns);
+        this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns[0]);
     }
 
 }

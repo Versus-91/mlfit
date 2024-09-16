@@ -81,9 +81,11 @@ import SPLOMComponent from './visualization/scatterplot-matrix-component.vue'
 import { FeatureCategories } from '../helpers/settings'
 import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
-import CorrelationMatrix from '@/helpers/correaltion/correlation-matrix';
+import { Matrix, correlation } from 'ml-matrix';
+
 let ui = new UI(null, null);
-let chartController = new ChartController(null, null);
+// eslint-disable-next-line no-unused-vars
+let chartController = new ChartController(null, null)
 
 export default {
     name: 'MainComponent',
@@ -143,13 +145,12 @@ export default {
             this.loading = true;
             let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
             let values = this.settings.df.loc({ columns: numericColumns }).values
-            let correlation_matrix = new CorrelationMatrix()
-            let [correlationValues, columns, correlationsClusterd, clusteredColumnNames] = await correlation_matrix.train(values, numericColumns)
+            let matrix = new Matrix(values)
+            let correlations = correlation(matrix)
             this.hasCorrelationMatrix = true;
-
             setTimeout(() => {
-                chartController.correlationHeatmap('correlation_matrix', correlationValues, columns, 'Correlation Matrix');
-                chartController.correlationHeatmap('correlation_matrix_clustered', correlationsClusterd, clusteredColumnNames, 'Clustered Correlation Matrix');
+                chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns, 'Correlation Matrix');
+                // chartController.correlationHeatmap('correlation_matrix_clustered', correlationsClusterd, clusteredColumnNames, 'Clustered Correlation Matrix');
                 this.loading = false;
             }, 500);
 
