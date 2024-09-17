@@ -42,7 +42,7 @@
                                     <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
                                     <div class="column is-5">
                                         <div class=" colmun is-12" id="test">
-                                            <img :src="img" alt="" height="400" width="100%" srcset="">
+                                            <img :src="img">
                                         </div>
                                     </div>
                                 </div>

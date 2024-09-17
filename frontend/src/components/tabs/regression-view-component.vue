@@ -130,6 +130,10 @@
                 <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
                     v-if="result.name.toString().includes('neighbour')">
                 </div>
+                <div class="column is-6" style="height: 400px;" :id="'pfi_boxplot_' + result.id">
+                </div>
+                <div class="column is-6" style="height: 400px;" :id="'pdp_plot_' + result.id">
+                </div>
             </div>
         </div>
     </div>

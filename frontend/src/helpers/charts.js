@@ -1984,10 +1984,7 @@ export default class ChartController {
             yaxis: {
                 linecolor: 'black',
                 linewidth: 1,
-                mirror: true,
-                title: {
-                    text: 'Feature',
-                }
+                mirror: true
             },
         };
 

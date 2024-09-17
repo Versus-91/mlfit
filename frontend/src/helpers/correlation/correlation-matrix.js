@@ -23,8 +23,7 @@ export default class Clustermap {
 
         buffer = io.BytesIO()
         df = pd.DataFrame(X_train,columns = columns)
-        plot = sns.clustermap(df.corr(), vmin=-1, vmax=1,cmap="YlGnBu")
-        plot.cax.set_visible(False)
+        plot = sns.clustermap(df.corr(),cmap="YlGnBu")
         plot.savefig(buffer, format='png',dpi=300)
         buffer.seek(0)
         img_str = 'data:image/png;base64,' + base64.b64encode(buffer.read()).decode('UTF-8')
