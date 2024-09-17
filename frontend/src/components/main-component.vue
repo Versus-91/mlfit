@@ -1,6 +1,7 @@
 <template>
     <div class="column is-10">
         <section>
+
             <b-tabs type="is-toggle" v-model="settings.activeTab" :position="'is-centered'" :animated="false">
                 <b-tab-item label="Data Anaysis">
                     <section v-if="this.settings.datasetShape?.count > 0">
@@ -9,7 +10,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                        }})</p>
+                                    }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Continuous Features :</h5>
@@ -39,7 +40,10 @@
                             <b-message v-show="hasCorrelationMatrix">
                                 <div class="columns is-multiline is-centered mb-2">
                                     <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
-                                    <div class="column is-5" id="correlation_matrix_clustered" style="height: 400px;">
+                                    <div class="column is-5">
+                                        <div class=" colmun is-12" id="test">
+                                            <img :src="img" alt="" height="400" width="100%" srcset="">
+                                        </div>
                                     </div>
                                 </div>
                             </b-message>
@@ -82,9 +86,8 @@ import { FeatureCategories } from '../helpers/settings'
 import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
 import { Matrix, correlation } from 'ml-matrix';
-
+import Clustermap from '@/helpers/correlation/correlation-matrix'
 let ui = new UI(null, null);
-// eslint-disable-next-line no-unused-vars
 let chartController = new ChartController(null, null)
 
 export default {
@@ -105,6 +108,7 @@ export default {
     },
     data() {
         return {
+            img: null,
             continuousFeaturesStats: [
             ],
             continuousFeaturesColumns: [
@@ -148,11 +152,10 @@ export default {
             let matrix = new Matrix(values)
             let correlations = correlation(matrix)
             this.hasCorrelationMatrix = true;
-            setTimeout(() => {
-                chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns, 'Correlation Matrix');
-                // chartController.correlationHeatmap('correlation_matrix_clustered', correlationsClusterd, clusteredColumnNames, 'Clustered Correlation Matrix');
-                this.loading = false;
-            }, 500);
+            chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns, 'Correlation Matrix');
+            let mtx = new Clustermap();
+            this.img = await mtx.train(values);
+            this.loading = false;
 
         }
     },
