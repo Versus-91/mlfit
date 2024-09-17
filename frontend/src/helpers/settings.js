@@ -176,8 +176,8 @@ export const Settings = {
                     type: "number",
                     default: 0.3
                 },
-                "iterations": {
-                    label: "max iterations",
+                "estimators": {
+                    label: "estimators",
                     type: "number",
                     default: 200
                 },
@@ -284,8 +284,8 @@ export const Settings = {
                     type: "number",
                     default: 0.3
                 },
-                "iterations": {
-                    label: "iterations",
+                "estimators": {
+                    label: "estimators",
                     type: "number",
                     default: 200
                 },

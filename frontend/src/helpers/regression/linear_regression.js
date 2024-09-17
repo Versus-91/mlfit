@@ -273,7 +273,7 @@ export default class LinearRegression extends RegressionModel {
         this.model_stats_matrix.reverse()
         let reg_plot = JSON.parse(await results[0].toString())
 
-        reg_plot.layout['showlegend'] = true;
+        reg_plot.layout['showlegend'] = false;
         reg_plot.layout.legend = {
             font: {
                 family: 'sans-serif',
@@ -297,9 +297,6 @@ export default class LinearRegression extends RegressionModel {
             size: 10
         };
         this.summary.regularization_plot = reg_plot;
-        this.summary.regularization_plot.layout['autosize'] = true
-        this.summary.regularization_plot.layout['staticPlot'] = true
-        this.summary.regularization_plot.layout['responsive'] = true
         this.summary.errors_plot = JSON.parse(await results[1].toString());
         this.summary.qqplot_ols_plot = JSON.parse(await results[27].toString());
         this.summary.qqplot_1se_plot = JSON.parse(await results[28].toString());
@@ -347,74 +344,71 @@ export default class LinearRegression extends RegressionModel {
         return this.summary['predictions'];
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
+        await super.visualize(x_test, y_test, uniqueLabels, predictions)
         let current = this;
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                new DataTable('#metrics_table_' + current.id, {
-                    responsive: false,
-                    "footerCallback": function (row, data, start, end, display) {
-                        var api = this.api();
-                        $(api.column(2).footer()).html(
-                            'R2 : ' + current.summary.r2.toFixed(2) + ' AIC: ' + current.summary.aic.toFixed(2)
-                        );
-                        $(api.column(5).footer()).html(
-                            'R2 : ' + current.summary['best_fit_min'].r2.toFixed(2) + ' AIC: ' + current.summary['best_fit_min'].aic.toFixed(2)
-                        );
-                        $(api.column(8).footer()).html(
-                            'R2 : ' + current.summary['best_fit_1se'].r2.toFixed(2) + ' AIC: ' + current.summary['best_fit_1se'].aic.toFixed(2)
-                        );
-                    },
-                    data: current.model_stats_matrix,
-                    info: false,
-                    search: false,
-                    ordering: false,
-                    searching: false,
-                    paging: false,
-                    bDestroy: true,
-                    columnDefs: [
-                        {
-                            "targets": 3,
-                            "createdCell": function (td, cellData, rowData, row, col) {
-                                if (rowData[3] <= 0.05) {
-                                    $(td).css('color', 'red')
-                                }
-                            }
-                        },
-                        {
-                            "targets": 6,
-                            "createdCell": function (td, cellData, rowData, row, col) {
-                                if (rowData[6] <= 0.05) {
-                                    $(td).css('color', 'red')
-                                }
-                            }
-                        },
-                        {
-                            "targets": 9,
-                            "createdCell": function (td, cellData, rowData, row, col) {
-                                if (rowData[9] <= 0.05) {
-                                    $(td).css('color', 'red')
-                                }
-                            }
+        new DataTable('#metrics_table_' + current.id, {
+            responsive: false,
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api();
+                $(api.column(2).footer()).html(
+                    'R2 : ' + current.summary.r2.toFixed(2) + ' AIC: ' + current.summary.aic.toFixed(2)
+                );
+                $(api.column(5).footer()).html(
+                    'R2 : ' + current.summary['best_fit_min'].r2.toFixed(2) + ' AIC: ' + current.summary['best_fit_min'].aic.toFixed(2)
+                );
+                $(api.column(8).footer()).html(
+                    'R2 : ' + current.summary['best_fit_1se'].r2.toFixed(2) + ' AIC: ' + current.summary['best_fit_1se'].aic.toFixed(2)
+                );
+            },
+            data: current.model_stats_matrix,
+            info: false,
+            search: false,
+            ordering: false,
+            searching: false,
+            paging: false,
+            bDestroy: true,
+            columnDefs: [
+                {
+                    "targets": 3,
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        if (rowData[3] <= 0.05) {
+                            $(td).css('color', 'red')
                         }
-                    ],
-                });
-
-                Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { staticPlot: false });
-                Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { staticPlot: false });
-                Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { staticPlot: true });
-                Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { staticPlot: true });
-                Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { staticPlot: true });
-                Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { staticPlot: true });
-                current.ui.yhat_plot(y_test, this.summary['predictions'], 'regression_y_yhat_' + + current.id, 'OLS predictions')
-                current.ui.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + + current.id, 'OLS min predictions')
-                current.ui.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + + current.id, 'OLS 1se predictions')
-                current.ui.residual_plot(y_test, this.summary['residuals_ols'], 'regression_residual_' + + current.id, 'OLS residuals')
-                current.ui.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + + current.id, 'OLS min residuals')
-                current.ui.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + + current.id, 'OLS 1se residuals')
-                this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
-                resolve('resolved');
-            }, 1000);
+                    }
+                },
+                {
+                    "targets": 6,
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        if (rowData[6] <= 0.05) {
+                            $(td).css('color', 'red')
+                        }
+                    }
+                },
+                {
+                    "targets": 9,
+                    "createdCell": function (td, cellData, rowData, row, col) {
+                        if (rowData[9] <= 0.05) {
+                            $(td).css('color', 'red')
+                        }
+                    }
+                }
+            ],
         });
+
+        await Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { autosize: true });
+        await Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { autosize: true });
+        await Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { autosize: true });
+        await Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { autosize: true });
+        await Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { autosize: true });
+        await Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { autosize: true });
+        current.ui.yhat_plot(y_test, this.summary['predictions'], 'regression_y_yhat_' + current.id, 'OLS predictions')
+        current.ui.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + current.id, 'OLS min predictions')
+        current.ui.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + current.id, 'OLS 1se predictions')
+        current.ui.residual_plot(y_test, this.summary['residuals_ols'], 'regression_residual_' + current.id, 'OLS residuals')
+        current.ui.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + current.id, 'OLS min residuals')
+        current.ui.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + current.id, 'OLS 1se residuals')
+        this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
+        window.dispatchEvent(new Event('resize'));
 
     }
 }

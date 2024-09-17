@@ -1900,7 +1900,7 @@ export default class ChartController {
         };
         Plotly.newPlot("knn_table_" + id, traces, layout);
     }
-    correlationHeatmap(id, correlations, names, title) {
+    async correlationHeatmap(id, correlations, names, title) {
         var data = [
             {
                 z: correlations,
@@ -1908,14 +1908,13 @@ export default class ChartController {
                 y: names,
                 type: 'heatmap',
                 hoverongaps: false,
-                colorscale: 'Jet',
+                colorscale: 'YlGnBu',
                 showscale: false
 
             }
         ];
         var layout = {
             responsive: true,
-            title: title,
             annotations: [],
             xaxis: {
                 ticks: '',
@@ -1934,7 +1933,7 @@ export default class ChartController {
                 var currentValue = correlations[i][j];
                 let textColor
                 if (currentValue != 0.0) {
-                    textColor = 'white';
+                    textColor = 'black';
                 } else {
                     textColor = 'black';
                 }
@@ -1955,7 +1954,7 @@ export default class ChartController {
             }
         }
 
-        Plotly.newPlot(id, data, layout);
+        await Plotly.newPlot(id, data, layout);
     }
     PFIBoxplot(id, importances, columns) {
         let traces = []

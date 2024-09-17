@@ -37,7 +37,7 @@
                             <div class="column is-12"> <button class="button is-success" :disabled="loading"
                                     @click="correlationMatrix">Correlation Matrix</button>
                             </div>
-                            <b-message v-show="hasCorrelationMatrix">
+                            <b-message>
                                 <div class="columns is-multiline is-centered mb-2">
                                     <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
                                     <div class="column is-5">
@@ -152,9 +152,9 @@ export default {
             let matrix = new Matrix(values)
             let correlations = correlation(matrix)
             this.hasCorrelationMatrix = true;
-            chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns, 'Correlation Matrix');
+            await chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns, 'Correlation Matrix');
             let mtx = new Clustermap();
-            this.img = await mtx.train(values);
+            this.img = await mtx.train(values, numericColumns);
             this.loading = false;
 
         }

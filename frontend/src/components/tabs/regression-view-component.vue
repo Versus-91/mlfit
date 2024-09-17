@@ -76,11 +76,9 @@
             <div class="column is-12" :id="'metrics_' + result.id">
             </div>
 
-            <div class="column is-6">
-                <div :id="'errors_' + result.id" width="100%" style="height:250px"></div>
+            <div class="column is-6" :id="'errors_' + result.id" width="100%" style="height:250px">
             </div>
-            <div class="column is-6">
-                <div :id="'regularization_' + result.id" width="100%" style="height:250px"></div>
+            <div class="column is-6" :id="'regularization_' + result.id" width="100%" style="height:250px">
             </div>
             <div class="column is-4">
                 <div :id="'regression_y_yhat_' + result.id" width="100%" style="height:200px">
