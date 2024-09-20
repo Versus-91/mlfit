@@ -22,7 +22,7 @@ import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
 import { ScaleOptions } from '@/helpers/settings'
 import { applyDataTransformation } from '@/helpers/utils';
-import Plotly from 'plotly.js-dist-min';
+import  Plotly  from 'danfojs/node_modules/plotly.js-dist-min';
 
 let chartController = new ChartController();
 export default {

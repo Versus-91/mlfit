@@ -11,6 +11,7 @@
     "@tensorflow/tfjs": "^4.12.0",
     "@tensorflow/tfjs-core": "^4.12.0",
     "@tensorflow/tfjs-tsne": "^0.2.0",
+    "@tensorflow/tfjs-vis": "^1.5.1",
     "axios": "^1.7.3",
     "buefy": "^0.9.29",
     "core-js": "^3.8.3",
@@ -19,11 +20,9 @@
     "danfojs": "^1.1.2",
     "jquery": "^3.7.1",
     "jspdf": "^2.5.1",
-    "libsvm-js": "^0.2.1",
     "ml-hclust": "^3.1.0",
     "ml-matrix": "^6.11.1",
     "ml-random-forest": "^2.1.0",
-    "plotly.js-dist-min": "^2.33.0",
     "pinia": "^2.1.7",
     "scikitjs": "^1.24.0",
     "simple-statistics": "^7.8.3",
@@ -40,9 +39,8 @@
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "vue-template-compiler": "^2.6.14",
-    "webpack-bundle-analyzer": "^4.10.2"
-  },
+    "vue-template-compiler": "^2.6.14"
+    },
   "eslintConfig": {
     "root": true,
     "env": {

@@ -29,7 +29,7 @@ import { settingStore } from '@/stores/settings'
 import ClassificationViewComponent from './classification-view-component.vue'
 import RegressionViewComponent from './regression-view-component.vue'
 import { jsPDF } from "jspdf";
-import Plotly from 'plotly.js-dist-min';
+import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import UI from '@/helpers/ui';
 let ui = new UI(null, null)
 

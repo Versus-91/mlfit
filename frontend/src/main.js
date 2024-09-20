@@ -3,11 +3,11 @@ import App from './App.vue'
 import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
 import { tensorflow } from 'danfojs/dist/danfojs-base';
-import { PlotlyLib } from 'danfojs/dist/danfojs-base/plotting';
+import  Plotly  from 'danfojs/node_modules/plotly.js-dist-min';
 import * as sk from 'scikitjs'
 import { createPinia, PiniaVuePlugin } from 'pinia'
 
-PlotlyLib.setPlotConfig({
+Plotly.setPlotConfig({
   autosize: true,
   staticPlot: true,
   displaylogo: false,

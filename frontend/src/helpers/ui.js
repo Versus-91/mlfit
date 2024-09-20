@@ -4,7 +4,7 @@
 import { MinMaxScaler, StandardScaler } from 'danfojs/dist/danfojs-base';
 import { calculateRSquared, calculateMSE, encode_name } from './utils';
 import { FeatureCategories, Settings } from "./settings.js";
-import Plotly from 'plotly.js-dist-min';
+import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 
 export default class UI {
     constructor(parser, chart_controller) {

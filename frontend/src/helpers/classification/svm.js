@@ -1,19 +1,33 @@
-import SVM from "libsvm-js/asm";
 import { ClassificationModel } from "../model";
-
 import { asyncRun } from "@/helpers/py-worker";
+const SVM_TYPES = {
+    C_SVC: '0', // C support vector classification
+    NU_SVC: '1', // NU support vector classification
+    ONE_CLASS: '2', // ONE CLASS classification
+    EPSILON_SVR: '3', // Epsilon support vector regression
+    NU_SVR: '4' // Nu support vector regression
+};
+
+
+const KERNEL_TYPES = {
+    LINEAR: '0',
+    POLYNOMIAL: '1',
+    RBF: '2', // Radial basis function
+    SIGMOID: '3',
+    PRECOMPUTED: '4'
+};
 export default class SupportVectorMachine extends ClassificationModel {
     constructor(opt) {
         super();
+        // eslint-disable-next-line no-unused-vars
         let options = {
-            kernel: SVM.KERNEL_TYPES[opt.kernel.value.toUpperCase()],
-            type: SVM.SVM_TYPES.C_SVC,
+            kernel: KERNEL_TYPES[opt.kernel.value.toUpperCase()],
+            type: SVM_TYPES.C_SVC,
             coef0: opt.bias.value,
             gamma: opt.gamma.value,
             degree: opt.degree.value,
             quiet: true
         }
-        this.model = new SVM(options);
     }
     async train(x_train, y_train, x_test, y_test) {
 

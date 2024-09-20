@@ -1,13 +1,13 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-import Plotly from 'plotly.js-dist-min';
+import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import PCA from './dimensionality-reduction/pca';
 import { binarize } from './utils'
 import * as ss from "simple-statistics"
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import { FeatureCategories } from "./settings";
-import { metrics, encode_name } from './utils.js';
-import * as tfvis from '@tensorflow/tfjs-vis';
+import { metrics as ClassificationMetric, encode_name } from './utils.js';
+import { metrics } from '@tensorflow/tfjs-vis';
 import { scale_data } from './utils';
 import { tensorflow } from 'danfojs/dist/danfojs-base';
 
@@ -1020,8 +1020,8 @@ export default class ChartController {
     }
     async plotConfusionMatrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
 
-        const confusionMatrix = await tfvis.metrics.confusionMatrix(y, predictedLabels);
-        let metric = await metrics(y.arraySync(), predictedLabels.arraySync(), uniqueClasses)
+        const confusionMatrix = await metrics.confusionMatrix(y, predictedLabels);
+        let metric = await ClassificationMetric(y.arraySync(), predictedLabels.arraySync(), uniqueClasses)
         let accuracy = metric[4].toFixed(2);
         let f1Micro = metric[2].toFixed(2)
         let f1Macro = metric[3].toFixed(2)

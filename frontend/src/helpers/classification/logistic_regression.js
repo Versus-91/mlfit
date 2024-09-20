@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 
 
-import Plotly from 'plotly.js-dist-min';
+import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import { ClassificationModel } from '../model';
 
 export default class LinearRegression extends ClassificationModel {
