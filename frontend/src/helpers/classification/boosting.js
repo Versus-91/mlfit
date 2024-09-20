@@ -63,6 +63,4 @@ export default class Boosting extends ClassificationModel {
         this.chartController.PFIBoxplot(this.id, this.importances, columns);
         this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns[0]);
     }
-
-
 }

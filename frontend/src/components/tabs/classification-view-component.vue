@@ -42,6 +42,9 @@
         <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
             v-if="result.name.toString().includes('neighbour')">
         </div>
+        <div class="column is-6" style="height: 350px;" :id="'roc_plot_' + result.id"
+            v-if="result.name.toString().toLowerCase().includes('nai')">
+        </div>
     </div>
 </template>
 

@@ -2027,4 +2027,40 @@ export default class ChartController {
 
         Plotly.newPlot('pdp_plot_' + id, traces, layout, { responsive: true });
     }
+    plotROC(id, fprs, tprs, labels) {
+
+        let traces = []
+        fprs.forEach((fpr, index) => {
+            traces.push(
+                {
+                    x: fpr,
+                    y: tprs[index],
+                    mode: 'line',
+                    name: labels[index],
+                    marker: { color: this.indexToColor(index) }
+                }
+            )
+        });
+        var layout = {
+            autosize: true,
+            xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: {
+                    text: 'false positive rate',
+                },
+            },
+            yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: {
+                    text: 'true positive rate',
+                }
+            },
+        };
+
+        Plotly.newPlot('roc_plot_' + id, traces, layout, { responsive: true });
+    }
 }
