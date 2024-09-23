@@ -1909,8 +1909,7 @@ export default class ChartController {
                 type: 'heatmap',
                 hoverongaps: false,
                 colorscale: 'YlGnBu',
-                showscale: false
-
+                showscale: false,
             }
         ];
         var layout = {
