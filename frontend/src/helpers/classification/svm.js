@@ -1,29 +1,13 @@
 import { ClassificationModel } from "../model";
 import { asyncRun } from "@/helpers/py-worker";
-const SVM_TYPES = {
-    C_SVC: '0', // C support vector classification
-    NU_SVC: '1', // NU support vector classification
-    ONE_CLASS: '2', // ONE CLASS classification
-    EPSILON_SVR: '3', // Epsilon support vector regression
-    NU_SVR: '4' // Nu support vector regression
-};
 
-
-const KERNEL_TYPES = {
-    LINEAR: '0',
-    POLYNOMIAL: '1',
-    RBF: '2', // Radial basis function
-    SIGMOID: '3',
-    PRECOMPUTED: '4'
-};
 export default class SupportVectorMachine extends ClassificationModel {
     constructor(opt) {
         super();
         // eslint-disable-next-line no-unused-vars
-        let options = {
-            kernel: KERNEL_TYPES[opt.kernel.value.toUpperCase()],
-            type: SVM_TYPES.C_SVC,
-            coef0: opt.bias.value,
+        this.options = {
+            kernel: opt.kernel.value.toLowerCase(),
+            coef: opt.bias.value,
             gamma: opt.gamma.value,
             degree: opt.degree.value,
             quiet: true
@@ -36,15 +20,18 @@ export default class SupportVectorMachine extends ClassificationModel {
             y_train: y_train,
             X_test: x_test,
             y_test: y_test,
-
+            kernel: this.options.kernel,
+            coef: this.options.coef,
+            gamma: this.options.gamma,
+            degree: this.options.degree,
         };
         const script = `
         from sklearn import svm
-        from js import X_train,y_train,X_test,y_test
+        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree
         from sklearn.inspection import partial_dependence
         from sklearn.inspection import permutation_importance
 
-        model = svm.SVC(kernel="linear")
+        model = svm.SVC(kernel=kernel)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 

@@ -107,9 +107,9 @@ export const Settings = {
                 "kernel": {
                     label: 'kernel',
                     type: "select",
-                    default: "RBF",
-                    values: [{ label: "RBF", value: "RBF" }, { label: "Linear", value: "Linear" }, { label: "Polynomial", value: "Polynomial" }
-                        , { label: "Sigmoid", value: "Sigmoid" }]
+                    default: "rbf",
+                    values: [{ label: "RBF", value: "rbf" }, { label: "Linear", value: "linear" }, { label: "Polynomial", value: "poly" }
+                        , { label: "Sigmoid", value: "sigmoid" }]
                 },
                 "gamma": {
                     "label": "gamma",
@@ -219,7 +219,6 @@ export const Settings = {
             "label": "Linear Regression",
             "value": 9,
             "id": 9,
-
             "feature_selection": ["no", "Lasso", "ridge"],
             "criteria": ["AIC", "BIC", "AR2",],
             "options": {
@@ -305,9 +304,9 @@ export const Settings = {
                 "kernel": {
                     label: "kernel",
                     type: "select",
-                    default: "RBF",
-                    values: [{ label: "RBF", value: "RBF" }, { label: "Linear", value: "Linear" }, { label: "Polynomial", value: "Polynomial" }
-                        , { label: "Sigmoid", value: "Sigmoid" }]
+                    default: "rbf",
+                    values: [{ label: "RBF", value: "rbf" }, { label: "Linear", value: "linear" }, { label: "Polynomial", value: "poly" }
+                        , { label: "Sigmoid", value: "sigmoid" }]
                 },
                 "gamma": {
                     label: "gamma",

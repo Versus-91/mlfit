@@ -20,7 +20,7 @@ export default class SupportVectorMachineRegression extends RegressionModel {
     constructor(opt) {
         super();
         // eslint-disable-next-line no-unused-vars
-        let options = {
+        this.options = {
             kernel: KERNEL_TYPES[opt.kernel.value.toUpperCase()],
             type: SVM_TYPES.C_SVC,
             coef0: opt.bias.value,
@@ -36,15 +36,19 @@ export default class SupportVectorMachineRegression extends RegressionModel {
             y_train: y_train,
             X_test: x_test,
             y_test: y_test,
+            kernel: this.options.kernel,
+            coef: this.options.coef,
+            gamma: this.options.gamma,
+            degree: this.options.degree,
 
         };
         const script = `
         from sklearn import svm
-        from js import X_train,y_train,X_test,y_test
+        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree
         from sklearn.inspection import partial_dependence
         from sklearn.inspection import permutation_importance
 
-        model = svm.SVR(kernel="linear")
+        model = svm.SVR(kernel=kernel)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
