@@ -33,7 +33,7 @@ export default class BSplineRegression extends RegressionModel {
         from sklearn.inspection import partial_dependence
         from sklearn.inspection import permutation_importance
 
-
+        
         model = make_pipeline(
             SplineTransformer(n_knots=knots, degree=degree), 
             linear_model.LinearRegression()
@@ -45,7 +45,7 @@ export default class BSplineRegression extends RegressionModel {
         pred_test = model.predict(X_test)
 
         pdp_results = partial_dependence(model, X_train, [0])
-        fi = permutation_importance(model,X_test,y_test)
+        fi = permutation_importance(model,X_test,y_test,scoring = 'neg_mean_squared_error',n_repeats=10)
             
         pred_test,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
         `;

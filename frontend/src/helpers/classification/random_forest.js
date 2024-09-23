@@ -34,7 +34,7 @@ export default class RandomForest extends ClassificationModel {
             y_pred = classifier.predict(X_test)
 
             pdp_results = partial_dependence(classifier, X_train, [0])
-            fi = permutation_importance(classifier,X_test,y_test)
+            fi = permutation_importance(classifier,X_test,y_test,n_repeats=10)
             
             y_pred,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
         `;

@@ -37,7 +37,7 @@ export default class Boosting extends ClassificationModel {
         y_pred = model.predict(X_test)
 
         pdp_results = partial_dependence(model, X_train, [0])
-        fi = permutation_importance(model,X_test,y_test)
+        fi = permutation_importance(model,X_test,y_test,n_repeats=10)
         y_pred,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
 
     `;
