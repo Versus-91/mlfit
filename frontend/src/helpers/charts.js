@@ -1915,6 +1915,10 @@ export default class ChartController {
         var layout = {
             responsive: true,
             annotations: [],
+            margin: {
+                t: 60,  // Top margin
+                b: 50   // Bottom margin
+            },
             xaxis: {
                 ticks: '',
                 side: 'top'
@@ -1922,17 +1926,14 @@ export default class ChartController {
             yaxis: {
                 ticks: '',
                 ticksuffix: ' ',
-                width: 700,
-                height: 700,
-                autosize: false
             }
         };
         for (var i = 0; i < names.length; i++) {
-            for (var j = 0; j < names.length; j++) {
+            for (var j = names.length - 1; j >= 0; j--) {
                 var currentValue = correlations[i][j];
                 let textColor
-                if (currentValue != 0.0) {
-                    textColor = 'black';
+                if (currentValue <= 0.0) {
+                    textColor = 'white';
                 } else {
                     textColor = 'black';
                 }
@@ -1977,7 +1978,7 @@ export default class ChartController {
                 linewidth: 1,
                 mirror: true,
                 title: {
-                    text: 'Imporetance',
+                    text: 'Importance',
                 },
             },
             yaxis: {

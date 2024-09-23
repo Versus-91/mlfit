@@ -1,7 +1,7 @@
 <template>
     <div class="column is-10">
         <section>
-
+            <button class="button is-info mt-2" id="example-step" @click="test">Help</button>
             <b-tabs type="is-toggle" v-model="settings.activeTab" :position="'is-centered'" :animated="false">
                 <b-tab-item label="Data Anaysis">
                     <section v-if="this.settings.datasetShape?.count > 0">
@@ -10,7 +10,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                    }})</p>
+                                        }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Continuous Features :</h5>
@@ -39,10 +39,10 @@
                             </div>
                             <b-message>
                                 <div class="columns is-multiline is-centered mb-2">
-                                    <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
+                                    <div class="column is-5" id="correlation_matrix" style="height: 415px;"></div>
                                     <div class="column is-5">
                                         <div class=" colmun is-12" id="test">
-                                            <img :src="img">
+                                            <img :src="img" height="400">
                                         </div>
                                     </div>
                                 </div>
@@ -87,6 +87,8 @@ import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
 import { Matrix, correlation } from 'ml-matrix';
 import Clustermap from '@/helpers/correlation/correlation-matrix'
+import Shepherd from 'shepherd.js';
+
 let ui = new UI(null, null);
 let chartController = new ChartController(null, null)
 
@@ -127,6 +129,50 @@ export default {
         }
     },
     methods: {
+        test() {
+            let tour = new Shepherd.Tour({
+                useModalOverlay: true,
+                defaultStepOptions: {
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: true
+                }
+            });
+            tour.addStep({
+                id: 'example-step',
+                text: 'The main page.',
+                attachTo: {
+                    element: '.container',
+                    on: 'bottom'
+                },
+                classes: 'example-step-extra-class',
+                buttons: [
+                    {
+                        text: 'Next',
+                        action: tour.next
+                    }
+                ]
+            });
+            tour.addStep({
+                id: 'side-bar',
+                text: 'The side bar for tuning the models.',
+                attachTo: {
+                    element: '.side-bar',
+                    on: 'bottom'
+                },
+                classes: 'example-step-extra-class',
+                buttons: [
+                    {
+                        text: 'Next',
+                        action: tour.next
+                    }
+                ]
+            });
+
+
+
+            tour.start();
+
+        },
         renderStats() {
             let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
             let categoricalColumns = this.settings.items.filter(m => m.type !== FeatureCategories.Numerical.id).map(m => m.name);

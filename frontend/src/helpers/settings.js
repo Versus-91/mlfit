@@ -334,7 +334,7 @@ export const Settings = {
             "id": 13,
             "options": {
                 "estimators": {
-                    label: "boostnumber of estimators",
+                    label: "num of estimators",
                     type: "number",
                     default: 100
                 },

@@ -32,7 +32,7 @@ export default class Boosting extends ClassificationModel {
         from sklearn.ensemble import GradientBoostingClassifier
         import pandas as pd
 
-        model = GradientBoostingClassifier()
+        model = GradientBoostingClassifier(learning_rate = eta,n_estimators = estimators,max_depth =max_depth )
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 

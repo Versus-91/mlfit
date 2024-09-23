@@ -1,6 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
-    <div class="column is-2">
+    <div class="column is-2 side-bar">
         <button @click="impute()">Impute</button>
         <section v-if="!configureFeatures">
             <upload-component @uploaded="generateTargetDropdown"></upload-component>
@@ -303,7 +303,7 @@ export default {
                     this.settings.setResultActiveTab(model.id);
                     window.dispatchEvent(new Event('resize'));
                 }, 500);
-                await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, selected_columns)
+                await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, x_train.columns)
                 this.settings.increaseCounter();
                 this.toggleTraining();
             } catch (error) {
