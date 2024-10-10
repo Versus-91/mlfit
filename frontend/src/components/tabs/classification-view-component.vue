@@ -37,7 +37,16 @@
         <div class="column is-6" style="height: 400px;" :id="'pca_results_' + result.id"></div>
         <div class="column is-6" style="height: 400px;" :id="'pfi_boxplot_' + result.id">
         </div>
+
         <div class="column is-6" style="height: 400px;" :id="'pdp_plot_' + result.id">
+            <div class="select">
+                <select name="pdp_variable"> test
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+
         </div>
         <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
             v-if="result.name.toString().includes('neighbour')">

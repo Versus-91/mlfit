@@ -4,7 +4,7 @@ import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import PCA from './dimensionality-reduction/pca';
 import { binarize } from './utils'
 import * as ss from "simple-statistics"
-import { schemeCategory10 } from 'd3-scale-chromatic';
+import { schemeCategory10, interpolateBlues } from 'd3-scale-chromatic';
 import { FeatureCategories } from "./settings";
 import { metrics as ClassificationMetric, encode_name } from './utils.js';
 import { metrics } from '@tensorflow/tfjs-vis';
@@ -14,6 +14,8 @@ import { tensorflow } from 'danfojs/dist/danfojs-base';
 export default class ChartController {
     constructor() {
         this.color_scheme = schemeCategory10;
+        this.color_scheme_sequential = interpolateBlues;
+
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -1915,15 +1917,15 @@ export default class ChartController {
         var layout = {
             responsive: true,
             annotations: [],
-            margin: {
-                t: 60,  // Top margin
-                b: 50   // Bottom margin
+            font: {
+                size: 8
             },
             xaxis: {
                 ticks: '',
                 side: 'top'
             },
             yaxis: {
+
                 ticks: '',
                 ticksuffix: ' ',
             }
@@ -1958,21 +1960,31 @@ export default class ChartController {
     }
     PFIBoxplot(id, importances, columns) {
         let traces = []
+        let avgs = []
+        importances.forEach(importance => {
+            const importancesMean = importance.reduce((a, b) => a + b, 0)
+            avgs.push(importancesMean / importance.length)
+        });
+        let max = Math.max(...avgs)
         importances.forEach((importance, index) => {
+            console.log(importance / max);
+
             traces.push(
                 {
                     x: Array.from(importance),
                     type: 'box',
                     name: columns[index],
-                    marker: { color: '#43a047' },
+                    marker: { color: this.color_scheme_sequential(avgs[index] / max) },
 
                 }
             )
         });
         var layout = {
+            font: {
+                size: 8
+            },
             autosize: true,
-
-            title: 'Permutation Feature Importance',
+            legend: { "orientation": "h" },
             xaxis: {
                 linecolor: 'black',
                 linewidth: 1,
@@ -2005,8 +2017,8 @@ export default class ChartController {
             )
         });
         var layout = {
+
             autosize: true,
-            title: 'Partial Dependence Plot',
             xaxis: {
                 linecolor: 'black',
                 linewidth: 1,
