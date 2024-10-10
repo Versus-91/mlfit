@@ -1,7 +1,7 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
     <div class="column is-2 side-bar">
-        <button @click="impute()">Impute</button>
+        <!-- <button @click="impute()">Impute</button> -->
         <section v-if="!configureFeatures">
             <upload-component @uploaded="generateTargetDropdown"></upload-component>
             <div class="column is-12">
@@ -73,7 +73,9 @@
                 type="is-primary is-light">Select Features
             </b-button>
             <section>
-                Configure Features :
+
+                <p class="mt-2">Configure Features :</p>
+
                 <table class="table is-narrow is-size-7 is-fullwidth">
                     <thead>
                         <tr>

@@ -2017,7 +2017,11 @@ export default class ChartController {
             )
         });
         var layout = {
+            legend: { "orientation": "h" },
 
+            font: {
+                size: 8
+            },
             autosize: true,
             xaxis: {
                 linecolor: 'black',
