@@ -9,7 +9,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                    }})</p>
+                                        }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Continuous Features :</h5>
@@ -36,16 +36,14 @@
                             <div class="column is-12"> <button class="button is-success" :disabled="loading"
                                     @click="correlationMatrix">Correlation Matrix</button>
                             </div>
-                            <b-message>
-                                <div class="columns is-multiline is-centered mb-2">
-                                    <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
-                                    <div class="column is-5">
-                                        <div class=" colmun is-12" id="test">
-                                            <img :src="img" height="400">
-                                        </div>
+                            <div class="columns is-multiline is-centered mb-2">
+                                <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
+                                <div class="column is-5">
+                                    <div class=" colmun is-12" id="test">
+                                        <img :src="img" height="400">
                                     </div>
                                 </div>
-                            </b-message>
+                            </div>
                         </section>
                     </section>
                     <section v-else>

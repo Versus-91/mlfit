@@ -23,7 +23,7 @@ export default class Clustermap {
         sns.set(font_scale=1.5)
         buffer = io.BytesIO()
         df = pd.DataFrame(X_train,columns = columns)
-        plt.figure(figsize=(10, 8))
+        plt.figure(figsize=(12, 8))
         plot = sns.clustermap(df.corr(),cmap="YlGnBu_r",annot = True, fmt=".2f")
         plot.savefig(buffer, format='png',dpi=300)
         buffer.seek(0)

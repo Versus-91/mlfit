@@ -35,10 +35,9 @@
         </div>
         <div class="column is-6" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
         <div class="column is-6" style="height: 400px;" :id="'pca_results_' + result.id"></div>
-        <div class="column is-6" style="height: 400px;" :id="'pfi_boxplot_' + result.id">
+        <div class="column is-6">
         </div>
-
-        <div class="column is-6" style="height: 400px;" :id="'pdp_plot_' + result.id">
+        <div class="column is-6">
             <div class="select">
                 <select name="pdp_variable" v-model="pdpFeature">
                     <option v-for="feature in settings.features" :key="feature.name"> {{
@@ -46,6 +45,11 @@
                 </select>
             </div>
             <button class="button" @click="updatePartialDependencePlot">update</button>
+        </div>
+        <div class="column is-6 mt-0" style="height: 400px;" :id="'pfi_boxplot_' + result.id">
+        </div>
+        <div class="column is-6 mt-0" style="height: 400px;" :id="'pdp_plot_' + result.id">
+
         </div>
         <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
             v-if="result.name.toString().includes('neighbour')">

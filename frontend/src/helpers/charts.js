@@ -1915,7 +1915,6 @@ export default class ChartController {
             }
         ];
         var layout = {
-            responsive: true,
             annotations: [],
             font: {
                 size: 8
@@ -1963,7 +1962,7 @@ export default class ChartController {
         let avgs = []
         importances.forEach(importance => {
             const importancesMean = importance.reduce((a, b) => a + b, 0)
-            avgs.push(importancesMean / importance.length)
+            avgs.push((importancesMean / importance.length) + 0.1)
         });
         let max = Math.max(...avgs)
         importances.forEach((importance, index) => {
@@ -1980,8 +1979,13 @@ export default class ChartController {
             )
         });
         var layout = {
-            font: {
-                size: 8
+            title: {
+                text: 'Permutation Feature Importance',
+                font: {
+                    size: 14
+                },
+                xref: 'paper',
+                x: 0.05,
             },
             autosize: true,
             legend: { "orientation": "h" },
@@ -1989,9 +1993,6 @@ export default class ChartController {
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
-                title: {
-                    text: 'Importance',
-                },
             },
             yaxis: {
                 linecolor: 'black',
@@ -2017,6 +2018,14 @@ export default class ChartController {
             )
         });
         var layout = {
+            title: {
+                text: 'Partial Dependence Plot - ' + column,
+                font: {
+                    size: 14
+                },
+                xref: 'paper',
+                x: 0.05,
+            },
             legend: { "orientation": "h" },
 
             font: {
@@ -2027,9 +2036,6 @@ export default class ChartController {
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
-                title: {
-                    text: column,
-                },
             },
             yaxis: {
                 linecolor: 'black',
