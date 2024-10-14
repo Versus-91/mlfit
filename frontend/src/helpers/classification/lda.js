@@ -10,7 +10,7 @@ export default class DiscriminantAnalysis extends ClassificationModel {
             X_test: [0.8, 0.4, 1.2, 3.7, 2.6, 5.8],
         };
     }
-    async train(x, y, x_test, y_test) {
+    async train(x, y, x_test, y_test, _, __, pdpIndex) {
         this.context = {
             lda_type: this.options.type.value,
             priors: this.options.priors.value,
@@ -18,12 +18,12 @@ export default class DiscriminantAnalysis extends ClassificationModel {
             y_train: y,
             X_test: x_test,
             y_test: y_test,
-
+            pdpIndex: pdpIndex
         };
         const script = `
         from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
         from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-        from js import X_train,y_train,X_test,lda_type,priors,y_test
+        from js import X_train,y_train,X_test,lda_type,priors,y_test,pdpIndex
         from sklearn.inspection import partial_dependence
         from sklearn.inspection import permutation_importance
 
@@ -39,7 +39,7 @@ export default class DiscriminantAnalysis extends ClassificationModel {
             model = QuadraticDiscriminantAnalysis(priors=priors)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
-        pdp_results = partial_dependence(model, X_train, [0])
+        pdp_results = partial_dependence(model, X_train,[pdpIndex])
         fi = permutation_importance(model,X_test,y_test,n_repeats=10)
         y_pred,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
     `;

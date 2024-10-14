@@ -40,13 +40,12 @@
 
         <div class="column is-6" style="height: 400px;" :id="'pdp_plot_' + result.id">
             <div class="select">
-                <select name="pdp_variable"> test
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
+                <select name="pdp_variable" v-model="pdpFeature">
+                    <option v-for="feature in settings.features" :key="feature.name"> {{
+                        feature.name }}</option>
                 </select>
             </div>
-
+            <button class="button" @click="updatePartialDependencePlot">update</button>
         </div>
         <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
             v-if="result.name.toString().includes('neighbour')">
@@ -59,6 +58,7 @@
 
 <script>
 import { settingStore } from '@/stores/settings'
+import { ModelFactory } from "@/helpers/model_factory";
 
 export default {
 
@@ -66,10 +66,23 @@ export default {
         const settings = settingStore()
         return { settings }
     },
+    data() {
+        return {
+            pdpFeature: null,
+        }
+    },
     name: 'ClassificationViewComponent',
     methods: {
         deleteTab() {
             this.$emit("delete-result", this.result.id)
+        },
+        async updatePartialDependencePlot() {
+            let model_factory = new ModelFactory();
+            let model = model_factory.createModel(this.result.snapshot.id, this.result.options);
+            await model.train(this.result.snapshot.x, this.result.snapshot.y,
+                this.result.snapshot.xt, this.result.snapshot.yt, this.result.snapshot.xFeatures, this.result.snapshot.categoricals, this.result.snapshot.xFeatures.findIndex(feature => feature == this.pdpFeature));
+            model.chartController.plotPDP(this.result.id, model.pdp_averages, model.pdp_grid, this.result.snapshot.labels, this.pdpFeature);
+
         }
     },
     props: {

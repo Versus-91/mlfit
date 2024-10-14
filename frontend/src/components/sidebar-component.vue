@@ -281,12 +281,23 @@ export default {
                 let model = model_factory.createModel(this.modelOption, this.modelConfigurations)
                 model.id = this.settings.getCounter
                 this.toggleTraining()
-                let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures);
+                let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
                 let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
                 console.log(this.modelConfigurations);
 
                 this.settings.addResult({
                     id: model.id,
+
+                    snapshot: {
+                        x: x_train.values,
+                        y: encoded_y,
+                        xt: x_test.values,
+                        yt: encoded_y_test,
+                        xFeatures: x_train.columns,
+                        categoricals: categoricalFeatures,
+                        id: this.modelOption,
+                        labels: uniqueLabels
+                    },
                     name: this.modelName,
                     datasetName: this.settings.getDatasetName,
                     modelTask: this.settings.classificationTask,

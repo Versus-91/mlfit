@@ -9,13 +9,14 @@ export default class RandomForest extends ClassificationModel {
         this.model = null;
         this.predictions = []
     }
-    async train(x_train, y_train, x_test, y_test) {
+    // eslint-disable-next-line no-unused-vars
+    async train(x_train, y_train, x_test, y_test, _, __, pdpIndex) {
         this.context = {
             X_train: x_train,
             y_train: y_train,
             X_test: x_test,
             y_test: y_test,
-
+            pdpIndex: pdpIndex,
             rf_type: this.options.criteria.value,
             max_features: this.options.features.value,
             num_estimators: this.options.estimators.value <= 0 || !this.options.estimators.value ? 100 : +this.options.estimators.value,
@@ -27,13 +28,13 @@ export default class RandomForest extends ClassificationModel {
             from sklearn.metrics import accuracy_score
             from sklearn.inspection import partial_dependence
             from sklearn.inspection import permutation_importance
-            from js import X_train,y_train,X_test,y_test,rf_type,max_features,num_estimators,max_depth
+            from js import X_train,y_train,X_test,y_test,rf_type,max_features,num_estimators,max_depth, pdpIndex
 
             classifier = RandomForestClassifier(criterion=rf_type,max_features = max_features,n_estimators=num_estimators,max_depth = max_depth, random_state=42)
             classifier.fit(X_train, y_train)
             y_pred = classifier.predict(X_test)
 
-            pdp_results = partial_dependence(classifier, X_train, [0])
+            pdp_results = partial_dependence(classifier, X_train, [pdpIndex])
             fi = permutation_importance(classifier,X_test,y_test,n_repeats=10)
             
             y_pred,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)

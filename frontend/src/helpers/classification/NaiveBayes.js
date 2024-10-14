@@ -7,7 +7,8 @@ export default class NaiveBayes extends ClassificationModel {
         this.options = options
         this.model = null
     }
-    async train(x_train, y_train, x_test, y_test) {
+    // eslint-disable-next-line no-unused-vars
+    async train(x_train, y_train, x_test, y_test, _, __, pdpIndex) {
         // const priors = this.options.priors.value ? this.options.priors?.value.split(',').map((m) => parseFloat(m)) : undefined
         this.context = {
             nb_type: this.options.type.value === "Multinomial" ? 0 : this.options.type.value === "Gaussian" ? 1 : 2,
@@ -18,11 +19,12 @@ export default class NaiveBayes extends ClassificationModel {
             y_train: y_train,
             y_test: y_test,
             X_test: x_test,
+            pdpIndex: pdpIndex
         };
         const script = `
             from sklearn.naive_bayes import BernoulliNB
             from sklearn.naive_bayes import MultinomialNB
-            from js import X_train,y_train,X_test,nb_type,priors,smoothing,y_test,num_classes
+            from js import X_train,y_train,X_test,nb_type,priors,smoothing,y_test,num_classes,pdpIndex
             from sklearn.naive_bayes import GaussianNB
             from sklearn.inspection import partial_dependence
             from sklearn.inspection import permutation_importance
@@ -43,7 +45,7 @@ export default class NaiveBayes extends ClassificationModel {
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
             probas = model.predict_proba(X_test)
-            pdp_results = partial_dependence(model, X_train, [0])
+            pdp_results = partial_dependence(model, X_train, [pdpIndex])
             fi = permutation_importance(model,X_test,y_test,n_repeats=10)
             tprs=[]
             fprs=[]

@@ -13,13 +13,15 @@ export default class SupportVectorMachine extends ClassificationModel {
             quiet: true
         }
     }
-    async train(x_train, y_train, x_test, y_test) {
+    // eslint-disable-next-line no-unused-vars
+    async train(x_train, y_train, x_test, y_test, _, __, pdpIndex) {
 
         this.context = {
             X_train: x_train,
             y_train: y_train,
             X_test: x_test,
             y_test: y_test,
+            pdpIndex: pdpIndex,
             kernel: this.options.kernel,
             coef: this.options.coef,
             gamma: this.options.gamma,
@@ -27,7 +29,7 @@ export default class SupportVectorMachine extends ClassificationModel {
         };
         const script = `
         from sklearn import svm
-        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree
+        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree,pdpIndex
         from sklearn.inspection import partial_dependence
         from sklearn.inspection import permutation_importance
 
@@ -35,7 +37,7 @@ export default class SupportVectorMachine extends ClassificationModel {
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
-        pdp_results = partial_dependence(model, X_train, [0])
+        pdp_results = partial_dependence(model, X_train, [pdpIndex])
         fi = permutation_importance(model,X_test,y_test,n_repeats=10)
         y_pred,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
     `;
