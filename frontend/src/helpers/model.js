@@ -14,6 +14,7 @@ export class ClassificationModel {
         this.predictions = [];
         this.plots = [];
         this.tables = [];
+        this.seed = 1;
         this.id = null;
     }
     async train(x, y, x_test, y_test) {

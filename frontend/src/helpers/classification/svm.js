@@ -26,6 +26,7 @@ export default class SupportVectorMachine extends ClassificationModel {
             coef: this.options.coef,
             gamma: this.options.gamma,
             degree: this.options.degree,
+            seed: this.seed
         };
         const script = `
         from sklearn import svm
@@ -33,7 +34,7 @@ export default class SupportVectorMachine extends ClassificationModel {
         from sklearn.inspection import partial_dependence
         from sklearn.inspection import permutation_importance
 
-        model = svm.SVC(kernel=kernel)
+        model = svm.SVC(kernel=kernel,random_state = seed)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
