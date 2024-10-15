@@ -127,8 +127,11 @@ export default {
                 return ret.arraySync();
             });
             // eslint-disable-next-line no-unused-vars
-            let data = tidyWrapper;
-            console.log(await data);
+            let data = await tidyWrapper;
+            console.log(data);
+            chartController.drawAutoencoder(data, 0, 1,
+                this.settings.isClassification
+                    ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [])
 
         }
     }

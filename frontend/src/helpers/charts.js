@@ -2029,7 +2029,7 @@ export default class ChartController {
             legend: { "orientation": "h" },
 
             font: {
-                size: 8
+                size: 10
             },
             autosize: true,
             xaxis: {
@@ -2048,6 +2048,40 @@ export default class ChartController {
         };
 
         Plotly.newPlot('pdp_plot_' + id, traces, layout, { responsive: true });
+    }
+    drawAutoencoder(points, xIndex = 1, yIndex = 0, labels) {
+        labels = labels.map(l => l[0])
+        var uniqueLabels = [...new Set(labels)];
+        const labelToIndex = Object.fromEntries(uniqueLabels.map((label, index) => [label, index]));
+        console.log(this.indexToColor(labelToIndex[labels[0]]));
+
+        var trace1 = {
+            x: points.map(point => point[xIndex]),
+            y: points.map(point => point[yIndex]),
+            mode: 'markers',
+            type: 'scatter',
+            name: 'Team A',
+            marker: {
+                size: 4,
+                color: points.map((_, i) => this.indexToColor(labelToIndex[labels[i]]))
+            }
+        };
+
+        var data = [trace1];
+
+        var layout = {
+            legend: {
+                y: 0.5,
+                yref: 'paper',
+                font: {
+                    family: 'Arial, sans-serif',
+                    size: 20,
+                    color: 'grey',
+                }
+            },
+        };
+
+        Plotly.newPlot('autoencoder', data, layout);
     }
     plotROC(id, fprs, tprs, labels) {
 

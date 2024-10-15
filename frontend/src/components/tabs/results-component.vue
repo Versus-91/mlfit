@@ -1,7 +1,7 @@
 <template>
     <div v-if="this.settings.results?.length > 0">
         <b-tabs v-model="settings.resultActiveTab">
-            <b-tab-item v-for="result in this.settings.results" :label="result.id + '.' + result.name.toString()"
+            <b-tab-item v-for="result in this.settings.results" :label="(result.id + 1) + '.' + result.name.toString()"
                 :key="result.id" ref="resultContents">
                 <classification-view-component @delete-result="deleteResult" :result="result"
                     v-if="result.modelTask"></classification-view-component>
