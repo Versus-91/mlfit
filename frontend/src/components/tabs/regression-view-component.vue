@@ -130,13 +130,19 @@
                 <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
                     v-if="result.name.toString().includes('neighbour')">
                 </div>
+                <div class="column is-6">
+                </div>
+                <div class="column is-6">
+                    <div class="select">
+                        <select name="pdp_variable" v-model="pdpFeature">
+                            <option v-for="feature in settings.features" :key="feature.name"> {{
+                                feature.name }}</option>
+                        </select>
+                    </div>
+                    <button class="button" @click="updatePartialDependencePlot">update</button>
+                </div>
                 <div class="column is-6" style="height: 400px;" :id="'pfi_boxplot_' + result.id">
                 </div>
-                <select name="pdp_variable"> test
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                </select>
                 <div class="column is-6" style="height: 400px;" :id="'pdp_plot_' + result.id">
                 </div>
             </div>
@@ -157,6 +163,15 @@ export default {
     methods: {
         deleteTab() {
             this.$emit("delete-result", this.result.id)
+        }
+    },
+    created() {
+        this.pdpFeature = this.settings.features[0].name
+    },
+    data() {
+        return {
+            pdpFeature: null,
+            showResult: true
         }
     },
     props: {
