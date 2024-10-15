@@ -1,7 +1,7 @@
 <template>
     <div class="columns is-multiline">
         <div class="column is-12">
-            <b-message type="is-info " has-icon icon-pack="fas" class="has-text-left">
+            <b-message type="is-info " has-icon icon-pack="fas" class="has-text-left" v-if="showResult">
                 <p class="my-1 is-size-7">
                     <span>Dataset Name : {{ result.datasetName }} , </span>
                     <span> Target variable : {{ result.target }}</span>
@@ -30,7 +30,11 @@
                 <p class="ml-2 my-1 subtitle is-size-7">f1 micro : {{ result.metrics[4].toFixed(2) }}</p>
                 <p class="ml-2 my-1 subtitle is-size-7"> f1 macro :{{ result.metrics[2].toFixed(2) }}</p>
                 <button class="button is-link is-outlined is-small" @click="deleteTab()">Delete </button>
-
+                <button class="button is-link is-outlined is-small" @click="toggleHelp()">Help </button>
+            </b-message>
+            <b-message type="is-info " has-icon icon-pack="fas" class="has-text-left" v-else>
+                <img src="/gda.png" alt="">
+                <button class="button is-link is-outlined is-small" @click="toggleHelp()">Back </button>
             </b-message>
         </div>
         <div class="column is-6" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
@@ -70,13 +74,20 @@ export default {
         const settings = settingStore()
         return { settings }
     },
+    created() {
+        this.pdpFeature = this.settings.features[0].name
+    },
     data() {
         return {
             pdpFeature: null,
+            showResult: true
         }
     },
     name: 'ClassificationViewComponent',
     methods: {
+        toggleHelp() {
+            this.showResult = !this.showResult
+        },
         deleteTab() {
             this.$emit("delete-result", this.result.id)
         },
