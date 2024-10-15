@@ -40,15 +40,16 @@ export default class SupportVectorMachineRegression extends RegressionModel {
             coef: this.options.coef,
             gamma: this.options.gamma,
             degree: this.options.degree,
+            seed: this.seed
 
         };
         const script = `
         from sklearn import svm
-        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree
+        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree,seed
         from sklearn.inspection import partial_dependence
         from sklearn.inspection import permutation_importance
 
-        model = svm.SVR(kernel=kernel)
+        model = svm.SVR(kernel=kernel,random_state = seed)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 

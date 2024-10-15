@@ -22,17 +22,18 @@ export default class RandomForestRegressor extends RegressionModel {
             rf_type: this.options.criteria.value,
             max_features: this.options.features.value,
             num_estimators: this.options.estimators.value <= 0 || !this.options.estimators.value ? 100 : +this.options.estimators.value,
-            max_depth: this.options.depth.value <= 0 ? 5 : +this.options.depth.value
+            max_depth: this.options.depth.value <= 0 ? 5 : +this.options.depth.value,
+            seed: this.seed
         };
         const script = `
             from sklearn.model_selection import train_test_split
             from sklearn.ensemble import RandomForestRegressor
             from sklearn.metrics import accuracy_score
-            from js import X_train,y_train,X_test,y_test,rf_type,max_features,num_estimators,max_depth
+            from js import X_train,y_train,X_test,y_test,rf_type,max_features,num_estimators,max_depth,seed
             from sklearn.inspection import partial_dependence
             from sklearn.inspection import permutation_importance
 
-            model = RandomForestRegressor(criterion=rf_type,max_features = max_features,n_estimators=num_estimators,max_depth = max_depth, random_state=42)
+            model = RandomForestRegressor(criterion=rf_type,max_features = max_features,n_estimators=num_estimators,max_depth = max_depth, random_state=seed)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
 

@@ -25,17 +25,18 @@ export default class BoostingRegression extends RegressionModel {
             max_depth: this.options.max_depth,
             eta: this.options.eta,
             estimators: this.options.estimators,
+            seed: this.seed
 
         };
         const script = `
 
-        from js import X_train,y_train,X_test,y_test,objective,max_depth,eta,estimators
+        from js import X_train,y_train,X_test,y_test,objective,max_depth,eta,estimators,seed
         from sklearn.inspection import partial_dependence
         from sklearn.inspection import permutation_importance
         from sklearn.ensemble import GradientBoostingRegressor
         import pandas as pd
 
-        model = GradientBoostingRegressor()
+        model = GradientBoostingRegressor(random_state = seed)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
