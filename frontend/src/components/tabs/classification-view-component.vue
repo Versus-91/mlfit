@@ -33,7 +33,8 @@
                 <button class="button is-link is-outlined is-small" @click="toggleHelp()">Help </button>
             </b-message>
             <b-message type="is-info " has-icon icon-pack="fas" class="has-text-left" v-else>
-                <img src="/gda.png" alt="">
+                <img src="/boost.png" alt="" v-if="result.name.toLowerCase().includes('boosting')">
+                <img v-else-if="result.name.toLowerCase().includes('discriminant')" src="/gda.png" alt="">
                 <button class="button is-link is-outlined is-small" @click="toggleHelp()">Back </button>
             </b-message>
         </div>

@@ -1,5 +1,7 @@
 <template>
     <section v-if="this.settings?.items.length > 2">
+        When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are
+        $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
         <b-message title="Principle Component Analysis" type="is-info" :closable="false">
             <b-field>
                 <b-input v-model="pcaX" size="is-small" type="number" placeholder="X axis component"></b-input>
@@ -99,24 +101,25 @@ export default {
         },
         async autoEncoder() {
             const model = tensorflow.sequential();
+            tensorflow.random.set_seed(42)
             let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
             let values = this.settings.df.loc({ columns: numericColumns }).values
             const encoder = tensorflow.layers.dense({
-                units: 3,
+                units: Math.floor(numericColumns.length / 2),
                 batchInputShape: [null, numericColumns.length],
                 activation: 'relu',
-                kernelInitializer: "randomNormal",
-                biasInitializer: "ones"
+                kernelInitializer: tensorflow.initializers.glorotUniform(),
+                biasInitializer: tensorflow.initializers.zeros()
             });
             const decoder = tensorflow.layers.dense({ units: numericColumns.length, activation: 'relu' });
             model.add(encoder);
             model.add(decoder);
-            await model.compile({ optimizer: 'sgd', loss: 'meanSquaredError' });
+            await model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
             console.log('compliled');
 
             const xs = tensorflow.tensor2d(values);
             // eslint-disable-next-line no-unused-vars
-            let h = await model.fit(xs, xs, { epochs: 5, batchSize: 15, shuffle: true, validationSpit: 0.1 });
+            let h = await model.fit(xs, xs, { epochs: 100, batchSize: 32, shuffle: false, validationSplit: 0.2 });
             xs.dispose();
             const tidyWrapper = tensorflow.tidy(() => {
                 const predictor = tensorflow.sequential();

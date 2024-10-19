@@ -61,6 +61,9 @@
                 <b-tab-item label="Results Analysis">
                     <results-component></results-component>
                 </b-tab-item>
+                <b-tab-item label="Methods">
+                    <methods-tab-component></methods-tab-component>
+                </b-tab-item>
                 <b-tab-item label="Help">
                     <div class="content has-text-left	">
                         <h4>1. Dataset Selection</h4>
@@ -136,6 +139,8 @@ import { toJSON } from 'danfojs';
 import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
 import ResultsComponent from './tabs/results-component.vue'
 import SPLOMComponent from './visualization/scatterplot-matrix-component.vue'
+import MethodsTabComponent from './tabs/methods-tab-component.vue'
+
 import { FeatureCategories } from '../helpers/settings'
 import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
@@ -151,6 +156,7 @@ export default {
         'dmensionality-reduction-component': PCAComponent,
         'results-component': ResultsComponent,
         'scatterplot-matrix-component': SPLOMComponent,
+        'methods-tab-component': MethodsTabComponent
 
     },
     setup() {

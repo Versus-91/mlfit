@@ -6,7 +6,7 @@ import { tensorflow } from 'danfojs/dist/danfojs-base';
 import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import * as sk from 'scikitjs'
 import { createPinia, PiniaVuePlugin } from 'pinia'
-
+import VueMathjax from 'vue-mathjax'
 Plotly.setPlotConfig({
   autosize: true,
   staticPlot: true,
@@ -19,7 +19,7 @@ sk.setBackend(tensorflow);
 Vue.config.productionTip = false
 Vue.prototype.window = window;
 
-
+Vue.use(VueMathjax)
 Vue.use(Buefy)
 Vue.use(PiniaVuePlugin)
 const pinia = createPinia()

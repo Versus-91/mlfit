@@ -28,6 +28,7 @@
     "shepherd.js": "^13.0.3",
     "simple-statistics": "^7.8.3",
     "vue": "^2.6.14",
+    "vue-mathjax": "^0.1.1",
     "webr": "^0.2.2"
   },
   "devDependencies": {
