@@ -682,12 +682,6 @@ export default class ChartController {
             hovermode: "closest",
             hoverlabel: { bgcolor: "#FFF" },
             showlegend: true,
-            margin: {
-                l: 40,
-                r: 20,
-                b: 40,
-                t: 20,
-            },
             legend: {
                 x: 1,
                 xanchor: 'right',

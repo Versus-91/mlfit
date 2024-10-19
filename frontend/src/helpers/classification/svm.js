@@ -30,7 +30,7 @@ export default class SupportVectorMachine extends ClassificationModel {
         };
         const script = `
         from sklearn import svm
-        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree,pdpIndex
+        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree,pdpIndex,seed
         from sklearn.inspection import partial_dependence
         from sklearn.inspection import permutation_importance
 
