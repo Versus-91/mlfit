@@ -67,7 +67,7 @@
             <textarea v-model="formula" cols="30" rows="10"></textarea>
             <vue-mathjax :formula="formula"></vue-mathjax>
         </div>
-        <h4 class="title is-medium is-5">Model Selection
+        <h4 class="title is-medium is-5" id="1_help">Model Selection
         </h4>
         <h5>
             When selecting a model, we distinguish 3 different parts of the data that we have as follows:

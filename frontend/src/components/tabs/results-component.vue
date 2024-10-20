@@ -3,8 +3,8 @@
         <b-tabs v-model="settings.resultActiveTab">
             <b-tab-item v-for="result in this.settings.results" :label="(result.id + 1) + '.' + result.name.toString()"
                 :key="result.id" ref="resultContents">
-                <classification-view-component @delete-result="deleteResult" :result="result"
-                    v-if="result.modelTask"></classification-view-component>
+                <classification-view-component @delete-result="deleteResult"
+                    :result="result" v-if="result.modelTask"></classification-view-component>
                 <regression-view-component @delete-result="deleteResult" :result="result" v-else>
                 </regression-view-component>
                 <div class="column is-12">
@@ -65,6 +65,10 @@ export default {
                 Plotly.purge(plot);
             });
             this.settings.removeResult(id);
+
+        },
+        showMethodDetails(id) {
+            alert(id)
 
         },
         resize(id) {
