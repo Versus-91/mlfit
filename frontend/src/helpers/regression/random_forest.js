@@ -39,7 +39,7 @@ export default class RandomForestRegressor extends RegressionModel {
             pdp_results = partial_dependence(model, X_train,[0,1])
             fi = permutation_importance(model,X_test,y_test,n_repeats=10)
             
-            y_pred,pdp_results["average"],list(pdp_results['grid_values']), list(fi.importances)
+            y_pred,pdp_results["average"],[arr.tolist() for arr in pdp_results['grid_values']], list(fi.importances)
             
         `;
         try {
@@ -47,7 +47,6 @@ export default class RandomForestRegressor extends RegressionModel {
             if (results) {
                 this.predictions = Array.from(results[0]);
                 this.pdp_averages = Array.from(results[1]);
-                console.log(this.pdp_averages);
                 this.pdp_grid = Array.from(results[2]);
                 this.importances = Array.from(results[3]);
                 return Array.from(results[0]);

@@ -1998,51 +1998,61 @@ export default class ChartController {
 
         Plotly.newPlot('pfi_boxplot_' + id, traces, layout, { responsive: true });
     }
-    plotPDP(id, averages, grid, labels, column) {
-
-        let traces = []
-        averages.forEach((average, index) => {
-            traces.push(
-                {
-                    x: grid,
-                    y: Array.from(average),
-                    mode: 'line',
-                    name: labels[index],
-                    marker: { color: this.indexToColor(index) }
-                }
-            )
-        });
-        var layout = {
-            title: {
-                text: 'Partial Dependence Plot - ' + column,
-                font: {
-                    size: 14
-                },
-                xref: 'paper',
-                x: 0.05,
-            },
-            legend: { "orientation": "h" },
-
-            font: {
-                size: 10
-            },
-            autosize: true,
-            xaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
-            },
-            yaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
+    plotPDP(id, averages, grids, labels, column) {
+        id = 'pdp_plot_' + id
+        grids.forEach((grid, i) => {
+            let element = document.getElementById(id);
+            let chartContainer = document.createElement("div");
+            chartContainer.classList.add("column", "is-6");
+            let chartId = id + '_' + i;
+            chartContainer.id = chartId
+            chartContainer.style.height = "400px";
+            element.after(chartContainer)
+            let traces = []
+            averages[i].forEach((average, index) => {
+                traces.push(
+                    {
+                        x: grid,
+                        y: Array.from(average),
+                        mode: 'line',
+                        name: labels[index],
+                        marker: { color: this.indexToColor(index) }
+                    }
+                )
+            });
+            var layout = {
                 title: {
-                    text: 'Feature',
-                }
-            },
-        };
+                    text: 'Partial Dependence Plot - ' + column,
+                    font: {
+                        size: 14
+                    },
+                    xref: 'paper',
+                    x: 0.05,
+                },
+                legend: { "orientation": "h" },
 
-        Plotly.newPlot('pdp_plot_' + id, traces, layout, { responsive: true });
+                font: {
+                    size: 10
+                },
+                autosize: true,
+                xaxis: {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                },
+                yaxis: {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                    title: {
+                        text: 'Feature',
+                    }
+                },
+            };
+
+            Plotly.newPlot(chartId, traces, layout, { responsive: true });
+        });
+
     }
     drawAutoencoder(points, xIndex = 1, yIndex = 0, labels) {
         labels = labels.map(l => l[0])

@@ -27,7 +27,9 @@ export default class RandomForest extends ClassificationModel {
             from sklearn.model_selection import train_test_split
             from sklearn.ensemble import RandomForestClassifier
             from sklearn.metrics import accuracy_score
-            from sklearn.inspection import partial_dependence
+            import matplotlib
+            matplotlib.use("AGG")
+            from sklearn.inspection import PartialDependenceDisplay
             from sklearn.inspection import permutation_importance
             from js import seed,X_train,y_train,X_test,y_test,rf_type,max_features,num_estimators,max_depth, pdpIndex
 
@@ -35,10 +37,13 @@ export default class RandomForest extends ClassificationModel {
             classifier.fit(X_train, y_train)
             y_pred = classifier.predict(X_test)
 
-            pdp_results = partial_dependence(classifier, X_train, [pdpIndex])
+            pdp = PartialDependenceDisplay.from_estimator(classifier, X_train, [0,1,2],target=0)
             fi = permutation_importance(classifier,X_test,y_test,n_repeats=10)
-            
-            y_pred,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
+            avgs = list(map(lambda item:item['average'],pdp.pd_results))
+            grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
+            for item in grids:
+                print(item)
+            y_pred,avgs,[item[0].tolist() for item in grids ], list(fi.importances)
         `;
         try {
             const { results, error } = await asyncRun(script, this.context);

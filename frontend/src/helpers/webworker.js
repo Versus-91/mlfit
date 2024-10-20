@@ -9,7 +9,7 @@ importScripts("https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js");
 async function loadPyodideAndPackages() {
   // eslint-disable-next-line no-undef
   self.pyodide = await loadPyodide();
-  await self.pyodide.loadPackage(["numpy", "statsmodels", "pandas", "xgboost"]);
+  await self.pyodide.loadPackage(["numpy", "matplotlib", "pandas"]);
 }
 let pyodideReadyPromise = loadPyodideAndPackages();
 
