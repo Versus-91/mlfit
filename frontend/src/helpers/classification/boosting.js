@@ -12,7 +12,8 @@ export default class Boosting extends ClassificationModel {
         }
         this.options = options
     }
-    async train(x, y, x_test, y_test) {
+    // eslint-disable-next-line no-unused-vars
+    async train(x, y, x_test, y_test, _, __, pdpIndex) {
         this.context = {
             X_train: x,
             y_train: y,
@@ -23,11 +24,12 @@ export default class Boosting extends ClassificationModel {
             eta: this.options.eta,
             estimators: this.options.estimators,
             seed: this.seed,
+            pdpIndex: pdpIndex
 
         };
         const script = `
 
-        from js import X_train,y_train,X_test,y_test,objective,max_depth,eta,estimators,seed
+        from js import X_train,y_train,X_test,y_test,objective,max_depth,eta,estimators,seed,pdpIndex
         from sklearn.inspection import partial_dependence
         from sklearn.inspection import permutation_importance
         from sklearn.ensemble import GradientBoostingClassifier
@@ -37,7 +39,7 @@ export default class Boosting extends ClassificationModel {
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
-        pdp_results = partial_dependence(model, X_train, [0])
+        pdp_results = partial_dependence(model, X_train, [pdpIndex])
         fi = permutation_importance(model,X_test,y_test,n_repeats=10)
         y_pred,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
 
