@@ -135,8 +135,10 @@
                 <div class="column is-6">
                     <div class="select">
                         <select name="pdp_variable" v-model="pdpFeature">
-                            <option v-for="feature in settings.features" :key="feature.name"> {{
-                                feature.name }}</option>
+                            <option
+                                v-for="feature in settings.features.filter(feature => feature.name != settings.target)"
+                                :key="feature.name"> {{
+                                    feature.name }}</option>
                         </select>
                     </div>
                     <button class="button" @click="updatePartialDependencePlot">update</button>
@@ -152,6 +154,7 @@
 
 <script>
 import { settingStore } from '@/stores/settings'
+import { ModelFactory } from "@/helpers/model_factory";
 
 export default {
 
@@ -163,11 +166,20 @@ export default {
     methods: {
         deleteTab() {
             this.$emit("delete-result", this.result.id)
-        }
+        }, async updatePartialDependencePlot() {
+            let model_factory = new ModelFactory();
+            let model = model_factory.createModel(this.result.snapshot.id, this.result.options);
+            await model.train(this.result.snapshot.x, this.result.snapshot.y,
+                this.result.snapshot.xt, this.result.snapshot.yt, this.result.snapshot.xFeatures, this.result.snapshot.categoricals,
+                [0, 1, 2]);
+            model.chartController.plotPDP(this.result.id, model.pdp_averages, model.pdp_grid, this.result.snapshot.labels, this.pdpFeature);
+
+        },
     },
     created() {
-        this.pdpFeature = this.settings.features[0].name
+        this.pdpFeature = this.settings.features.filter(feature => feature.name != this.settings.target)[0].name
     },
+
     data() {
         return {
             pdpFeature: null,

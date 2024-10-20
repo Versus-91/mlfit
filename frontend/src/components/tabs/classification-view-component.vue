@@ -1,6 +1,6 @@
 <template>
     <div class="columns is-multiline">
-        <div class="column is-12">
+        <div class="column is-12 mb-1">
             <b-message type="is-info " has-icon icon-pack="fas" class="has-text-left">
                 <p class="my-1 is-size-7">
                     <span>Dataset Name : {{ result.datasetName }} , </span>

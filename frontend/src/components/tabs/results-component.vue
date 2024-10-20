@@ -1,27 +1,23 @@
 <template>
-    <div v-if="this.settings.results?.length > 0">
-        <b-tabs v-model="settings.resultActiveTab">
-            <b-tab-item v-for="result in this.settings.results" :label="(result.id + 1) + '.' + result.name.toString()"
-                :key="result.id" ref="resultContents">
-                <classification-view-component @delete-result="deleteResult"
-                    :result="result" v-if="result.modelTask"></classification-view-component>
-                <regression-view-component @delete-result="deleteResult" :result="result" v-else>
-                </regression-view-component>
-                <div class="column is-12">
-                    <div class="table-container">
-                        <table :id="'predictions_table_' + result.id"
-                            class="table is-bordered is-hoverable is-narrow display is-size-7" width="100%">
-                        </table>
-                    </div>
+    <b-tabs v-model="settings.resultActiveTab" v-if="this.settings.results?.length > 0">
+        <b-tab-item v-for="result in this.settings.results" :label="(result.id + 1) + '.' + result.name.toString()"
+            :key="result.id" ref="resultContents">
+            <classification-view-component @delete-result="deleteResult" :result="result"
+                v-if="result.modelTask"></classification-view-component>
+            <regression-view-component @delete-result="deleteResult" :result="result" v-else>
+            </regression-view-component>
+            <div class="column is-12">
+                <div class="table-container">
+                    <table :id="'predictions_table_' + result.id"
+                        class="table is-bordered is-hoverable is-narrow display is-size-7" width="100%">
+                    </table>
                 </div>
-            </b-tab-item>
-        </b-tabs>
-    </div>
-    <div v-else>
-        <b-message type="is-danger" has-icon icon-pack="fas">
-            No result to show.
-        </b-message>
-    </div>
+            </div>
+        </b-tab-item>
+    </b-tabs>
+    <b-message type="is-danger" has-icon icon-pack="fas" v-else>
+        No result to show.
+    </b-message>
 </template>
 
 <script>

@@ -281,9 +281,9 @@ export default {
                 let model = model_factory.createModel(this.modelOption, this.modelConfigurations)
                 model.id = this.settings.getCounter
                 this.toggleTraining()
-                let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
+                let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, [0, 1]);
                 let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
-                console.log(this.modelConfigurations);
+                console.log(target);
 
                 this.settings.addResult({
                     id: model.id,

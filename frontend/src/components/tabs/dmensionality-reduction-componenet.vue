@@ -1,7 +1,5 @@
 <template>
     <section v-if="this.settings?.items.length > 2">
-        When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are
-        $$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
         <b-message title="Principle Component Analysis" type="is-info" :closable="false">
             <b-field>
                 <b-input v-model="pcaX" size="is-small" type="number" placeholder="X axis component"></b-input>

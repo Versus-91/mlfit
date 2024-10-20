@@ -13,7 +13,7 @@ export default class RandomForestRegressor extends RegressionModel {
         this.model = null;
 
     }
-    async train(x_train, y_train, x_test, y_test) {
+    async train(x_train, y_train, x_test, y_test, _, __, pdpIndex) {
         this.context = {
             X_train: x_train,
             y_train: y_train,
@@ -23,7 +23,7 @@ export default class RandomForestRegressor extends RegressionModel {
             max_features: this.options.features.value,
             num_estimators: this.options.estimators.value <= 0 || !this.options.estimators.value ? 100 : +this.options.estimators.value,
             max_depth: this.options.depth.value <= 0 ? 5 : +this.options.depth.value,
-            seed: this.seed
+            seed: this.seed,
         };
         const script = `
             from sklearn.model_selection import train_test_split
@@ -36,11 +36,10 @@ export default class RandomForestRegressor extends RegressionModel {
             model = RandomForestRegressor(criterion=rf_type,max_features = max_features,n_estimators=num_estimators,max_depth = max_depth, random_state=seed)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
-
-            pdp_results = partial_dependence(model, X_train, [0])
+            pdp_results = partial_dependence(model, X_train,[0,1])
             fi = permutation_importance(model,X_test,y_test,n_repeats=10)
             
-            y_pred,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
+            y_pred,pdp_results["average"],list(pdp_results['grid_values']), list(fi.importances)
             
         `;
         try {
@@ -48,6 +47,7 @@ export default class RandomForestRegressor extends RegressionModel {
             if (results) {
                 this.predictions = Array.from(results[0]);
                 this.pdp_averages = Array.from(results[1]);
+                console.log(this.pdp_averages);
                 this.pdp_grid = Array.from(results[2]);
                 this.importances = Array.from(results[3]);
                 return Array.from(results[0]);

@@ -4,7 +4,7 @@ import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import PCA from './dimensionality-reduction/pca';
 import { binarize } from './utils'
 import * as ss from "simple-statistics"
-import { schemeCategory10, interpolateBlues } from 'd3-scale-chromatic';
+import { schemeCategory10, interpolateYlGnBu } from 'd3-scale-chromatic';
 import { FeatureCategories } from "./settings";
 import { metrics as ClassificationMetric, encode_name } from './utils.js';
 import { metrics } from '@tensorflow/tfjs-vis';
@@ -14,7 +14,7 @@ import { tensorflow } from 'danfojs/dist/danfojs-base';
 export default class ChartController {
     constructor() {
         this.color_scheme = schemeCategory10;
-        this.color_scheme_sequential = interpolateBlues;
+        this.color_scheme_sequential = interpolateYlGnBu;
 
     }
 
@@ -679,6 +679,9 @@ export default class ChartController {
         var data = [trace1, trace2];
 
         Plotly.newPlot('pca_results_' + index, data, {
+            title: {
+                text: 'Principle Component Analysis of Predictions'
+            },
             hovermode: "closest",
             hoverlabel: { bgcolor: "#FFF" },
             showlegend: true,
@@ -1956,18 +1959,16 @@ export default class ChartController {
         let avgs = []
         importances.forEach(importance => {
             const importancesMean = importance.reduce((a, b) => a + b, 0)
-            avgs.push((importancesMean / importance.length) + 0.1)
+            avgs.push((importancesMean / importance.length))
         });
         let max = Math.max(...avgs)
         importances.forEach((importance, index) => {
-            console.log(importance / max);
-
             traces.push(
                 {
                     x: Array.from(importance),
                     type: 'box',
                     name: columns[index],
-                    marker: { color: this.color_scheme_sequential(avgs[index] / max) },
+                    marker: { color: this.color_scheme_sequential((avgs[index] / max) + 0.2) },
 
                 }
             )
