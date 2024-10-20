@@ -1,6 +1,5 @@
 <template>
     <div class="columns is-multiline">
-        {{ this.settings.currentTab }}
         <div class="column is-12">
             <b-message type="is-info " has-icon icon-pack="fas" class="has-text-left">
                 <p class="my-1 is-size-7">
