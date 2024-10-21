@@ -1,35 +1,16 @@
 import { RegressionModel } from "../regression_model";
 import { asyncRun } from "@/helpers/py-worker";
-const SVM_TYPES = {
-    C_SVC: '0', // C support vector classification
-    NU_SVC: '1', // NU support vector classification
-    ONE_CLASS: '2', // ONE CLASS classification
-    EPSILON_SVR: '3', // Epsilon support vector regression
-    NU_SVR: '4' // Nu support vector regression
-};
-
-
-const KERNEL_TYPES = {
-    LINEAR: '0',
-    POLYNOMIAL: '1',
-    RBF: '2', // Radial basis function
-    SIGMOID: '3',
-    PRECOMPUTED: '4'
-};
 export default class SupportVectorMachineRegression extends RegressionModel {
-    constructor(opt) {
-        super();
-        // eslint-disable-next-line no-unused-vars
-        this.options = {
-            kernel: KERNEL_TYPES[opt.kernel.value.toUpperCase()],
-            type: SVM_TYPES.C_SVC,
-            coef0: opt.bias.value,
+    constructor(opt, chartControler) {
+        super(chartControler);
+        let options = {
+            kernel: opt.kernel.value ?? "linear",
             gamma: opt.gamma.value,
             degree: opt.degree.value,
-            quiet: true
         }
+        this.options = options
     }
-    async train(x_train, y_train, x_test, y_test) {
+    async train(x_train, y_train, x_test, y_test, columns) {
 
         this.context = {
             X_train: x_train,
@@ -37,25 +18,29 @@ export default class SupportVectorMachineRegression extends RegressionModel {
             X_test: x_test,
             y_test: y_test,
             kernel: this.options.kernel,
-            coef: this.options.coef,
             gamma: this.options.gamma,
             degree: this.options.degree,
-            seed: this.seed
+            seed: this.seed,
+            features: [...Array(columns.length).keys()]
 
         };
         const script = `
         from sklearn import svm
-        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree,seed
-        from sklearn.inspection import partial_dependence
+        import matplotlib
+        matplotlib.use("AGG")
+        from js import X_train,y_train,X_test,y_test,kernel,gamma,degree,seed,features
+        from sklearn.inspection import PartialDependenceDisplay
         from sklearn.inspection import permutation_importance
 
-        model = svm.SVR(kernel=kernel,random_state = seed)
+        model = svm.SVR(kernel=kernel)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
-        pdp_results = partial_dependence(model, X_train, [0])
+        pdp = PartialDependenceDisplay.from_estimator(model, X_train, features)
         fi = permutation_importance(model,X_test,y_test,n_repeats=10)
-        y_pred,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
+        avgs = list(map(lambda item:item['average'],pdp.pd_results))
+        grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
+        y_pred,avgs,[item[0].tolist() for item in grids ], list(fi.importances)
     `;
         try {
             const { results, error } = await asyncRun(script, this.context);
@@ -77,6 +62,6 @@ export default class SupportVectorMachineRegression extends RegressionModel {
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
         this.chartController.PFIBoxplot(this.id, this.importances, columns);
-        this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns[0]);
+        this.chartController.plotPDPRegression(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns);
     }
 }

@@ -2052,7 +2052,64 @@ export default class ChartController {
 
             Plotly.newPlot(chartId, traces, layout, { responsive: true });
         });
+    }
+    plotPDPRegression(id, averages, grids, labels, columns) {
+        console.log('ssss');
 
+        id = 'pdp_plot_' + id;
+        let element = document.getElementById(id);
+        let chartContainer = document.createElement("div");
+        chartContainer.classList.add("column", "is-6");
+        let chartId = id + '_';
+        chartContainer.id = chartId
+        chartContainer.style.height = "400px";
+        element.after(chartContainer);
+        let traces = []
+
+        grids.forEach((grid, i) => {
+            averages[i].forEach((average, index) => {
+                traces.push(
+                    {
+                        x: grid,
+                        y: Array.from(average),
+                        mode: 'line',
+                        name: columns[i],
+                        marker: { color: this.indexToColor(i) }
+                    }
+                )
+            });
+        });
+        var layout = {
+            title: {
+                text: 'Partial Dependence Plot',
+                font: {
+                    size: 14
+                },
+                xref: 'paper',
+                x: 0.05,
+            },
+            legend: { "orientation": "h" },
+
+            font: {
+                size: 10
+            },
+            autosize: true,
+            xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+            },
+            yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: {
+                    text: 'Feature',
+                }
+            },
+        };
+
+        Plotly.newPlot(chartId, traces, layout, { responsive: true });
     }
     drawAutoencoder(points, xIndex = 1, yIndex = 0, labels) {
         labels = labels.map(l => l[0])
