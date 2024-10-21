@@ -41,8 +41,6 @@ export default class RandomForest extends ClassificationModel {
             fi = permutation_importance(classifier,X_test,y_test,n_repeats=10)
             avgs = list(map(lambda item:item['average'],pdp.pd_results))
             grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
-            for item in grids:
-                print(item)
             y_pred,avgs,[item[0].tolist() for item in grids ], list(fi.importances)
         `;
         try {

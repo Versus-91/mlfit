@@ -31,16 +31,20 @@ export default class SupportVectorMachine extends ClassificationModel {
         const script = `
         from sklearn import svm
         from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree,pdpIndex,seed
-        from sklearn.inspection import partial_dependence
+        import matplotlib
+        matplotlib.use("AGG")
+        from sklearn.inspection import PartialDependenceDisplay
         from sklearn.inspection import permutation_importance
 
         model = svm.SVC(kernel=kernel,random_state = seed)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
-        pdp_results = partial_dependence(model, X_train, [pdpIndex])
+        pdp = PartialDependenceDisplay.from_estimator(model, X_train, [0,1,2],target=0)
         fi = permutation_importance(model,X_test,y_test,n_repeats=10)
-        y_pred,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
+        avgs = list(map(lambda item:item['average'],pdp.pd_results))
+        grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
+        y_pred,avgs,[item[0].tolist() for item in grids ], list(fi.importances)
     `;
         try {
             const { results, error } = await asyncRun(script, this.context);
