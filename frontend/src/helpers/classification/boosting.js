@@ -10,7 +10,9 @@ export default class Boosting extends ClassificationModel {
             eta: +opt.eta.value,
             estimators: opt.estimators.value ?? 200
         }
-        this.options = options
+        this.options = options;
+        this.helpSectionId = 'cart_help';
+
     }
     // eslint-disable-next-line no-unused-vars
     async train(x, y, x_test, y_test, _, __, pdpIndex) {

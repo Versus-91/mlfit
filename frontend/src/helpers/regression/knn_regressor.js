@@ -7,7 +7,9 @@ export default class KNNRegressor extends RegressionModel {
     constructor(options) {
         super();
         this.options = options
-        this.model = null
+        this.model = null;
+        this.helpSectionId = 'knn_help';
+
 
     }
     async fit(x_train, y_train, metric, k = 3) {

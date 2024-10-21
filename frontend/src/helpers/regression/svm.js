@@ -8,7 +8,9 @@ export default class SupportVectorMachineRegression extends RegressionModel {
             gamma: opt.gamma.value,
             degree: opt.degree.value,
         }
-        this.options = options
+        this.options = options;
+        this.helpSectionId = 'svm_help';
+
     }
     async train(x_train, y_train, x_test, y_test, columns) {
 

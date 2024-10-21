@@ -5,7 +5,9 @@ export default class NaiveBayes extends ClassificationModel {
     constructor(options) {
         super();
         this.options = options
-        this.model = null
+        this.model = null;
+        this.helpSectionId = 'naive_bayes_help';
+
     }
     // eslint-disable-next-line no-unused-vars
     async train(x_train, y_train, x_test, y_test, _, __, pdpIndex) {

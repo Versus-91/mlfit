@@ -11,7 +11,8 @@ export default class SupportVectorMachine extends ClassificationModel {
             gamma: opt.gamma.value,
             degree: opt.degree.value,
             quiet: true
-        }
+        };
+        this.helpSectionId = 'svm_help';
     }
     // eslint-disable-next-line no-unused-vars
     async train(x_train, y_train, x_test, y_test, _, __, pdpIndex) {

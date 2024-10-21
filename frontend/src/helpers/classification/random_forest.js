@@ -5,6 +5,7 @@ import { ClassificationModel } from "../model";
 export default class RandomForest extends ClassificationModel {
     constructor(options, chartController) {
         super(chartController)
+        this.helpSectionId = 'cart_help';
         this.options = options;
         this.model = null;
         this.predictions = []

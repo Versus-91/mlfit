@@ -11,6 +11,7 @@ export default class RandomForestRegressor extends RegressionModel {
         super();
         this.options = options;
         this.model = null;
+        this.helpSectionId = 'cart_help';
 
     }
     async train(x_train, y_train, x_test, y_test, columns, __, pdpIndex) {

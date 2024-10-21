@@ -287,7 +287,7 @@ export default {
 
                 this.settings.addResult({
                     id: model.id,
-
+                    helpSectionId: model.helpSectionId,
                     snapshot: {
                         x: x_train.values,
                         y: encoded_y,

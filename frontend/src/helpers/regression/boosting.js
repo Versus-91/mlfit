@@ -13,7 +13,9 @@ export default class BoostingRegression extends RegressionModel {
             eta: +opt.eta.value,
             estimators: opt.estimators.value ?? 200
         }
-        this.options = options
+        this.options = options;
+        this.helpSectionId = 'cart_help';
+
     }
     async train(x, y, x_test, y_test, columns) {
         this.context = {
