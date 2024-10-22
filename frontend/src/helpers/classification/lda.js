@@ -4,11 +4,8 @@ export default class DiscriminantAnalysis extends ClassificationModel {
     constructor(options) {
         super();
         this.options = options
-        this.context = {
-            X_train: [0.8, 0.4, 1.2, 3.7, 2.6, 5.8],
-            y_train: [0.8, 0.4, 1.2, 3.7, 2.6, 5.8],
-            X_test: [0.8, 0.4, 1.2, 3.7, 2.6, 5.8],
-        };
+        this.helpSectionId = 'discriminant_analysis_help';
+
     }
     async train(x, y, x_test, y_test, _, __, pdpIndex) {
         this.context = {

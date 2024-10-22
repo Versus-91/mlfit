@@ -16,6 +16,8 @@ export class ClassificationModel {
         this.tables = [];
         this.seed = 1;
         this.id = null;
+        this.helpSectionId = 'help';
+
     }
     async train(x, y, x_test, y_test) {
         throw new Error('Not implemented', x, y, x_test, y_test)

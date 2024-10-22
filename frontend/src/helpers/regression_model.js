@@ -13,6 +13,8 @@ export class RegressionModel {
         this.id = null;
         this.plots = [];
         this.tables = [];
+        this.helpSectionId = 'help';
+
     }
     async train(x, y, x_test, y_test) {
         throw new Error('Not implemented', x, y, x_test, y_test)

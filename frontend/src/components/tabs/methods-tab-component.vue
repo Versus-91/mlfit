@@ -1,6 +1,6 @@
 <template>
     <section class="has-text-left content">
-        <h4 class="title is-medium is-5">Classification metrics
+        <h4 class="title is-medium is-5" id="help">Classification metrics
         </h4>
         <p>
             In a context of a binary classification, here are the main metrics that are important to track in order to
@@ -258,6 +258,18 @@
             (k) neighbors from the training set. It can be used in both classification and regression settings.
         </p>
         <img src="/knn.png" class="image">
+
+
+        <h4 class="title is-medium" id="discriminant_analysis_help"> Gaussian Discriminant Anallysis </h4>
+        <p>
+            Gaussian Discriminant Analysis
+            SettingThe Gaussian Discriminant Analysis assumes that
+            (y) and (x ∣ y = 0) and (x|y = 1) are such that:
+            <vue-mathjax
+                :formula="'$$ y \\sim Bernoulli(\\phi)   ,   x|y = 0 \\sim \\mathcal{N(\\mu_0,\\Sigma)}$$'"></vue-mathjax>
+
+        </p>
+
     </section>
 
 
