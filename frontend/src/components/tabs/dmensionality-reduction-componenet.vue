@@ -99,7 +99,6 @@ export default {
         },
         async autoEncoder() {
             const model = tensorflow.sequential();
-            tensorflow.random.set_seed(42)
             let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
             let values = this.settings.df.loc({ columns: numericColumns }).values
             const encoder = tensorflow.layers.dense({
