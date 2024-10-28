@@ -29,6 +29,8 @@
                 <p class="ml-2 my-1 subtitle is-size-7 ">MSE : {{ result.metrics[0].toFixed(2) }}</p>
                 <p class="ml-2 my-1 subtitle is-size-7 ">R2 : {{ result.metrics[1].toFixed(2) }}</p>
                 <button class="button is-link is-outlined is-small" @click="deleteTab()">Delete </button>
+                <button class="button is-link is-outlined is-small"
+                    @click="toggleHelp(result.helpSectionId)">Help</button>
 
             </b-message>
         </div>
@@ -164,6 +166,13 @@ export default {
     },
     name: 'regression-view-component',
     methods: {
+        toggleHelp(id) {
+            this.settings.setActiveTab(3);
+            setTimeout(() => {
+                let el = document.getElementById(id);
+                el.scrollIntoView({ behavior: 'smooth' })
+            }, 500);
+        },
         deleteTab() {
             this.$emit("delete-result", this.result.id)
         },
@@ -173,7 +182,7 @@ export default {
             await model.train(this.result.snapshot.x, this.result.snapshot.y,
                 this.result.snapshot.xt, this.result.snapshot.yt, this.result.snapshot.xFeatures, this.result.snapshot.categoricals,
                 [0, 1, 2]);
-            model.chartController.plotPDPRegression(this.result.id, model.pdp_averages, model.pdp_grid, this.result.snapshot.labels, this.pdpFeature);
+            model.chartController.plotPDPRegression(this.result.id, model.pdp_averages, model.pdp_grid, this.result.snapshot.labels, this.result.snapshot.xFeatures, this.result.snapshot.categoricals);
 
         },
     },

@@ -10,6 +10,7 @@ import { metrics as ClassificationMetric, encode_name } from './utils.js';
 import { metrics } from '@tensorflow/tfjs-vis';
 import { scale_data } from './utils';
 import { tensorflow } from 'danfojs/dist/danfojs-base';
+import { MinMaxScaler } from 'danfojs/dist/danfojs-base';
 
 export default class ChartController {
     constructor() {
@@ -2053,31 +2054,61 @@ export default class ChartController {
             Plotly.newPlot(chartId, traces, layout, { responsive: true });
         });
     }
-    plotPDPRegression(id, averages, grids, labels, columns) {
-        console.log('ssss');
-
+    plotPDPRegression(id, averages, grids, labels, columns, categoricals) {
         id = 'pdp_plot_' + id;
         let element = document.getElementById(id);
         let chartContainer = document.createElement("div");
         chartContainer.classList.add("column", "is-6");
-        let chartId = id + '_';
+        const chartId = id + '_number';
         chartContainer.id = chartId
         chartContainer.style.height = "400px";
         element.after(chartContainer);
+        element = document.getElementById(id);
+        chartContainer = document.createElement("div");
+        chartContainer.classList.add("column", "is-6");
+        const chartIdCategorical = id + '_class';
+        chartContainer.id = chartIdCategorical
+        chartContainer.style.height = "400px";
+        element.after(chartContainer);
         let traces = []
-
+        let traces_categoricals = []
+        let allxs = []
         grids.forEach((grid, i) => {
-            averages[i].forEach((average, index) => {
-                traces.push(
-                    {
-                        x: grid,
-                        y: Array.from(average),
-                        mode: 'line',
-                        name: columns[i],
-                        marker: { color: this.indexToColor(i) }
-                    }
-                )
-            });
+            if (!categoricals.includes(columns[i])) {
+                allxs = allxs.concat(grid)
+            }
+        })
+        let scaler = new MinMaxScaler();
+        scaler.fit(allxs)
+        grids.forEach((grid, i) => {
+            if (!categoricals.includes(columns[i])) {
+                averages[i].forEach((average, index) => {
+                    let xs = scaler.transform(grid)
+
+                    traces.push(
+                        {
+                            x: xs,
+                            y: Array.from(average),
+                            mode: 'line',
+                            name: columns[i],
+                            marker: { color: this.indexToColor(i) }
+                        }
+                    )
+                });
+            } else {
+                averages[i].forEach((average, index) => {
+                    traces_categoricals.push(
+                        {
+                            x: grid,
+                            y: Array.from(average),
+                            type: 'bar',
+                            name: columns[i],
+                            marker: { color: this.indexToColor(i), opacity: 0.7 }
+                        }
+                    )
+                });
+            }
+
         });
         var layout = {
             title: {
@@ -2108,8 +2139,38 @@ export default class ChartController {
                 }
             },
         };
-
         Plotly.newPlot(chartId, traces, layout, { responsive: true });
+        var layout2 = {
+            title: {
+                text: 'Partial Dependence Plot',
+                font: {
+                    size: 14
+                },
+                xref: 'paper',
+                x: 0.05,
+            },
+            legend: { "orientation": "h" },
+            barmode: 'group', font: {
+                size: 10
+            },
+            autosize: true,
+            xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+            },
+            bargap: 0.05,
+            yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: {
+                    text: 'Feature',
+                }
+            },
+        };
+
+        Plotly.newPlot(chartIdCategorical, traces_categoricals, layout2);
     }
     drawAutoencoder(points, xIndex = 1, yIndex = 0, labels) {
         labels = labels.map(l => l[0])

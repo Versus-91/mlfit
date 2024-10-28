@@ -316,7 +316,7 @@ export default {
                     this.settings.setResultActiveTab(model.id);
                     window.dispatchEvent(new Event('resize'));
                 }, 500);
-                await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, x_train.columns)
+                await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, x_train.columns, categoricalFeatures)
                 this.settings.increaseCounter();
                 this.toggleTraining();
             } catch (error) {
