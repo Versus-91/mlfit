@@ -48,11 +48,13 @@ export default class PolynomialRegression extends RegressionModel {
                     add_powers <- function(df, degree,columns) {
                             new_df <- df  # Copy the original data frame
                             for (col in columns) {
-                                new_col_name <- paste0(col, "_", degree)
-                                new_df[[new_col_name]] <- df[[col]]^degree
+                                for (d in 2:degree){
+                                    new_col_name <- paste0(col, "_", d)
+                                    new_df[[new_col_name]] <- df[[col]]^d
+                                }
                             }
                             return(new_df)
-                            }
+                        }
                         
                     x <- as.matrix(xx)  
                     colnames(x) <- names
@@ -242,7 +244,18 @@ export default class PolynomialRegression extends RegressionModel {
         min_ols_columns.unshift('intercept');
         let se_ols_columns = this.summary['best_fit_1se'].names;
         se_ols_columns.unshift('intercept');
+        function isNumeric(value) {
+            return /^-?\d+$/.test(value);
+        }
 
+        cols = cols.map(column => {
+            let parts = column.split('_');
+            if (isNumeric(parts[parts.length - 1])) {
+                parts[parts.length - 1] = `<sup>${parts[parts.length - 1]}</sup>`
+                return parts.join('.')
+            }
+            return column;
+        })
         for (let i = 0; i < cols.length; i++) {
             let row = [];
             row.push(cols[i])
@@ -276,8 +289,9 @@ export default class PolynomialRegression extends RegressionModel {
         reg_plot.layout['showlegend'] = true;
         reg_plot.layout['autosize'] = true;
         reg_plot.layout['responsive'] = true;
-
+        reg_plot.layout.xaxis['side'] = 'top';
         reg_plot.layout.legend = {
+            orientation: 'h',
             font: {
                 family: 'sans-serif',
                 size: 8,
@@ -291,6 +305,7 @@ export default class PolynomialRegression extends RegressionModel {
             traceorder: 'normal',
             font: {
                 family: 'sans-serif',
+                size: 8,
                 color: '#000'
             },
         };
