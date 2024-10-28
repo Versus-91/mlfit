@@ -1999,7 +1999,7 @@ export default class ChartController {
 
         Plotly.newPlot('pfi_boxplot_' + id, traces, layout, { responsive: true });
     }
-    plotPDP(id, averages, grids, labels, column) {
+    plotPDP(id, averages, grids, labels, columns, categorical_columns) {
         id = 'pdp_plot_' + id
         grids.forEach((grid, i) => {
             let element = document.getElementById(id);
@@ -2010,20 +2010,34 @@ export default class ChartController {
             chartContainer.style.height = "400px";
             element.after(chartContainer)
             let traces = []
+            const isCategorical = categorical_columns.includes(columns[i])
             averages[i].forEach((average, index) => {
-                traces.push(
-                    {
-                        x: grid,
-                        y: Array.from(average),
-                        mode: 'line',
-                        name: labels[index],
-                        marker: { color: this.indexToColor(index) }
-                    }
-                )
+                if (isCategorical) {
+                    traces.push(
+                        {
+                            x: grid,
+                            y: Array.from(average),
+                            type: 'bar',
+                            name: labels[index],
+                            marker: { color: this.indexToColor(index) }
+                        }
+                    )
+                } else {
+                    traces.push(
+                        {
+                            x: grid,
+                            y: Array.from(average),
+                            mode: 'line',
+                            name: labels[index],
+                            marker: { color: this.indexToColor(index) }
+                        }
+                    )
+                }
+
             });
             var layout = {
                 title: {
-                    text: 'Partial Dependence Plot - ' + column,
+                    text: 'Partial Dependence Plot - ' + columns[i],
                     font: {
                         size: 14
                     },

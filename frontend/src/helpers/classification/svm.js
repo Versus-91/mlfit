@@ -15,7 +15,7 @@ export default class SupportVectorMachine extends ClassificationModel {
         this.helpSectionId = 'svm_help';
     }
     // eslint-disable-next-line no-unused-vars
-    async train(x_train, y_train, x_test, y_test, _, __, pdpIndex) {
+    async train(x_train, y_train, x_test, y_test, columns, __, pdpIndex) {
 
         this.context = {
             X_train: x_train,
@@ -27,11 +27,13 @@ export default class SupportVectorMachine extends ClassificationModel {
             coef: this.options.coef,
             gamma: this.options.gamma,
             degree: this.options.degree,
-            seed: this.seed
+            seed: this.seed,
+            features: [...Array(columns.length).keys()]
+
         };
         const script = `
         from sklearn import svm
-        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree,pdpIndex,seed
+        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree,features,seed
         import matplotlib
         matplotlib.use("AGG")
         from sklearn.inspection import PartialDependenceDisplay
@@ -41,7 +43,7 @@ export default class SupportVectorMachine extends ClassificationModel {
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
-        pdp = PartialDependenceDisplay.from_estimator(model, X_train, [0,1,2],target=0)
+        pdp = PartialDependenceDisplay.from_estimator(model, X_train, features,target=0)
         fi = permutation_importance(model,X_test,y_test,n_repeats=10)
         avgs = list(map(lambda item:item['average'],pdp.pd_results))
         grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
@@ -64,9 +66,9 @@ export default class SupportVectorMachine extends ClassificationModel {
             );
         }
     }
-    async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns) {
+    async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns,categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
         this.chartController.PFIBoxplot(this.id, this.importances, columns);
-        this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns[0]);
+        this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns,categorical_columns);
     }
 }

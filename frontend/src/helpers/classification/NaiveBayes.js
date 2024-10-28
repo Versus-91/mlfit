@@ -10,7 +10,7 @@ export default class NaiveBayes extends ClassificationModel {
 
     }
     // eslint-disable-next-line no-unused-vars
-    async train(x_train, y_train, x_test, y_test, _, __, pdpIndex) {
+    async train(x_train, y_train, x_test, y_test, columns, __, pdpIndex) {
         // const priors = this.options.priors.value ? this.options.priors?.value.split(',').map((m) => parseFloat(m)) : undefined
         this.context = {
             nb_type: this.options.type.value === "Multinomial" ? 0 : this.options.type.value === "Gaussian" ? 1 : 2,
@@ -21,14 +21,16 @@ export default class NaiveBayes extends ClassificationModel {
             y_train: y_train,
             y_test: y_test,
             X_test: x_test,
-            pdpIndex: pdpIndex
+            pdpIndex: pdpIndex,
+            features: [...Array(columns.length).keys()]
+
         };
         const script = `
             from sklearn.naive_bayes import BernoulliNB
             from sklearn.naive_bayes import MultinomialNB
             import matplotlib
             matplotlib.use("AGG")
-            from js import X_train,y_train,X_test,nb_type,priors,smoothing,y_test,num_classes,pdpIndex
+            from js import X_train,y_train,X_test,nb_type,priors,smoothing,y_test,num_classes,features
             from sklearn.naive_bayes import GaussianNB
             from sklearn.inspection import PartialDependenceDisplay
             from sklearn.inspection import permutation_importance
@@ -49,7 +51,7 @@ export default class NaiveBayes extends ClassificationModel {
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
             probas = model.predict_proba(X_test)
-            pdp = PartialDependenceDisplay.from_estimator(model, X_train, [0,1,2],target=0)
+            pdp = PartialDependenceDisplay.from_estimator(model, X_train, features,target=0)
             fi = permutation_importance(model,X_test,y_test,n_repeats=10)
             tprs=[]
             fprs=[]
@@ -89,10 +91,10 @@ export default class NaiveBayes extends ClassificationModel {
         }
         return this.predictions;
     }
-    async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns) {
+    async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
         this.chartController.PFIBoxplot(this.id, this.importances, columns);
-        this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns[0]);
+        this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
         this.chartController.plotROC(this.id, this.fpr, this.tpr, uniqueLabels);
 
     }
