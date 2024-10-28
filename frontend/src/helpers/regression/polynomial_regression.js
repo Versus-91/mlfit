@@ -414,7 +414,6 @@ export default class PolynomialRegression extends RegressionModel {
         current.ui.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + + current.id, 'OLS min residuals')
         current.ui.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + + current.id, 'OLS 1se residuals')
         this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
-        window.dispatchEvent(new Event('resize'));
     }
 
 }

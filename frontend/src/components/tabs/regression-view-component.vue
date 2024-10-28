@@ -34,91 +34,94 @@
 
             </b-message>
         </div>
-        <div class="columns is-multiline is-gapless"
-            v-if="result.name === 'Linear Regression' || result.name === 'Polynomial Regression'">
-            <div class="column is-7">
-                <div class="table-container">
-                    <table
-                        class="table has-text-centered nowrap is-striped is-bordered is-narrow is-hoverable is-size-7"
-                        :id="'metrics_table_' + result.id">
-                        <thead>
-                            <tr>
-                                <th colspan="1"></th>
-                                <th colspan="3">OLS</th>
-                                <th colspan="3">lambda min</th>
-                                <th colspan="3">lambda 1se</th>
-                            </tr>
-                            <tr>
-                                <th>name</th>
-                                <th>coef</th>
-                                <th>st.d.</th>
-                                <th><i>p</i>-value</th>
-                                <th>coef</th>
-                                <th>st.d.</th>
-                                <th><i>p</i>-value</th>
-                                <th>coef</th>
-                                <th>st.d.</th>
-                                <th><i>p</i>-value</th>
-                            </tr>
-                        </thead>
-                        <tfoot class="has-text-centered" style=" font-weight: normal">
-                            <tr>
-                                <th></th>
-                                <th colspan="3"></th>
-                                <th colspan="3"></th>
-                                <th colspan="3"></th>
+        <div class="column is-12" v-if="result.name === 'Linear Regression' || result.name === 'Polynomial Regression'">
+            <div class="columns is-multiline">
 
-                            </tr>
-                        </tfoot>
-                    </table>
+                <div class="column is-7">
+                    <div class="table-container">
+                        <table
+                            class="table has-text-centered nowrap is-striped is-bordered is-narrow is-hoverable is-size-7"
+                            :id="'metrics_table_' + result.id">
+                            <thead>
+                                <tr>
+                                    <th colspan="1"></th>
+                                    <th colspan="3">OLS</th>
+                                    <th colspan="3">lambda min</th>
+                                    <th colspan="3">lambda 1se</th>
+                                </tr>
+                                <tr>
+                                    <th>name</th>
+                                    <th>coef</th>
+                                    <th>st.d.</th>
+                                    <th><i>p</i>-value</th>
+                                    <th>coef</th>
+                                    <th>st.d.</th>
+                                    <th><i>p</i>-value</th>
+                                    <th>coef</th>
+                                    <th>st.d.</th>
+                                    <th><i>p</i>-value</th>
+                                </tr>
+                            </thead>
+                            <tfoot class="has-text-centered" style=" font-weight: normal">
+                                <tr>
+                                    <th></th>
+                                    <th colspan="3"></th>
+                                    <th colspan="3"></th>
+                                    <th colspan="3"></th>
+
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
-            </div>
-            <div class="column is-5 mt-4" :id="'parameters_plot_' + result.id">
-            </div>
-            <div class="column is-12" :id="'metrics_' + result.id">
+                <div class="column is-5" :id="'parameters_plot_' + result.id" width="100%">
+                </div>
+                <!-- <div class="column is-12" :id="'metrics_' + result.id">
+            </div> -->
+
+                <div class="column is-6" :id="'errors_' + result.id" width="100%" style="height:250px">
+                </div>
+                <div class="column is-6" :id="'regularization_' + result.id" width="100%" style="height:250px">
+                </div>
+                <div class="column is-4">
+                    <div :id="'regression_y_yhat_' + result.id" width="100%" style="height:200px">
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div :id="'regression_y_yhat_min_' + result.id" width="100%" style="height:200px">
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div :id="'regression_y_yhat_1se_' + result.id" width="100%" style="height:200px">
+                    </div>
+                </div>
+
+                <div class="column is-4">
+                    <div :id="'regression_residual_' + result.id" width="100%" style="height:200px">
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div :id="'regression_residual_min_' + result.id" width="100%" style="height:200px">
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div :id="'regression_residual_1se_' + result.id" width="100%" style="height:200px">
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div :id="'qqplot_ols_' + result.id" width="100%" style="height:200px">
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div :id="'qqplot_min_' + result.id" width="100%" style="height:200px">
+                    </div>
+                </div>
+                <div class="column is-4">
+                    <div :id="'qqplot_1se_' + result.id" width="100%" style="height:200px">
+                    </div>
+                </div>
             </div>
 
-            <div class="column is-6" :id="'errors_' + result.id" width="100%" style="height:250px">
-            </div>
-            <div class="column is-6" :id="'regularization_' + result.id" width="100%" style="height:250px">
-            </div>
-            <div class="column is-4">
-                <div :id="'regression_y_yhat_' + result.id" width="100%" style="height:200px">
-                </div>
-            </div>
-            <div class="column is-4">
-                <div :id="'regression_y_yhat_min_' + result.id" width="100%" style="height:200px">
-                </div>
-            </div>
-            <div class="column is-4">
-                <div :id="'regression_y_yhat_1se_' + result.id" width="100%" style="height:200px">
-                </div>
-            </div>
-
-            <div class="column is-4">
-                <div :id="'regression_residual_' + result.id" width="100%" style="height:200px">
-                </div>
-            </div>
-            <div class="column is-4">
-                <div :id="'regression_residual_min_' + result.id" width="100%" style="height:200px">
-                </div>
-            </div>
-            <div class="column is-4">
-                <div :id="'regression_residual_1se_' + result.id" width="100%" style="height:200px">
-                </div>
-            </div>
-            <div class="column is-4">
-                <div :id="'qqplot_ols_' + result.id" width="100%" style="height:200px">
-                </div>
-            </div>
-            <div class="column is-4">
-                <div :id="'qqplot_min_' + result.id" width="100%" style="height:200px">
-                </div>
-            </div>
-            <div class="column is-4">
-                <div :id="'qqplot_1se_' + result.id" width="100%" style="height:200px">
-                </div>
-            </div>
         </div>
         <div class="column is-12" v-else>
             <div class="columns is-multiline">
