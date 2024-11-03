@@ -133,6 +133,7 @@ export default {
             if (processdDataset.length > DATASET_SIZE) {
                 processdDataset = processdDataset.slice(0, DATASET_SIZE)
             }
+            this.settings.setRawData(processdDataset);
             let dataFrame = new DataFrame(processdDataset)
             return dataFrame
         },

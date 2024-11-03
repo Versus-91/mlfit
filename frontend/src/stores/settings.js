@@ -5,6 +5,7 @@ export const settingStore = defineStore({
     state: () => ({
         counter: 0,
         df: {},
+        rawData: {},
         features: [],
         transformations: [],
         results: [],
@@ -33,6 +34,9 @@ export const settingStore = defineStore({
         },
         getDataset: (state) => {
             return state.df;
+        },
+        getRawData: (state) => {
+            return state.rawData;
         },
         currentTab: (state) => {
             return state.activeTab
@@ -68,6 +72,9 @@ export const settingStore = defineStore({
         },
         setDataframe(data) {
             this.df = data;
+        },
+        setRawData(data) {
+            this.rawData = data;
         },
         addFeature(feature) {
             let index = this.features.findIndex(m => m.name === feature.name);

@@ -284,6 +284,10 @@ export function scale_data(dataset, column, normalization_type) {
 
 
         switch (normalization_type) {
+            case "0":
+                {
+                    break;
+                }
             case "1":
                 {
                     let scaler = new MinMaxScaler()
@@ -322,7 +326,7 @@ export function applyDataTransformation(dataset, column_names, transformations) 
     for (let i = 0; i < column_names.length; i++) {
         const column = column_names[i];
         let transformation = transformations.find(transformation => transformation.name === column)
-        if (transformation && transformation !== "0") {
+        if (transformation) {
             scale_data(dataset, column, transformation.scaler.toString())
         }
     }

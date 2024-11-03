@@ -1983,26 +1983,30 @@ export default class ChartController {
                 xref: 'paper',
                 x: 0.05,
             },
-            autosize: true,
             legend: { "orientation": "h" },
             xaxis: {
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
+
             },
             yaxis: {
                 linecolor: 'black',
                 linewidth: 1,
-                mirror: true
+                mirror: true,
+                automargin: true,
+
             },
         };
 
         Plotly.newPlot('pfi_boxplot_' + id, traces, layout, { responsive: true });
     }
     plotPDP(id, averages, grids, labels, columns, categorical_columns) {
+        let pfiChartId = 'pfi_boxplot_' + id;
         id = 'pdp_plot_' + id
+
         grids.forEach((grid, i) => {
-            let element = document.getElementById(id);
+            let element = document.getElementById(pfiChartId);
             let chartContainer = document.createElement("div");
             chartContainer.classList.add("column", "is-6");
             let chartId = id + '_' + i;
@@ -2069,21 +2073,23 @@ export default class ChartController {
         });
     }
     plotPDPRegression(id, averages, grids, labels, columns, categoricals) {
-        id = 'pdp_plot_' + id;
-        let element = document.getElementById(id);
+        let pfiChartId = 'pfi_boxplot_' + id;
+        let element = document.getElementById(pfiChartId);
         let chartContainer = document.createElement("div");
         chartContainer.classList.add("column", "is-6");
         const chartId = id + '_number';
         chartContainer.id = chartId
         chartContainer.style.height = "400px";
         element.after(chartContainer);
-        element = document.getElementById(id);
+        element = document.getElementById(chartId);
+
         chartContainer = document.createElement("div");
         chartContainer.classList.add("column", "is-6");
         const chartIdCategorical = id + '_class';
         chartContainer.id = chartIdCategorical
         chartContainer.style.height = "400px";
         element.after(chartContainer);
+
         let traces = []
         let traces_categoricals = []
         let allxs = []
