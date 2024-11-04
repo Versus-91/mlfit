@@ -29,7 +29,7 @@
                             </div>
                         </b-message>
                         <section>
-                            <scatterplot-matrix-component v-if="this.settings.df"></scatterplot-matrix-component>
+                            <scatterplot-matrix-component :dataObj="this.settings.df"></scatterplot-matrix-component>
                         </section>
                         <section>
                             <div class="column is-12"> <button class="button is-success" :disabled="loading"

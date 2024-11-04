@@ -35,6 +35,7 @@ export default {
     name: 'ScatterplotMatrixComponent',
     props: {
         msg: String,
+        dataObj: {}
     },
     data() {
         return {
@@ -42,7 +43,7 @@ export default {
             ScaleOptions: ScaleOptions,
             features: [],
             df: null,
-
+            rawData: null,
         }
     },
     methods: {
@@ -87,7 +88,28 @@ export default {
                 scaler: 0
             }
         })
-        this.dispalySPLOM(this.settings.df?.copy())
+        this.dispalySPLOM(this.df)
+    },
+    watch: {
+        dataObj: function () {
+            this.df = new DataFrame(this.settings.rawData);
+            let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(function (column) {
+                return { 'name': column.name, type: column.type }
+            });
+            let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1).map(function (column) {
+                return { 'name': column.name, type: column.type }
+            })
+            let features = numericColumns.concat(categorical_columns);
+            this.features = features.map((feature, i) => {
+                return {
+                    id: i,
+                    name: feature.name,
+                    type: feature.type,
+                    scaler: 0
+                }
+            })
+            this.dispalySPLOM(this.df)
+        }
     },
     computed: {
         column_width: {
@@ -96,6 +118,7 @@ export default {
             }
         }
     }
+
 }
 </script>
 
