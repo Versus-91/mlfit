@@ -46,13 +46,13 @@ export default class LinearRegression extends ClassificationModel {
                     library(dplyr)
                     library(ggrepel)
                     library(modelsummary)
+                    library(jsonlite)
                     library(glmnet)
-
+                    set.seed(123)
                     # Select all columns except the first as predictors. 
                     x <- as.matrix(xx)  
                     colnames(x) <- names
                     scale_df <- as.data.frame(x)
-                    y <- as.factor(y)
                     cols_to_scale <- setdiff(names, categorical_columns)
                     scale_df[cols_to_scale] <- scale(scale_df[cols_to_scale])
                     if(is_lasso){
@@ -75,108 +75,82 @@ export default class LinearRegression extends ClassificationModel {
                     geom_vline(xintercept=c(cvfit$lambda.1se,cvfit$lambda.min),
                                 linetype="dashed")+
                     theme_bw()
-
- 
-                    list(plotly_json(p, pretty = FALSE))
+                    colnames(x_test) <- names
+                    model <- nnet::multinom(y ~ . , data = as.data.frame(x))
+                    s <- summary(model)
+                    coefs <- s$coefficients
+                    stds <- s$standard.errors
+                    z_scores <- coefs / stds
+                    p_values <- 2 * (1 - pnorm(abs(z_scores)))
+                    preds <- predict(model,newdata=as.data.frame(x_test))
+                    preds_probs <- predict(model,type = 'probs',newdata=as.data.frame(x_test))
+                    print(coefs)
+                    list(
+                    plotly_json(p, pretty = FALSE)
+                    ,rownames(coefs)
+                    ,toJSON(coefs,pretty = TRUE)
+                    ,toJSON(stds,pretty = TRUE)
+                    ,toJSON(z_scores,pretty = TRUE)
+                    ,toJSON(p_values,pretty = TRUE)
+                    ,preds_probs
+                    ,preds)
                     `);
         let results = await plotlyData.toArray()
 
         this.summary = {
-            params: await results[2].toArray(),
-            bse: await results[4].toArray(),
-            pvalues: await results[3].toArray(),
-            predictions: await results[5].toArray(),
-            predictions1se: await results[21].toArray(),
-            predictionsmin: await results[22].toArray(),
-            residuals_ols: await results[18].toArray(),
-            residuals_1se: await results[19].toArray(),
-            residuals_min: await results[20].toArray(),
-            aic: await results[6].toNumber(),
-            bic: await results[7].toNumber(),
-            r2: await results[8].toNumber(),
-            best_fit_min: {
-                r2: await results[25].toNumber(),
-                aic: await results[26].toNumber(),
-                names: await results[16].toArray(),
-                coefs: await results[9].toArray(),
-                bse: await results[11].toArray(),
-                pvalues: await results[10].toArray(),
-            },
-            best_fit_1se: {
-                r2: await results[23].toNumber(),
-                aic: await results[24].toNumber(),
-                names: await results[17].toArray(),
-                coefs: await results[12].toArray(),
-                bse: await results[14].toArray(),
-                pvalues: await results[13].toArray(),
-            },
+            plot: await results[0].toArray(),
+            classes: await results[1].toArray(),
+            coefs: JSON.parse(await results[2].toArray()),
+            stds: JSON.parse(await results[3].toArray()),
+            z_scores: JSON.parse(await results[4].toArray()),
+            p_values: JSON.parse(await results[5].toArray()),
+            probabities: await results[6].toArray(),
+            predictions: (await results[7].toArray()).map(pred => pred - 1),
         };
         this.model_stats_matrix = [];
         let cols = [...labels]
         cols.unshift("intercept")
-        let min_ols_columns = this.summary['best_fit_min'].names;
+        let min_ols_columns = []
+        let se_ols_columns = []
+        for (let j = 0; j < this.summary.classes.length; j++) {
+            for (let i = 0; i < cols.length; i++) {
+                let row = [];
+                row.push(cols[i])
+                row.push((isNaN(this.summary['coefs'][j][i]) ? ' ' : this.summary['coefs'][j][i].toFixed(2)))
+                row.push((isNaN(this.summary['stds'][j][i]) ? ' ' : this.summary['stds'][j][i].toFixed(2)))
+                row.push((isNaN(this.summary['p_values'][j][i]) ? ' ' : this.summary['p_values'][j][i].toFixed(2)))
 
-        min_ols_columns.unshift('intercept');
-        let se_ols_columns = this.summary['best_fit_1se'].names;
-        se_ols_columns.unshift('intercept');
-
-        for (let i = 0; i < cols.length; i++) {
-            let row = [];
-            row.push(cols[i])
-            row.push(this.summary['params'][i]?.toFixed(2) ?? ' ')
-            row.push(this.summary['bse'][i]?.toFixed(2) ?? ' ')
-            row.push(this.summary['pvalues'][i]?.toFixed(2) ?? ' ')
-            let index = min_ols_columns.findIndex(m => m === cols[i])
-            if (index !== -1) {
-                row.push(this.summary['best_fit_min']['coefs'][index]?.toFixed(2) ?? ' ')
-                row.push(this.summary['best_fit_min']['bse'][index]?.toFixed(2) ?? ' ')
-                row.push(this.summary['best_fit_min']['pvalues'][index]?.toFixed(2) ?? ' ')
-            } else {
-                row.push(' ')
-                row.push(' ')
-                row.push(' ')
+                let index = min_ols_columns.findIndex(m => m === cols[i])
+                if (index !== -1) {
+                    row.push(this.summary['best_fit_min']['coefs'][index]?.toFixed(2) ?? ' ')
+                    row.push(this.summary['best_fit_min']['bse'][index]?.toFixed(2) ?? ' ')
+                    row.push(this.summary['best_fit_min']['pvalues'][index]?.toFixed(2) ?? ' ')
+                } else {
+                    row.push(' ')
+                    row.push(' ')
+                    row.push(' ')
+                }
+                index = se_ols_columns.findIndex(m => m === cols[i])
+                if (index !== -1) {
+                    row.push(this.summary['best_fit_1se']['coefs'][index]?.toFixed(2) ?? ' ')
+                    row.push(this.summary['best_fit_1se']['bse'][index]?.toFixed(2) ?? ' ')
+                    row.push(this.summary['best_fit_1se']['pvalues'][index]?.toFixed(2) ?? ' ')
+                } else {
+                    row.push(' ')
+                    row.push(' ')
+                    row.push(' ')
+                }
+                this.model_stats_matrix.push(row)
             }
-            index = se_ols_columns.findIndex(m => m === cols[i])
-            if (index !== -1) {
-                row.push(this.summary['best_fit_1se']['coefs'][index]?.toFixed(2) ?? ' ')
-                row.push(this.summary['best_fit_1se']['bse'][index]?.toFixed(2) ?? ' ')
-                row.push(this.summary['best_fit_1se']['pvalues'][index]?.toFixed(2) ?? ' ')
-            } else {
-                row.push(' ')
-                row.push(' ')
-                row.push(' ')
+            if (j < this.summary.classes.length - 1) {
+                let placeholder_row = this.model_stats_matrix[0].map(m => '');
+                this.model_stats_matrix.push(placeholder_row)
             }
-            this.model_stats_matrix.push(row)
         }
-        this.model_stats_matrix.reverse()
-        let reg_plot = JSON.parse(await results[0].toString())
-        reg_plot.layout.legend["orientation"] = 'h'
-        reg_plot.layout['showlegend'] = false;
-
-        let coefs_plot = JSON.parse(await results[15].toString())
-        coefs_plot.layout.legend = {
-            x: 0,
-            y: 1,
-            traceorder: 'normal',
-            font: {
-                family: 'sans-serif',
-                size: 8,
-                color: '#000'
-            },
-        };
-        this.summary.coefs_plot = coefs_plot;
-        this.summary.regularization_plot = reg_plot;
-        this.summary.regularization_plot.layout['autosize'] = true
-        this.summary.regularization_plot.layout['staticPlot'] = true
-        this.summary.regularization_plot.layout['responsive'] = true
-        this.summary.errors_plot = JSON.parse(await results[1].toString());
-        this.summary.qqplot_ols_plot = JSON.parse(await results[27].toString());
-        this.summary.qqplot_1se_plot = JSON.parse(await results[28].toString());
-        this.summary.qqplot_min_plot = JSON.parse(await results[29].toString());
-
         return this.summary['predictions'];
     }
-    async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
+    async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
+        await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
         let current = this;
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -185,13 +159,13 @@ export default class LinearRegression extends ClassificationModel {
                     "footerCallback": function (row, data, start, end, display) {
                         var api = this.api();
                         $(api.column(2).footer()).html(
-                            'R2 : ' + current.summary.r2.toFixed(2) + ' AIC: ' + current.summary.aic.toFixed(2)
+                            'R2 : '
                         );
                         $(api.column(5).footer()).html(
-                            'R2 : ' + current.summary['best_fit_min'].r2.toFixed(2) + ' AIC: ' + current.summary['best_fit_min'].aic.toFixed(2)
+                            'R2 : '
                         );
                         $(api.column(8).footer()).html(
-                            'R2 : ' + current.summary['best_fit_1se'].r2.toFixed(2) + ' AIC: ' + current.summary['best_fit_1se'].aic.toFixed(2)
+                            'R2 : '
                         );
                     },
                     data: current.model_stats_matrix,
@@ -202,20 +176,6 @@ export default class LinearRegression extends ClassificationModel {
                     paging: false,
                     bDestroy: true,
                 });
-
-                Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { staticPlot: false });
-                Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { staticPlot: true });
-                Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { staticPlot: true });
-                Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { staticPlot: true });
-                Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { staticPlot: true });
-                Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { staticPlot: true });
-                current.ui.yhat_plot(y_test, this.summary['predictions'], 'regression_y_yhat_' + + current.id, 'OLS predictions')
-                current.ui.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + + current.id, 'OLS min predictions')
-                current.ui.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + + current.id, 'OLS 1se predictions')
-                current.ui.residual_plot(y_test, this.summary['residuals_ols'], 'regression_residual_' + + current.id, 'OLS residuals')
-                current.ui.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + + current.id, 'OLS min residuals')
-                current.ui.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + + current.id, 'OLS 1se residuals')
-                this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
                 resolve('resolved');
             }, 1000);
         });

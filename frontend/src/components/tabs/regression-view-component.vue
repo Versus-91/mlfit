@@ -121,7 +121,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
         <div class="column is-12" v-else>
             <div class="columns is-multiline">
