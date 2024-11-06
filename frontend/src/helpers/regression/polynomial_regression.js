@@ -23,7 +23,7 @@ export default class PolynomialRegression extends RegressionModel {
 
         const webR = window.webr;
         await webR.init();
-        await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'tidyr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary'], { quiet: true });
+        await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'tidyr', 'broom', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary'], { quiet: true });
         await webR.objs.globalEnv.bind('xx', x_train);
         await webR.objs.globalEnv.bind('x_test', x_test);
 
@@ -40,6 +40,8 @@ export default class PolynomialRegression extends RegressionModel {
                     library(ggplot2)
                     library(tidyr)
                     library(dplyr)
+                    library(broom)
+
                     library(ggrepel)
                     library(modelsummary)
                     library(glmnet)
@@ -85,6 +87,8 @@ export default class PolynomialRegression extends RegressionModel {
                       tibble::rownames_to_column("variable") %>% 
                       pivot_longer(-variable) %>% 
                       mutate(lambda=lambdas[name]) %>% 
+                      mutate(variable = factor(variable, levels = sort(unique(variable)))) %>%
+
                     ggplot(aes(x=lambda,y=value,col=variable)) + 
                       geom_line() + 
                       geom_label_repel(data=~subset(.x,lambda==min(lambda)),
@@ -170,6 +174,7 @@ export default class PolynomialRegression extends RegressionModel {
                         "Min OLS" = linear_model_min,
                         "1se OLS" = linear_model_1se
                         )
+
                     z <- modelplot(models =models,coef_omit = 'Interc')
                     qqplot_ols <-ggplot(data.frame(residuals = residuals_ols), aes(sample = residuals_ols)) +
                         stat_qq() +
@@ -284,6 +289,15 @@ export default class PolynomialRegression extends RegressionModel {
             }
             this.model_stats_matrix.push(row)
         }
+        this.model_stats_matrix = this.model_stats_matrix.sort(function (a, b) {
+            if (a[0] > b[0]) {
+                return 1
+            }
+            if (a[0] < b[0]) {
+                return -1
+            }
+            return 0
+        })
         this.model_stats_matrix.reverse()
         let reg_plot = JSON.parse(await results[0].toString())
         reg_plot.layout['showlegend'] = true;

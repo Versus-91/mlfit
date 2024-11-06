@@ -64,25 +64,11 @@ export default class LinearRegression extends ClassificationModel {
                     lambdas = cvfit$lambda
                     names(lambdas) = colnames(betas)
                     
-                    
-                    p <- as.data.frame(betas) %>% 
-                      tibble::rownames_to_column("variable") %>% 
-                      pivot_longer(-variable) %>% 
-                      mutate(lambda=lambdas[name]) %>% 
-                    ggplot(aes(x=lambda,y=value,col=variable)) + 
-                      geom_line() + 
-                      geom_label_repel(data=~subset(.x,lambda==min(lambda)),
-                                       aes(label=variable),nudge_x=-0.5) +
-                      geom_vline(xintercept=c(cvfit$lambda.1se,cvfit$lambda.min),
-                                linetype="dashed")+
-                    scale_color_discrete(name = "variable") +  
-                      scale_x_log10()
-                    
                     df = with(cvfit,
                             data.frame(lambda = lambdas,MSE = cvm,MSEhi=cvup,MSElow=cvlo))
 
             
-                    p2 <-ggplot(df,aes(x=lambda,y=MSE)) + 
+                    p <-ggplot(df,aes(x=lambda,y=MSE)) + 
                     geom_point(col="#f05454") + 
                     scale_x_log10("lambda") + 
                     geom_errorbar(aes(ymin = MSElow,ymax=MSEhi),col="#30475e") + 
