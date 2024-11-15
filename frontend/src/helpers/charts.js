@@ -1958,8 +1958,6 @@ export default class ChartController {
         await Plotly.newPlot(id, data, layout);
     }
     async dendogramPlot(id, correlations, linkage, names, originalColumns) {
-        console.log(correlations);
-        console.log(linkage);
 
         var trace4 = {
             x: names,
@@ -1969,15 +1967,17 @@ export default class ChartController {
             colorscale: 'YlGnBu',
             xaxis: 'x',
             yaxis: 'y',
+            colorbar: {
+                thickness: 10,  
+                len: 0.5   
+            }
         };
         let indices = []
         let linksLength = linkage.length + 1;
         let currentLimitX = 0;
         let prevLimitX = 0;
-        let colors = ['red', 'blue', 'black', 'grey']
         let clusterY = 0
         let clusterX = 0
-        let rightTreeY = []
         for (let i = 0; i < originalColumns.length; i++) {
             indices.push(names.findIndex(name => name == originalColumns[i]))
         }
