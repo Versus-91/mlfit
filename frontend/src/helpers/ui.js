@@ -454,7 +454,7 @@ export default class UI {
                 , { field: 'std', label: 'std' }, { field: 'missingVlauesCount', label: '# NAs' }
             ];
         const categoricalHeaders =
-            [{ field: 'name', label: '#' }, { field: 'shape', label: 'Shape' }, { field: 'mode', label: 'Mode' }, { field: 'percentage', label: 'Percentage' }
+            [{ field: 'name', label: '#' }, { field: 'shape', label: 'Shape' }, { field: 'mode', label: 'Mode' }, { field: 'percentage', label: 'Mode Percentage' }
                 , { field: 'missingVlauesCount', label: '# NAs' }
             ];
 
