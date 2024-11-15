@@ -9,7 +9,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                        }})</p>
+                                    }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Continuous Features :</h5>
@@ -37,11 +37,8 @@
                             </div>
                             <div class="columns is-multiline is-centered mb-2">
                                 <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
-                                <div class="column is-5">
-                                    <div class=" colmun is-12" id="test">
-                                        <img :src="img" height="400">
-                                    </div>
-                                </div>
+                                <div class="column is-5" id="correlation_matrix_ordered" style="height: 400px;"></div>
+
                             </div>
                         </section>
                     </section>
@@ -207,16 +204,21 @@ export default {
         },
         async correlationMatrix() {
             this.loading = true;
-            let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
-            let values = this.settings.df.loc({ columns: numericColumns }).values
-            let matrix = new Matrix(values)
-            let correlations = correlation(matrix)
-            this.hasCorrelationMatrix = true;
-            await chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns, 'Correlation Matrix');
-            let mtx = new Clustermap();
-            this.img = await mtx.train(values, numericColumns);
-            this.loading = false;
+            try {
+                let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
+                let values = this.settings.df.loc({ columns: numericColumns }).values
+                let matrix = new Matrix(values)
+                let correlations = correlation(matrix)
+                this.hasCorrelationMatrix = true;
+                await chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns, 'Correlation Matrix');
+                let mtx = new Clustermap();
+                let [dendogram, orderedMatrix, columns] = await mtx.train(values, numericColumns);
+                await chartController.dendogramPlot('correlation_matrix_ordered', orderedMatrix, dendogram, columns,numericColumns);
+                this.loading = false;
 
+            } catch (error) {
+                this.loading = false;
+            }
         }
     },
 

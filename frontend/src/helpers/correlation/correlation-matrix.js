@@ -17,18 +17,18 @@ export default class Clustermap {
         import matplotlib.pyplot as plt
         from js import X_train,columns
         import seaborn as sns
-        import io, base64
         import pandas as pd
 
         sns.set(font_scale=1.5)
-        buffer = io.BytesIO()
         df = pd.DataFrame(X_train,columns = columns)
         plt.figure(figsize=(12, 8))
         plot = sns.clustermap(df.corr(),cmap="YlGnBu_r",annot = True, fmt=".2f")
-        plot.savefig(buffer, format='png',dpi=300)
-        buffer.seek(0)
-        img_str = 'data:image/png;base64,' + base64.b64encode(buffer.read()).decode('UTF-8')
-        img_str
+        reordered_index = plot.dendrogram_row.reordered_ind
+        reordered_columns = plot.dendrogram_col.reordered_ind
+        clustered_corr = df.corr().iloc[reordered_index, :].iloc[:, reordered_columns]
+
+        Z = plot.dendrogram_col.linkage  
+        Z,clustered_corr.values,clustered_corr.columns.tolist()
         `;
         try {
             const { results, error } = await asyncRun(script, this.context);

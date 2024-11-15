@@ -1913,13 +1913,15 @@ export default class ChartController {
             }
         ];
         var layout = {
+
             annotations: [],
             font: {
-                size: 8
+                size: 10
             },
             xaxis: {
                 ticks: '',
-                side: 'top'
+                side: 'bottom',
+                textangle: -90
             },
             yaxis: {
 
@@ -1944,7 +1946,7 @@ export default class ChartController {
                     text: currentValue.toFixed(2),
                     font: {
                         family: 'Arial',
-                        size: 8,
+                        size: 10,
                         color: textColor
                     },
                     showarrow: false,
@@ -1954,6 +1956,197 @@ export default class ChartController {
         }
 
         await Plotly.newPlot(id, data, layout);
+    }
+    async dendogramPlot(id, correlations, linkage, names, originalColumns) {
+        console.log(correlations);
+        console.log(linkage);
+
+        var trace4 = {
+            x: names,
+            y: names,
+            z: correlations,
+            type: 'heatmap',
+            colorscale: 'YlGnBu',
+            xaxis: 'x',
+            yaxis: 'y',
+        };
+        let indices = []
+        for (let i = 0; i < originalColumns.length; i++) {
+            indices.push(names.findIndex(name => name == originalColumns[i]))
+        }
+        let dendrogramUP = {
+            'data': [],
+            'layout': {
+                'width': '100%', 'showlegend': false,
+                'xaxis': {
+                    'showticklabels': true, 'tickmode': 'array', 'ticks': 'outside',
+                    'showgrid': false, 'mirror': 'allticks', 'zeroline': false, 'showline': true, 'rangemode': 'tozero',
+                    'type': 'linear'
+                }, 'yaxis': {
+                    'showticklabels': true, 'ticks': 'outside', 'showgrid': false, 'mirror': 'allticks', 'zeroline':
+                        false, 'showline': true, 'rangemode': 'tozero', 'type': 'linear'
+                }, 'hovermode': 'closest', 'autosize': false, 'height': '100%'
+            }
+        }
+
+        let dendrogramRIGHT = {
+            'data': [],
+            'layout': {
+                'width': '100%', 'showlegend': false,
+                'xaxis': {
+                    'showticklabels': true, 'ticks': 'outside', 'showgrid': false, 'mirror': 'allticks', 'zeroline': false, 'showline': true,
+                    'rangemode': 'tozero', 'type': 'linear'
+                }, 'yaxis': {
+                    'showticklabels': true, 'tickmode': 'array', 'ticks': 'outside', 'showgrid': false,
+                    'mirror': 'allticks', 'zeroline': false, 'showline': true, 'rangemode': 'tozero',
+                    'type': 'linear'
+                }, 'hovermode': 'closest', 'autosize': false,
+                'height': '100%'
+            }
+        }
+        let linksLength = linkage.length + 1;
+        let currentLimitX = 0;
+        let prevLimitX = 0;
+        let colors = ['red', 'blue', 'black', 'grey']
+        let clusterY = 0
+        let rightTreeY = []
+        linkage.forEach((link, i) => {
+            let l0 = indices[link[0]] + 1
+            let l1 = indices[link[1]] + 1
+            currentLimitX = (parseFloat(i + 1) / linksLength);
+            if (l0 <= 4 && l1 <= 4) {
+                clusterY = ((l0 * 10 + l1 * 10) / 2) - 2
+                dendrogramUP.data.push({
+                    'yaxis': 'y2', 'x': [l0 * 10, l0 * 10, l1 * 10, l1 * 10],
+                    'mode': 'lines', 'xaxis': 'x', 'marker': { 'color': `${colors[i]}` },
+                    'y': [
+                        prevLimitX, currentLimitX,
+                        currentLimitX, prevLimitX
+                    ],
+                    'type': 'scatter'
+                })
+            } else {
+                let y = [
+                    (l0 <= 4 ? l0 * 10. : clusterY),
+                    (l0 <= 4 ? l0 * 10. : clusterY),
+                    (l1 <= 4 ? l1 * 10. : clusterY),
+                    (l1 <= 4 ? l1 * 10. : clusterY),
+                ]
+                dendrogramUP.data.push({
+                    'yaxis': 'y2', 'x': y,
+                    'mode': 'lines', 'xaxis': 'x', 'marker': { 'color': `${colors[i]}` },
+                    'y': [
+                        l0 <= 4 ? 0 : prevLimitX, currentLimitX,
+                        currentLimitX, l1 <= 4 ? 0 : prevLimitX
+                    ],
+                    'type': 'scatter'
+                })
+                clusterY = y.reduce((prev, curr) => prev + curr, 0) / 4
+            }
+            prevLimitX = currentLimitX;
+
+        })
+        currentLimitX = 0;
+        prevLimitX = 0;
+        linkage.forEach((link, i) => {
+            let l0 = indices[link[0]] + 1
+            let l1 = indices[link[1]] + 1
+
+            currentLimitX = (parseFloat(i + 1) / linksLength);
+            if (l0 <= 4 && l1 <= 4) {
+                clusterY = ((l0 * -10 + l1 * -10) / 2) - 2
+                dendrogramRIGHT.data.push({
+                    'yaxis': 'y', 'y': [l0 * -10, l0 * -10, l1 * -10, l1 * -10],
+                    'mode': 'lines', 'xaxis': 'x2', 'marker': { 'color': `${colors[i]}` },
+                    'x': [
+                        prevLimitX, currentLimitX,
+                        currentLimitX, prevLimitX
+                    ],
+                    'type': 'scatter'
+                })
+                rightTreeY = rightTreeY.concat([l0 * -10, l0 * -10, l1 * -10, l1 * -10])
+            } else {
+                let y = [
+                    (l0 <= 4 ? l0 * -10. : clusterY),
+                    (l0 <= 4 ? l0 * -10. : clusterY),
+                    (l1 <= 4 ? l1 * -10. : clusterY),
+                    (l1 <= 4 ? l1 * -10. : clusterY),
+                ]
+                dendrogramRIGHT.data.push({
+                    'yaxis': 'y', 'y': y,
+                    'mode': 'lines', 'xaxis': 'x2', 'marker': { 'color': `${colors[i]}` },
+                    'x': [
+                        l0 <= 4 ? 0 : prevLimitX, currentLimitX,
+                        currentLimitX, l1 <= 4 ? 0 : prevLimitX
+                    ],
+                    'type': 'scatter'
+                })
+                clusterY = y.reduce((prev, curr) => prev + curr, 0) / 4
+                rightTreeY = rightTreeY.concat(y)
+            }
+            prevLimitX = currentLimitX;
+
+        })
+
+
+        var layout2 = {
+            font: {
+                size: 10
+            },
+            yaxis: {
+                domain: [0, 0.75],
+                mirror: false,
+                showgrid: false,
+                showline: false,
+                zeroline: false,
+                showticklabels: true,
+                ticks: "",
+                tickvals: [-10, -20, -30, -40],  // Specify tick positions
+                ticktext: names,
+            },
+            xaxis: {
+                domain: [0, 0.75],
+                mirror: false,
+                showgrid: false,
+                showline: false,
+                zeroline: false,
+                showticklabels: true,
+                ticks: "",
+                tickvals: [10, 20, 30, 40, 50],  // Specify tick positions
+                ticktext: names,
+            },
+            xaxis2: {
+                domain: [0.75, 1],
+                mirror: false,
+                showgrid: false,
+                showline: false,
+                zeroline: false,
+                showticklabels: false,
+                ticks: "",
+                ticktext: names,
+            },
+            yaxis2: {
+                domain: [0.75, 1],
+                mirror: false,
+                showgrid: false,
+                showline: false,
+                zeroline: false,
+                showticklabels: false,
+                ticktext: names,
+            },
+            showlegend: false,
+            margin: { l: 60, r: 30, b: 60, t: 30 },
+        };
+
+        let data = dendrogramUP['data']
+        data = data.concat(dendrogramRIGHT['data'])
+
+        trace4['x'] = [5.0, 15.0, 25.0, 35.0, 45.0, 55.0, 65.0, 75.0, 85.0]
+        trace4['y'] = [-5.0, -15.0, -25.0, -35.0, -45.0, -55.0, -65.0, -75.0, -85.0]
+
+        data = data.concat(trace4)
+
+        Plotly.newPlot(id, data, layout2);
     }
     PFIBoxplot(id, importances, columns) {
         let traces = []
