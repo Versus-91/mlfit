@@ -176,7 +176,8 @@ export default {
         },
     },
     created() {
-        this.pdpFeature = this.settings.features.filter(feature => feature.name != this.settings.target)[0].name
+        this.pdpFeature = this.settings.features.filter(feature => feature.name != this.settings.target)[0].name;
+        
     },
 
     data() {
