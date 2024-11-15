@@ -1971,9 +1971,21 @@ export default class ChartController {
             yaxis: 'y',
         };
         let indices = []
+        let linksLength = linkage.length + 1;
+        let currentLimitX = 0;
+        let prevLimitX = 0;
+        let colors = ['red', 'blue', 'black', 'grey']
+        let clusterY = 0
+        let clusterX = 0
+        let rightTreeY = []
         for (let i = 0; i < originalColumns.length; i++) {
             indices.push(names.findIndex(name => name == originalColumns[i]))
         }
+        let tickValues = []
+        for (let i = 0; i < linksLength; i++) {
+            tickValues.push((i + 1) * 10)
+        }
+
         let dendrogramUP = {
             'data': [],
             'layout': {
@@ -2004,90 +2016,100 @@ export default class ChartController {
                 'height': '100%'
             }
         }
-        let linksLength = linkage.length + 1;
-        let currentLimitX = 0;
-        let prevLimitX = 0;
-        let colors = ['red', 'blue', 'black', 'grey']
-        let clusterY = 0
-        let rightTreeY = []
+        let history = {}
+
         linkage.forEach((link, i) => {
-            let l0 = indices[link[0]] + 1
-            let l1 = indices[link[1]] + 1
-            currentLimitX = (parseFloat(i + 1) / linksLength);
-            if (l0 <= 4 && l1 <= 4) {
-                clusterY = ((l0 * 10 + l1 * 10) / 2) - 2
+            let l0, l1;
+            if (indices[link[0]] + 1) {
+                l0 = indices[link[0]] + 1 ?? link[0] + 1
+            }
+            if (indices[link[1]] + 1) {
+                l1 = indices[link[1]] + 1 ?? link[1] + 1
+            }
+            if (currentLimitX == 0) {
+                currentLimitX = (parseFloat(i + 1) / linksLength);
+            }
+            if (l0 <= linksLength && l1 <= linksLength) {
+                clusterX = ((l0 * (Math.max(...tickValues) / linksLength) + l1 * (Math.max(...tickValues) / linksLength)) / 2)
                 dendrogramUP.data.push({
                     'yaxis': 'y2', 'x': [l0 * 10, l0 * 10, l1 * 10, l1 * 10],
-                    'mode': 'lines', 'xaxis': 'x', 'marker': { 'color': `${colors[i]}` },
+                    'mode': 'lines', 'xaxis': 'x', 'marker': { 'color': `${this.indexToColor(i)}` },
                     'y': [
                         prevLimitX, currentLimitX,
                         currentLimitX, prevLimitX
                     ],
                     'type': 'scatter'
                 })
+
             } else {
-                let y = [
-                    (l0 <= 4 ? l0 * 10. : clusterY),
-                    (l0 <= 4 ? l0 * 10. : clusterY),
-                    (l1 <= 4 ? l1 * 10. : clusterY),
-                    (l1 <= 4 ? l1 * 10. : clusterY),
+                prevLimitX = currentLimitX;
+                currentLimitX = (parseFloat(i + 1) / linksLength);
+                let x = [
+                    (l0 <= linksLength ? l0 * 10. : history[link[0]]?.x),
+                    (l0 <= linksLength ? l0 * 10. : history[link[0]]?.x),
+                    (l1 <= linksLength ? l1 * 10. : history[link[1]]?.x),
+                    (l1 <= linksLength ? l1 * 10. : history[link[1]]?.x),
                 ]
                 dendrogramUP.data.push({
-                    'yaxis': 'y2', 'x': y,
-                    'mode': 'lines', 'xaxis': 'x', 'marker': { 'color': `${colors[i]}` },
+                    'yaxis': 'y2', 'x': x,
+                    'mode': 'lines', 'xaxis': 'x', 'marker': { 'color': `${this.indexToColor(i)}` },
                     'y': [
-                        l0 <= 4 ? 0 : prevLimitX, currentLimitX,
-                        currentLimitX, l1 <= 4 ? 0 : prevLimitX
+                        l0 <= linksLength ? 0 : prevLimitX, currentLimitX,
+                        currentLimitX, l1 <= linksLength ? 0 : prevLimitX
                     ],
                     'type': 'scatter'
                 })
-                clusterY = y.reduce((prev, curr) => prev + curr, 0) / 4
+                clusterX = x.reduce((prev, curr) => prev + curr, 0) / 4
             }
-            prevLimitX = currentLimitX;
+            history[linksLength + i] = { x: clusterX }
 
         })
+
+
+
         currentLimitX = 0;
         prevLimitX = 0;
+        history = []
         linkage.forEach((link, i) => {
             let l0 = indices[link[0]] + 1
             let l1 = indices[link[1]] + 1
 
-            currentLimitX = (parseFloat(i + 1) / linksLength);
-            if (l0 <= 4 && l1 <= 4) {
+            if (currentLimitX == 0) {
+                currentLimitX = (parseFloat(i + 1) / linksLength);
+            }
+            if (l0 <= linksLength && l1 <= linksLength) {
                 clusterY = ((l0 * -10 + l1 * -10) / 2) - 2
                 dendrogramRIGHT.data.push({
                     'yaxis': 'y', 'y': [l0 * -10, l0 * -10, l1 * -10, l1 * -10],
-                    'mode': 'lines', 'xaxis': 'x2', 'marker': { 'color': `${colors[i]}` },
+                    'mode': 'lines', 'xaxis': 'x2', 'marker': { 'color': `${this.indexToColor(i)}` },
                     'x': [
                         prevLimitX, currentLimitX,
                         currentLimitX, prevLimitX
                     ],
                     'type': 'scatter'
                 })
-                rightTreeY = rightTreeY.concat([l0 * -10, l0 * -10, l1 * -10, l1 * -10])
             } else {
+                prevLimitX = currentLimitX;
+                currentLimitX = (parseFloat(i + 1) / linksLength);
                 let y = [
-                    (l0 <= 4 ? l0 * -10. : clusterY),
-                    (l0 <= 4 ? l0 * -10. : clusterY),
-                    (l1 <= 4 ? l1 * -10. : clusterY),
-                    (l1 <= 4 ? l1 * -10. : clusterY),
+                    (l0 <= linksLength ? l0 * -10. : history[link[0]]?.y),
+                    (l0 <= linksLength ? l0 * -10. : history[link[0]]?.y),
+                    (l1 <= linksLength ? l1 * -10. : history[link[1]]?.y),
+                    (l1 <= linksLength ? l1 * -10. : history[link[1]]?.y),
                 ]
                 dendrogramRIGHT.data.push({
                     'yaxis': 'y', 'y': y,
-                    'mode': 'lines', 'xaxis': 'x2', 'marker': { 'color': `${colors[i]}` },
+                    'mode': 'lines', 'xaxis': 'x2', 'marker': { 'color': `${this.indexToColor(i)}` },
                     'x': [
-                        l0 <= 4 ? 0 : prevLimitX, currentLimitX,
-                        currentLimitX, l1 <= 4 ? 0 : prevLimitX
+                        l0 <= linksLength ? 0 : prevLimitX, currentLimitX,
+                        currentLimitX, l1 <= linksLength ? 0 : prevLimitX
                     ],
                     'type': 'scatter'
                 })
                 clusterY = y.reduce((prev, curr) => prev + curr, 0) / 4
-                rightTreeY = rightTreeY.concat(y)
             }
-            prevLimitX = currentLimitX;
-
+            history[linksLength + i] = { y: clusterY }
         })
-
 
         var layout2 = {
             font: {
@@ -2101,7 +2123,7 @@ export default class ChartController {
                 zeroline: false,
                 showticklabels: true,
                 ticks: "",
-                tickvals: [-10, -20, -30, -40],  // Specify tick positions
+                tickvals: tickValues.map(tick => -tick),  // Specify tick positions
                 ticktext: names,
             },
             xaxis: {
@@ -2112,7 +2134,7 @@ export default class ChartController {
                 zeroline: false,
                 showticklabels: true,
                 ticks: "",
-                tickvals: [10, 20, 30, 40, 50],  // Specify tick positions
+                tickvals: tickValues,  // Specify tick positions
                 ticktext: names,
             },
             xaxis2: {
@@ -2141,8 +2163,8 @@ export default class ChartController {
         let data = dendrogramUP['data']
         data = data.concat(dendrogramRIGHT['data'])
 
-        trace4['x'] = [5.0, 15.0, 25.0, 35.0, 45.0, 55.0, 65.0, 75.0, 85.0]
-        trace4['y'] = [-5.0, -15.0, -25.0, -35.0, -45.0, -55.0, -65.0, -75.0, -85.0]
+        trace4['x'] = tickValues
+        trace4['y'] = tickValues.map(tick => -tick)
 
         data = data.concat(trace4)
 
