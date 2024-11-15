@@ -2,7 +2,7 @@
     <section style="overflow-y: auto;overflow-x: auto;">
         <div id="scatterplot_mtx"></div>
         <div class="columns my-1 ml-5 mt-5 is-multiline" :style="{ width: features.length * 100 + 'px' }">
-            <div :style="{ width: column_width + '%' }" v-for="feature in features" :key="feature.id">
+            <div :style="{ width: column_width + '%' }" v-for="feature in this.settings.items.filter(column => column.selected)" :key="feature.id">
                 <b-field :label="feature.name" :label-position="'on-border'" v-if="feature.type == 1">
                     <b-select size="is-small" v-model="feature.scaler">
                         <option v-for="option in ScaleOptions" :value="option.id" :key="option.id">
