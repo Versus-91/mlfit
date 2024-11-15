@@ -139,6 +139,9 @@ export default {
             return dataFrame
         },
         async handleFileSelect(name) {
+            if (name == 'none') {
+                return
+            }
             name += '.csv';
             let current = this;
             let file;
