@@ -874,6 +874,8 @@ export default class UI {
             line: { color: 'red', dash: 'dash' },
             name: 'y = x line'
         }], {
+            height: 300,
+            width: 300,
             title: {
                 text: title,
                 font: {
@@ -936,7 +938,6 @@ export default class UI {
             title: {
                 text: title,
                 font: {
-                    family: 'sans-serif',
                     size: 10
                 },
                 xref: 'paper',
@@ -950,7 +951,6 @@ export default class UI {
                 title: {
                     text: 'y',
                     font: {
-                        family: 'sans-serif',
                         size: 14,
                         color: '#7f7f7f'
                     }
@@ -963,7 +963,6 @@ export default class UI {
                 title: {
                     text: 'residuals',
                     font: {
-                        family: 'sans-serif',
                         size: 14,
                         color: '#7f7f7f'
                     }

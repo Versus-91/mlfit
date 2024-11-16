@@ -335,6 +335,8 @@ export default class PolynomialRegression extends RegressionModel {
         this.summary.qqplot_1se_plot = JSON.parse(await results[28].toString());
         this.summary.qqplot_min_plot = JSON.parse(await results[29].toString());
 
+        this.summary.qqplot_ols_plot.layout.height = 300
+        this.summary.qqplot_ols_plot.layout.width = 300
         this.summary.qqplot_ols_plot.layout.title.font = {
             family: 'sans-serif',
             size: 10
@@ -348,6 +350,9 @@ export default class PolynomialRegression extends RegressionModel {
             family: 'sans-serif',
             size: 10
         };
+
+        this.summary.qqplot_1se_plot.layout.height = 300
+        this.summary.qqplot_1se_plot.layout.width = 300
         this.summary.qqplot_1se_plot.layout.title.font = {
             family: 'sans-serif',
             size: 10
@@ -362,6 +367,9 @@ export default class PolynomialRegression extends RegressionModel {
             family: 'sans-serif',
             size: 10
         };
+
+        this.summary.qqplot_min_plot.layout.height = 300
+        this.summary.qqplot_min_plot.layout.width = 300
         this.summary.qqplot_min_plot.layout.title.font = {
             family: 'sans-serif',
             size: 10

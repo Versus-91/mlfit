@@ -305,7 +305,13 @@ export default class LinearRegression extends RegressionModel {
             family: 'sans-serif',
             size: 10
         };
+
+
+
         this.summary.qqplot_ols_plot.data[0].marker.size = 2;
+        this.summary.qqplot_ols_plot.layout.height = 300
+        this.summary.qqplot_ols_plot.layout.width = 300
+
         this.summary.qqplot_ols_plot.layout.xaxis.title.font = {
             family: 'sans-serif',
             size: 10
@@ -314,6 +320,9 @@ export default class LinearRegression extends RegressionModel {
             family: 'sans-serif',
             size: 10
         };
+
+        this.summary.qqplot_1se_plot.layout.height = 300
+        this.summary.qqplot_1se_plot.layout.width = 300
         this.summary.qqplot_1se_plot.layout.title.font = {
             family: 'sans-serif',
             size: 10
@@ -328,6 +337,10 @@ export default class LinearRegression extends RegressionModel {
             family: 'sans-serif',
             size: 10
         };
+
+
+        this.summary.qqplot_min_plot.layout.height = 300
+        this.summary.qqplot_min_plot.layout.width = 300
         this.summary.qqplot_min_plot.layout.title.font = {
             family: 'sans-serif',
             size: 10
@@ -340,6 +353,8 @@ export default class LinearRegression extends RegressionModel {
             family: 'sans-serif',
             size: 10
         };
+
+
         this.summary.qqplot_min_plot.data[0].marker.size = 2;
         return this.summary['predictions'];
     }
