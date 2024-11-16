@@ -6,7 +6,7 @@
                 <b-input v-model="pcaY" size="is-small" type="number" placeholder="Y axis component"></b-input>
                 <p class="control">
                     <b-button :disabled="!pcaX || !pcaY" size="is-small" @click="findPCA" type="is-info"
-                        :loading="findingPCA" label="Find PCA" />
+                        :loading="loading" label="Find PCA" />
                 </p>
             </b-field>
             <div class="columns" v-if="hasPCA">
@@ -19,7 +19,7 @@
             </div>
         </b-message>
         <b-message title="t-distributed stochastic neighbor embedding" type="is-info" :closable="false">
-            <b-button @click="findTSNE" size="is-small" type="is-info" :loading="findingTSNE" label="find t-SNE" />
+            <b-button @click="findTSNE" size="is-small" type="is-info" :loading="loading" label="find t-SNE" />
             <div class="column is-6" id="dimensionality_reduction_panel_tsne">
                 <div id="tsne">
                 </div>
@@ -29,7 +29,7 @@
             <b-field>
                 <b-input v-model="pcaX" size="is-small" type="number" placeholder="Hidden layer size"></b-input>
                 <p class="control">
-                    <b-button size="is-small" @click="autoEncoder" type="is-info" :loading="findingPCA"
+                    <b-button size="is-small" @click="autoEncoder" type="is-info" :loading="loading"
                         label="Find Auto Encoder" />
                 </p>
             </b-field>
@@ -70,15 +70,14 @@ export default {
         return {
             pcaX: null,
             pcaY: null,
-            findingPCA: false,
+            loading: false,
             hasPCA: false,
-            findingTSNE: false
 
         }
     },
     methods: {
         async findPCA() {
-            this.findingPCA = true;
+            this.loading = true;
             this.hasPCA = true;
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
             console.log(numericColumns);
@@ -86,29 +85,32 @@ export default {
                 this.settings.isClassification ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [],
                 this.dataframe.loc({ columns: [this.settings.modelTarget] }).values
                 , this.pcaX, this.pcaY)
-            this.findingPCA = false;
+            this.loading = false;
 
 
         },
         async findTSNE() {
-            this.findingTSNE = true;
+            this.loading = true;
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
             await chartController.plot_tsne(this.dataframe.loc({ columns: numericColumns }).values,
                 this.settings.isClassification ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [], this.dataframe.loc({ columns: [this.settings.modelTarget] }).values);
-            this.findingTSNE = false;
+            this.loading = false;
         },
         async autoEncoder() {
+            this.loading = true;
+
             const model = tensorflow.sequential();
             let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
+            let unitsLength = numericColumns.length;
             let values = this.settings.df.loc({ columns: numericColumns }).values
             const encoder = tensorflow.layers.dense({
-                units: Math.floor(numericColumns.length / 2),
-                batchInputShape: [null, numericColumns.length],
+                units: unitsLength,
+                batchInputShape: [null, unitsLength],
                 activation: 'relu',
                 kernelInitializer: tensorflow.initializers.glorotUniform(),
                 biasInitializer: tensorflow.initializers.zeros()
             });
-            const decoder = tensorflow.layers.dense({ units: numericColumns.length, activation: 'relu' });
+            const decoder = tensorflow.layers.dense({ units: unitsLength, activation: 'relu' });
             model.add(encoder);
             model.add(decoder);
             await model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
@@ -116,7 +118,7 @@ export default {
 
             const xs = tensorflow.tensor2d(values);
             // eslint-disable-next-line no-unused-vars
-            let h = await model.fit(xs, xs, { epochs: 100, batchSize: 32, shuffle: false, validationSplit: 0.2 });
+            let h = await model.fit(xs, xs, { epochs: 1024, batchSize: 32, shuffle: false, validationSplit: 0.2 });
             xs.dispose();
             const tidyWrapper = tensorflow.tidy(() => {
                 const predictor = tensorflow.sequential();
@@ -132,6 +134,7 @@ export default {
             chartController.drawAutoencoder(data, 0, 1,
                 this.settings.isClassification
                     ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [])
+            this.loading = false;
 
         }
     }

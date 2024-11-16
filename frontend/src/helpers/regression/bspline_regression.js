@@ -8,7 +8,7 @@ export default class BSplineRegression extends RegressionModel {
         this.options = options;
         this.model = null;
     }
-    async train(x_train, y_train, x_test, y_test, labels) {
+    async train(x_train, y_train, x_test, y_test, columns) {
         this.context = {
             X_train: x_train,
             y_train: y_train,
@@ -16,22 +16,22 @@ export default class BSplineRegression extends RegressionModel {
             y_test: y_test,
             knots: +this.options.knots.value,
             degree: +this.options.degree.value,
-            labels: labels
+            feaures: [...Array(columns.length).keys()]
+
 
         };
         const script = `
-        import numpy as np
-        from patsy import dmatrix
-        import statsmodels.formula.api as smf
-        import statsmodels.api as sm
         from sklearn.preprocessing import SplineTransformer
+        from sklearn.inspection import PartialDependenceDisplay
+        from sklearn.inspection import permutation_importance
+        from sklearn.ensemble import GradientBoostingRegressor
         import pandas as pd
+        import matplotlib
+        matplotlib.use("AGG")
         from sklearn import linear_model
         from sklearn.metrics import mean_squared_error
         from sklearn.pipeline import make_pipeline
-        from js import X_train,y_train,X_test,knots,degree,labels,y_test
-        from sklearn.inspection import partial_dependence
-        from sklearn.inspection import permutation_importance
+        from js import X_train,y_train,X_test,knots,degree,y_test,feaures
 
         
         model = make_pipeline(
@@ -42,12 +42,14 @@ export default class BSplineRegression extends RegressionModel {
         pred_train = model.predict(X_train)
         rmse_train = mean_squared_error(y_train, pred_train, squared=True)
         # Test data
-        pred_test = model.predict(X_test)
+        y_pred = model.predict(X_test)
 
-        pdp_results = partial_dependence(model, X_train, [0])
-        fi = permutation_importance(model,X_test,y_test,scoring = 'neg_mean_squared_error',n_repeats=10)
-            
-        pred_test,pdp_results["average"],list(pdp_results["grid_values"][0]), list(fi.importances)
+        pdp = PartialDependenceDisplay.from_estimator(model, X_train, feaures)
+        fi = permutation_importance(model,X_test,y_test)
+        avgs = list(map(lambda item:item['average'],pdp.pd_results))
+        grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
+
+        y_pred,avgs,[item[0].tolist() for item in grids ], list(fi.importances)
         `;
         try {
             const { results, error } = await asyncRun(script, this.context);
@@ -66,9 +68,9 @@ export default class BSplineRegression extends RegressionModel {
             );
         }
     }
-    async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns) {
+    async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
         this.chartController.PFIBoxplot(this.id, this.importances, columns);
-        this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns[0]);
+        this.chartController.plotPDPRegression(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
     }
 }

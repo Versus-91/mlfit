@@ -39,6 +39,7 @@ export default class BoostingRegression extends RegressionModel {
         import pandas as pd
         import matplotlib
         matplotlib.use("AGG")
+        
         model = GradientBoostingRegressor(random_state = seed)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)

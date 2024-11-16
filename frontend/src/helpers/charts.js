@@ -267,7 +267,9 @@ export default class ChartController {
                     color: x,
                     colorbar: {
                         title: 'Color Scale',
-                        titleside: 'right'
+                        titleside: 'right',
+                        thickness: 10,
+                        len: 0.5
                     }
                 },
             })
@@ -753,7 +755,9 @@ export default class ChartController {
                     size: 4,
                     colorbar: {
                         title: 'Color Scale Legend',
-                        titleside: 'right'
+                        titleside: 'right',
+                        thickness: 10,
+                        len: 0.5
                     }
                 },
 
@@ -1968,8 +1972,8 @@ export default class ChartController {
             xaxis: 'x',
             yaxis: 'y',
             colorbar: {
-                thickness: 10,  
-                len: 0.5   
+                thickness: 10,
+                len: 0.5
             }
         };
         let indices = []
