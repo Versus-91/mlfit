@@ -32,8 +32,9 @@
                             <scatterplot-matrix-component :dataObj="this.settings.df"></scatterplot-matrix-component>
                         </section>
                         <section>
-                            <div class="column is-12"> <button class="button is-success" :disabled="loading"
-                                    @click="correlationMatrix">Correlation Matrix</button>
+                            <div class="column is-12"> 
+                                <b-button type="is-warning" @click="correlationMatrix" :disabled="loading" :loading="loading">Correlation Cluster Diagram</b-button>
+
                             </div>
                             <div class="columns is-multiline is-centered mb-2">
                                 <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
