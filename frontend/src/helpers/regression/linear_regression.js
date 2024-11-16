@@ -276,7 +276,7 @@ export default class LinearRegression extends RegressionModel {
         reg_plot.layout['showlegend'] = false;
         reg_plot.layout.legend = {
             font: {
-                family: 'sans-serif',
+
                 size: 8,
                 color: '#000'
             },
@@ -287,7 +287,7 @@ export default class LinearRegression extends RegressionModel {
             y: 1,
             traceorder: 'normal',
             font: {
-                family: 'sans-serif',
+
                 size: 8,
                 color: '#000'
             },
@@ -302,7 +302,7 @@ export default class LinearRegression extends RegressionModel {
         this.summary.qqplot_1se_plot = JSON.parse(await results[28].toString());
         this.summary.qqplot_min_plot = JSON.parse(await results[29].toString());
         this.summary.qqplot_ols_plot.layout.title.font = {
-            family: 'sans-serif',
+
             size: 10
         };
 
@@ -313,28 +313,28 @@ export default class LinearRegression extends RegressionModel {
         this.summary.qqplot_ols_plot.layout.width = 300
 
         this.summary.qqplot_ols_plot.layout.xaxis.title.font = {
-            family: 'sans-serif',
+
             size: 10
         };
         this.summary.qqplot_ols_plot.layout.yaxis.title.font = {
-            family: 'sans-serif',
+
             size: 10
         };
 
         this.summary.qqplot_1se_plot.layout.height = 300
         this.summary.qqplot_1se_plot.layout.width = 300
         this.summary.qqplot_1se_plot.layout.title.font = {
-            family: 'sans-serif',
+
             size: 10
         };
         this.summary.qqplot_1se_plot.data[0].marker.size = 2;
 
         this.summary.qqplot_1se_plot.layout.xaxis.title.font = {
-            family: 'sans-serif',
+
             size: 10
         };
         this.summary.qqplot_1se_plot.layout.yaxis.title.font = {
-            family: 'sans-serif',
+
             size: 10
         };
 
@@ -342,15 +342,15 @@ export default class LinearRegression extends RegressionModel {
         this.summary.qqplot_min_plot.layout.height = 300
         this.summary.qqplot_min_plot.layout.width = 300
         this.summary.qqplot_min_plot.layout.title.font = {
-            family: 'sans-serif',
+
             size: 10
         };
         this.summary.qqplot_min_plot.layout.xaxis.title.font = {
-            family: 'sans-serif',
+
             size: 10
         };
         this.summary.qqplot_min_plot.layout.yaxis.title.font = {
-            family: 'sans-serif',
+
             size: 10
         };
 
