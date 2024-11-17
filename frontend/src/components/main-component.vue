@@ -9,7 +9,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                        }})</p>
+                                    }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-6 has-text-left">Continuous Features :</h5>
@@ -32,8 +32,9 @@
                             <scatterplot-matrix-component :dataObj="this.settings.df"></scatterplot-matrix-component>
                         </section>
                         <section>
-                            <div class="column is-12"> 
-                                <b-button type="is-warning" @click="correlationMatrix" :disabled="loading" :loading="loading">Correlation Cluster Diagram</b-button>
+                            <div class="column is-12">
+                                <b-button type="is-warning" @click="correlationMatrix" :disabled="loading"
+                                    :loading="loading">Correlation Cluster Diagram</b-button>
 
                             </div>
                             <div class="columns is-multiline is-centered mb-2">
@@ -186,22 +187,24 @@ export default {
     },
     methods: {
         renderStats() {
-            let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
-            let categoricalColumns = this.settings.items.filter(m => m.type !== FeatureCategories.Numerical.id).map(m => m.name);
+            if (this.settings.df?.columns?.length > 0) {
+                let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
+                let categoricalColumns = this.settings.items.filter(m => m.type !== FeatureCategories.Numerical.id).map(m => m.name);
 
-            let datasetStats = ui.renderDatasetStats(this.settings.df, numericColumns, categoricalColumns);
-            this.continuousFeaturesColumns = datasetStats[0];
-            this.continuousFeaturesStats = datasetStats[1];
-            this.categoricalFeaturesColumns = datasetStats[2];
-            this.categoricalFeaturesStats = datasetStats[3];
-            this.datasetColumns = this.settings.df.columns.map(column => {
-                return {
-                    field: column,
-                    label: column
+                let datasetStats = ui.renderDatasetStats(this.settings.df, numericColumns, categoricalColumns);
+                this.continuousFeaturesColumns = datasetStats[0];
+                this.continuousFeaturesStats = datasetStats[1];
+                this.categoricalFeaturesColumns = datasetStats[2];
+                this.categoricalFeaturesStats = datasetStats[3];
+                this.datasetColumns = this.settings.df.columns.map(column => {
+                    return {
+                        field: column,
+                        label: column
 
-                }
-            });
-            this.sampleData = toJSON(this.settings.df.head(5));
+                    }
+                });
+                this.sampleData = toJSON(this.settings.df.head(5));
+            }
         },
         async correlationMatrix() {
             this.loading = true;
