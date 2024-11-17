@@ -1928,7 +1928,7 @@ export default class ChartController {
                 tickangle: -90,
             },
             yaxis: {
-
+                tickangle: -45,
                 ticks: '',
                 ticksuffix: ' ',
             }
@@ -2129,6 +2129,8 @@ export default class ChartController {
                 ticks: "",
                 tickvals: tickValues.map(tick => -tick),  // Specify tick positions
                 ticktext: names,
+                tickangle: -45,
+
             },
             xaxis: {
                 domain: [0, 0.75],

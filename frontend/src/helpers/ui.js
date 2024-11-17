@@ -879,7 +879,6 @@ export default class UI {
             title: {
                 text: title,
                 font: {
-                    family: 'sans-serif',
                     size: 10
                 },
                 xref: 'paper',
@@ -893,9 +892,7 @@ export default class UI {
                 title: {
                     text: 'y',
                     font: {
-                        family: 'sans-serif',
                         size: 14,
-                        color: '#7f7f7f'
                     }
                 },
             },
@@ -906,9 +903,7 @@ export default class UI {
                 title: {
                     text: 'predictions',
                     font: {
-                        family: 'sans-serif',
                         size: 14,
-                        color: '#7f7f7f'
                     }
                 }
             },
@@ -952,7 +947,6 @@ export default class UI {
                     text: 'y',
                     font: {
                         size: 14,
-                        color: '#7f7f7f'
                     }
                 },
             },
@@ -964,7 +958,6 @@ export default class UI {
                     text: 'residuals',
                     font: {
                         size: 14,
-                        color: '#7f7f7f'
                     }
                 }
             },

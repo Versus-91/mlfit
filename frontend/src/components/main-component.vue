@@ -7,22 +7,22 @@
                         <b-message title="Data summary" v-model="isActive" type="is-info" :closable="false">
                             <div class="columns is-multiline">
                                 <div class="column is-12 has-text-left">
-                                    <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
+                                    <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
                                     }})</p>
                                 </div>
                                 <div class="column is-6">
-                                    <h5 class="title is-6 has-text-left">Continuous Features :</h5>
+                                    <h5 class="title is-7 has-text-left">Continuous Features :</h5>
                                     <b-table class="is-size-7" :data="continuousFeaturesStats"
                                         :columns="continuousFeaturesColumns" :narrowed="true"></b-table>
                                 </div>
                                 <div class="column is-6">
-                                    <h5 class="title is-6 has-text-left">Categorical Features :</h5>
+                                    <h5 class="title is-7 has-text-left">Categorical Features :</h5>
                                     <b-table class="is-size-7" :data="categoricalFeaturesStats"
                                         :columns="categoricalFeaturesColumns" :narrowed="true"></b-table>
                                 </div>
                                 <div class="column is-6">
-                                    <h5 class="title is-6 has-text-left">Sample Data :</h5>
+                                    <h5 class="title is-7 has-text-left">Sample Data :</h5>
                                     <b-table class="is-size-7" :data="sampleData" :columns="datasetColumns"
                                         :narrowed="true"></b-table>
                                 </div>

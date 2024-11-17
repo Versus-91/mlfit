@@ -161,8 +161,8 @@ export default class LinearRegression extends RegressionModel {
 
                     models <- list(
                         "OLS" = model,
-                        "Min OLS" = linear_model_min,
-                        "1se OLS" = linear_model_1se
+                        "Lasso Min " = linear_model_min,
+                        "Lasso 1se " = linear_model_1se
                         )
                     z <- modelplot(models =models,coef_omit = 'Interc')
                     qqplot_ols <-ggplot(data.frame(residuals = residuals_ols), aes(sample = residuals_ols)) +
@@ -417,11 +417,11 @@ export default class LinearRegression extends RegressionModel {
         await Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { autosize: true });
         await Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { autosize: true });
         current.ui.yhat_plot(y_test, this.summary['predictions'], 'regression_y_yhat_' + current.id, 'OLS predictions')
-        current.ui.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + current.id, 'OLS min predictions')
-        current.ui.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + current.id, 'OLS 1se predictions')
+        current.ui.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + current.id, 'lasso min predictions')
+        current.ui.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + current.id, 'lasso 1se predictions')
         current.ui.residual_plot(y_test, this.summary['residuals_ols'], 'regression_residual_' + current.id, 'OLS residuals')
-        current.ui.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + current.id, 'OLS min residuals')
-        current.ui.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + current.id, 'OLS 1se residuals')
+        current.ui.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + current.id, 'lasso min residuals')
+        current.ui.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + current.id, 'lasso 1se residuals')
         this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
         window.dispatchEvent(new Event('resize'));
 
