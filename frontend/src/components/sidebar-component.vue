@@ -244,7 +244,6 @@ export default {
                 if (!this.modelConfigurations) {
                     this.getDefaultModelConfiguration()
                 }
-                let len = this.dataframe.$data.length;
                 let seed = this.seed;
                 let categoricalFeatures = []
                 let dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
@@ -268,7 +267,7 @@ export default {
                     }
                 }), this.modelName)
 
-                let [x_train, y_train, x_test, y_test] = this.splitData(cross_validation_setting, filterd_dataset, targets, len);
+                let [x_train, y_train, x_test, y_test] = this.splitData(cross_validation_setting, filterd_dataset, targets);
                 let uniqueLabels = [...new Set(y_train.values)];
                 let labelEncoder, encoded_y, encoded_y_test;
                 if (this.settings.classificationTask) {
@@ -345,7 +344,8 @@ export default {
     },
     created: function () {
         let x_train, y_train, x_test, y_test;
-        this.splitData = function (cross_validation_setting, filterd_dataset, targets, len) {
+        this.splitData = function (cross_validation_setting, filterd_dataset, targets) {
+            let len = filterd_dataset.$data.length
             if (cross_validation_setting === CV_OPTIONS.SPLIT) {
                 const limit = Math.ceil(len * 70 / 100)
                 const train_bound = `0:${limit}`

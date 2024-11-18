@@ -43,7 +43,7 @@ export default class Boosting extends ClassificationModel {
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
-        pdp = PartialDependenceDisplay.from_estimator(model, X_train, features,target=0)
+        pdp = PartialDependenceDisplay.from_estimator(model, X_train, features,target=0,response_method ='predict_proba')
         fi = permutation_importance(model,X_test,y_test,n_repeats=10)
         avgs = list(map(lambda item:item['average'],pdp.pd_results))
         grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
