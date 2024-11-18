@@ -790,7 +790,7 @@ export default class UI {
             table_columns.push({ title: element });
         });
         new DataTable('#predictions_table_' + tab_index, {
-            pageLength: 10,
+            pageLength: 5,
             responsive: false,
             paging: true,
             columnDefs: [

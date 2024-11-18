@@ -9,7 +9,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                    }})</p>
+                                        }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -210,7 +210,8 @@ export default {
             this.loading = true;
             try {
                 let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
-                let values = this.settings.df.loc({ columns: numericColumns }).values
+                let values = this.settings.df.loc({ columns: numericColumns })
+                values = values.dropNa({ axis: 1 }).values
                 let matrix = new Matrix(values)
                 let correlations = correlation(matrix)
                 this.hasCorrelationMatrix = true;

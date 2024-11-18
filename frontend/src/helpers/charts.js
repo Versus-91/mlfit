@@ -2263,6 +2263,7 @@ export default class ChartController {
 
             });
             var layout = {
+
                 title: {
                     text: 'Partial Dependence Plot - ' + columns[i],
                     font: {
@@ -2281,9 +2282,11 @@ export default class ChartController {
                     linecolor: 'black',
                     linewidth: 1,
                     mirror: true,
+                    zeroline: false,
                 },
                 yaxis: {
                     linecolor: 'black',
+                    zeroline: false,
                     linewidth: 1,
                     mirror: true,
                     title: {
@@ -2316,16 +2319,17 @@ export default class ChartController {
         let traces = []
         let traces_categoricals = []
         let allxs = []
-        grids.forEach((grid, i) => {
-            if (!categoricals.includes(columns[i])) {
-                allxs = allxs.concat(grid)
-            }
-        })
-        let scaler = new MinMaxScaler();
-        scaler.fit(allxs)
+        // grids.forEach((grid, i) => {
+        //     if (!categoricals.includes(columns[i])) {
+        //         allxs = allxs.concat(grid)
+        //     }
+        // })
+        // scaler.fit(allxs)
         grids.forEach((grid, i) => {
             if (!categoricals.includes(columns[i])) {
                 averages[i].forEach((average, index) => {
+                    let scaler = new MinMaxScaler();
+                    scaler.fit(grid)
                     let xs = scaler.transform(grid)
 
                     traces.push(
@@ -2372,11 +2376,14 @@ export default class ChartController {
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
+                zeroline: false,
+
             },
             yaxis: {
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
+                zeroline: false,
                 title: {
                     text: 'Feature',
                 }

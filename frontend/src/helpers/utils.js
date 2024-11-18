@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import { asyncRun } from "./py-worker";
 import { MinMaxScaler, StandardScaler, LabelEncoder, getDummies } from 'danfojs/dist/danfojs-base';
-import { FeatureCategories, Settings } from '../helpers/settings'
+import { FeatureCategories } from '../helpers/settings'
 
 import * as Papa from 'papaparse';
 async function parseCsv(data) {
@@ -396,7 +396,7 @@ export function getCategoricalMode(arr) {
     categoryCount['mode'] = modeCategory;
     return categoryCount;
 }
-export function encode_dataset(data_frame, columns_types, model) {
+export function encode_dataset(data_frame, columns_types) {
     let df = data_frame.copy()
 
     let categorical_columns = columns_types.filter(column => column.type === FeatureCategories.Nominal.id || column.type === FeatureCategories.Ordinal.id)
