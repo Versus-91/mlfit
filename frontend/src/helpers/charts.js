@@ -1565,16 +1565,15 @@ export default class ChartController {
                                     name: 'Trace 1'
                                 })
                             } else {
-                                let boxplot_labels = [...new Set(items.map(m => m[j]))]
+
+                                let boxplot_labels = [...new Set(items.map(m => m[j]))].sort((a, b) => a - b)
+                                let boxtraces = []
                                 for (let m = 0; m < unique_labels.length; m++) {
                                     for (let n = 0; n < boxplot_labels.length; n++) {
+
                                         let box_items = items.filter(item => item[j] === boxplot_labels[n] && item[features.length - 1] === unique_labels[m])
                                         if (box_items) {
-                                            traces.push({
-                                                orientation: 'v',
-                                                offsetgroup: "1",
-
-                                                name: boxplot_labels[n],
+                                            boxtraces.push({
                                                 y: box_items.map(item => item[i]),
                                                 marker: {
                                                     color: this.indexToColor(m)
@@ -1584,10 +1583,14 @@ export default class ChartController {
                                                 yaxis: 'y' + (index),
                                             })
                                         }
-
                                     }
-
                                 }
+                                for (let i = 0; i < (boxtraces.length) / 2; i++) {
+                                    boxtraces[i]['x'] = Array(boxtraces[i]['y'].length).fill(i);
+                                    boxtraces[((boxtraces.length) / 2) + i]['x'] = Array(boxtraces[i]['y'].length).fill(i + 0.5);
+                                }
+                                traces = traces.concat(boxtraces)
+
                             }
                         }
                         else {
@@ -1636,7 +1639,7 @@ export default class ChartController {
                     height: features.length * 100,
                     spacing: 0,
                     showlegend: false,
-                    boxmode: "group",
+                    boxmode: 'overlay',
                     grid: { rows: features.length, columns: features.length, pattern: 'independent' },
                     margin: { r: 10, t: 10, pad: 5 },
 
