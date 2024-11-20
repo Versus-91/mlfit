@@ -1,5 +1,5 @@
 <template>
-    <div class="column is-12">
+    <div class="column is-12 has-background-light">
         <b-field class="file is-success is-fullwidth" :class="{ 'has-name': !!file }">
             <b-upload accept=".csv,.txt,.xlsx" v-model="file" class="file-label">
                 <a class="button is-success is-small is-fullwidth">

@@ -1,6 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
-    <div class="column is-2 side-bar">
+    <div class="column is-2  has-background-light" style="height: 100%;">
         <!-- <button @click="impute()">Impute</button> -->
         <section v-if="!configureFeatures">
             <upload-component @uploaded="generateTargetDropdown"></upload-component>
@@ -61,7 +61,7 @@
                 </section>
                 <b-field>
                     <b-button @click="train" size="is-small" icon-pack="fas" icon-left="play" :loading="training"
-                        :disabled="!dataframe" type=" is-light">
+                        :disabled="!dataframe">
                         train</b-button>
                 </b-field>
                 <b-loading :is-full-page="false" v-model="training"></b-loading>
@@ -70,11 +70,11 @@
         </section>
         <section v-else>
             <b-button @click="updateFeatures()" size="is-small" icon-pack="fas" icon-left="arrow-left"
-                type="is-primary is-light">Select Features
+                type="is-primary is-light">{{ configureFeatures ? 'settings' : '' }}
             </b-button>
             <section>
 
-                <p class="mt-2">Configure Features :</p>
+                <p class="my-2 title is-size-7">Configure Features :</p>
 
                 <table class="table is-narrow is-size-7 is-fullwidth">
                     <thead>
