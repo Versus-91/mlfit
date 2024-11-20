@@ -1,7 +1,7 @@
 <template>
     <div class="column is-10">
         <section>
-            <b-tabs type="is-toggle" v-model="settings.activeTab" :position="'is-centered'" :animated="false">
+            <b-tabs v-model="settings.activeTab" :position="'is-centered'" :animated="false">
                 <b-tab-item label="Data Anaysis">
                     <section v-if="this.settings.datasetShape?.count > 0">
                         <b-message title="Data summary" v-model="isActive" type="is-info" :closable="false">
@@ -9,7 +9,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                        }})</p>
+                                    }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-7 has-text-left">Continuous Features :</h5>

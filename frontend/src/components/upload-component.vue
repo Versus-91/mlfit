@@ -1,15 +1,15 @@
 <template>
     <div class="column is-12">
-        <b-field class="file is-warning" :class="{ 'has-name': !!file }">
+        <b-field class="file is-success is-fullwidth" :class="{ 'has-name': !!file }">
             <b-upload accept=".csv,.txt,.xlsx" v-model="file" class="file-label">
-                <span class="file-cta">
+                <a class="button is-success is-small is-fullwidth">
                     <b-icon pack="fas" class="file-icon" icon="upload"></b-icon>
                     <span class="file-label">{{ this.settings.datasetName || "Upload" }}</span>
-                </span>
+                </a>
             </b-upload>
         </b-field>
         <b-field>
-            <b-checkbox v-model="header">Header</b-checkbox>
+            <b-checkbox size="is-small" v-model="header">Header</b-checkbox>
         </b-field>
         <b-field label="Separator" :label-position="'on-border'">
             <b-select :expanded="true" v-model="separator" size="is-small">

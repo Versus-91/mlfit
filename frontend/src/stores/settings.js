@@ -77,6 +77,7 @@ export const settingStore = defineStore({
             this.rawData = data;
         },
         addFeature(feature) {
+            feature.scaler = 0;
             let index = this.features.findIndex(m => m.name === feature.name);
             if (index !== -1) {
                 this.features[index] = feature
