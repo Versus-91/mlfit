@@ -1594,8 +1594,6 @@ export default class ChartController {
                                 } else {
                                     traces = traces.concat(boxtraces)
                                 }
-
-
                             }
                         }
                         else {
