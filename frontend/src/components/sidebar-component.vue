@@ -282,7 +282,6 @@ export default {
                 this.toggleTraining()
                 let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
                 let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
-                console.log(target);
 
                 this.settings.addResult({
                     id: model.id,
@@ -305,7 +304,7 @@ export default {
                     target: target,
                     categoricalFeatures: this.settings.items.filter(m => m.selected && m.type !== FeatureCategories.Numerical.id).map(m => m.name),
                     numericColumns: numericColumns,
-                    transformations: [...this.settings.transformationsList],
+                    transformations: [...this.settings.transformationsList.filter(feature => feature.type != 0)],
                     tables: model.tables,
                     plots: model.plots,
 
