@@ -60,10 +60,14 @@
                     </b-field>
                 </section>
                 <b-field>
+                    <b-checkbox v-model="dataScalingBehavior" size="is-small">Standardize by default</b-checkbox>
+                </b-field>
+                <b-field>
                     <b-button @click="train" size="is-small" icon-pack="fas" icon-left="play" :loading="training"
                         :disabled="!dataframe">
                         train</b-button>
                 </b-field>
+
                 <b-loading :is-full-page="false" v-model="training"></b-loading>
 
             </div>
@@ -139,6 +143,7 @@ export default {
 
     data() {
         return {
+            dataScalingBehavior: false,
             training: false,
             tuneModel: false,
             seed: 1,
@@ -251,6 +256,13 @@ export default {
                 const target = this.settings.modelTarget;
                 dataset = handle_missing_values(dataset)
                 dataset = applyDataTransformation(dataset, numericColumns, this.settings.transformationsList);
+                if (this.dataScalingBehavior) {
+                    let transformations = []
+                    for (let i = 0; i < numericColumns.length; i++) {
+                        transformations.push({ name: numericColumns[i], scaler: '1' })
+                    }
+                    dataset = applyDataTransformation(dataset, numericColumns, transformations);
+                }
                 let selected_columns = this.settings.items.filter(m => m.selected).map(m => m.name)
                 const index = selected_columns.findIndex(m => m === target)
                 if (index === -1) {
