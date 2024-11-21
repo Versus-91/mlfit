@@ -61,7 +61,7 @@ export default {
         },
         async scaleData() {
             this.df = new DataFrame(this.settings.rawData);
-            let validTransformations = this.features;
+            let validTransformations = this.settings.items.filter(column => column.selected && column.type === 1)
             this.isLoading = true;
             Plotly.purge('scatterplot_mtx')
             applyDataTransformation(this.df, validTransformations.map(transformation => transformation.name), validTransformations);
