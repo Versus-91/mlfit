@@ -4,15 +4,16 @@
         <div class="columns my-1 ml-5 mt-5 is-multiline" :style="{ width: features.length * 100 + 'px' }">
             <div :style="{ width: column_width + '%' }"
                 v-for="feature in this.settings.items.filter(column => column.selected)" :key="feature.id">
-                <b-field :label="feature.name" :label-position="'on-border'" v-if="feature.type == 1">
+                <b-field :label="feature.name" :label-position="'on-border'" v-if="feature.type == 1" class="ml-1">
                     <b-select size="is-small" v-model="feature.scaler">
                         <option v-for="option in ScaleOptions" :value="option.id" :key="option.id">
                             {{ option.name }}
                         </option>
                     </b-select>
                 </b-field>
-                <p v-else>{{ feature.name }}</p>
+                <p class="title is-size-7 mt-1" v-else>{{ feature.name }}</p>
             </div>
+            <br>
             <button @click="scaleData()" class="button mt-2 is-info is-small">update</button>
         </div>
         <b-loading :is-full-page="false" v-model="isLoading"></b-loading>
