@@ -29,13 +29,13 @@
                             </div>
                         </b-message>
                         <section>
-                            <scatterplot-matrix-component :dataObj="this.settings.df"></scatterplot-matrix-component>
+                            <scatterplot-matrix-component ref="splom"></scatterplot-matrix-component>
                         </section>
                         <div class="column is-12">
                             <article class="message is-dark">
                                 <div class="message-body">
-                                    <b-button class="is-success is-small mb-2"
-                                        @click="correlationMatrix" :disabled="loading" :loading="loading">Correlation
+                                    <b-button class="is-success is-small mb-2" @click="correlationMatrix"
+                                        :disabled="loading" :loading="loading">Correlation
                                         Cluster Diagram</b-button>
                                     <div class="columns is-multiline is-centered mb-2">
                                         <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
@@ -188,6 +188,9 @@ export default {
         }
     },
     methods: {
+        updateSPLOM() {
+            this.$refs.splom?.initSPLOM();
+        },
         renderStats() {
             if (this.settings.df?.columns?.length > 0) {
                 let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
