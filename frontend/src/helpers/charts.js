@@ -1984,8 +1984,8 @@ export default class ChartController {
         };
         let indices = []
         let linksLength = linkage.length + 1;
-        let currentLimitX = 0;
-        let prevLimitX = 0;
+        let currentLimitY = 0;
+        let prevLimitY = 0;
         let clusterY = 0
         let clusterX = 0
         for (let i = 0; i < originalColumns.length; i++) {
@@ -2036,8 +2036,8 @@ export default class ChartController {
             if (indices[link[1]] + 1) {
                 l1 = indices[link[1]] + 1 ?? link[1] + 1
             }
-            if (currentLimitX == 0) {
-                currentLimitX = (parseFloat(i + 1) / linksLength);
+            if (currentLimitY == 0) {
+                currentLimitY = (parseFloat(i + 1) / linksLength);
             }
             if (l0 <= linksLength && l1 <= linksLength) {
                 clusterX = ((l0 * (Math.max(...tickValues) / linksLength) + l1 * (Math.max(...tickValues) / linksLength)) / 2)
@@ -2045,40 +2045,42 @@ export default class ChartController {
                     'yaxis': 'y2', 'x': [l0 * 10, l0 * 10, l1 * 10, l1 * 10],
                     'mode': 'lines', 'xaxis': 'x', 'marker': { 'color': `${this.indexToColor(i)}` },
                     'y': [
-                        prevLimitX, currentLimitX,
-                        currentLimitX, prevLimitX
+                        prevLimitY, currentLimitY,
+                        currentLimitY, prevLimitY
                     ],
                     'type': 'scatter'
                 })
 
             } else {
-                prevLimitX = currentLimitX;
-                currentLimitX = (parseFloat(i + 1) / linksLength);
+                prevLimitY = l0 <= linksLength ? currentLimitY : history[link[0]].y_current;
+                currentLimitY = (parseFloat(i + 1) / linksLength);
                 let x = [
                     (l0 <= linksLength ? l0 * 10. : history[link[0]]?.x),
                     (l0 <= linksLength ? l0 * 10. : history[link[0]]?.x),
                     (l1 <= linksLength ? l1 * 10. : history[link[1]]?.x),
                     (l1 <= linksLength ? l1 * 10. : history[link[1]]?.x),
                 ]
+                let y = [
+                    history[link[0]]?.y_current ?? 0, currentLimitY,
+                    currentLimitY, history[link[1]]?.y_current ?? 0
+                ]
                 dendrogramUP.data.push({
                     'yaxis': 'y2', 'x': x,
                     'mode': 'lines', 'xaxis': 'x', 'marker': { 'color': `${this.indexToColor(i)}` },
-                    'y': [
-                        l0 <= linksLength ? 0 : prevLimitX, currentLimitX,
-                        currentLimitX, l1 <= linksLength ? 0 : prevLimitX
-                    ],
+                    'y': y,
                     'type': 'scatter'
                 })
-                clusterX = x.reduce((prev, curr) => prev + curr, 0) / 4
+                clusterX = x.reduce((prev, curr) => prev + curr, 0) / 4;
+
             }
-            history[linksLength + i] = { x: clusterX }
+            history[linksLength + i] = { x: clusterX, y_current: currentLimitY }
 
         })
 
 
 
-        currentLimitX = 0;
-        prevLimitX = 0;
+        let currentLimitX = 0;
+        let prevLimitX = 0;
         history = []
         linkage.forEach((link, i) => {
             let l0 = indices[link[0]] + 1
@@ -2099,7 +2101,7 @@ export default class ChartController {
                     'type': 'scatter'
                 })
             } else {
-                prevLimitX = currentLimitX;
+                prevLimitX = l0 <= linksLength ? currentLimitX : history[link[0]].x;
                 currentLimitX = (parseFloat(i + 1) / linksLength);
                 let y = [
                     (l0 <= linksLength ? l0 * -10. : history[link[0]]?.y),
@@ -2111,14 +2113,14 @@ export default class ChartController {
                     'yaxis': 'y', 'y': y,
                     'mode': 'lines', 'xaxis': 'x2', 'marker': { 'color': `${this.indexToColor(i)}` },
                     'x': [
-                        l0 <= linksLength ? 0 : prevLimitX, currentLimitX,
-                        currentLimitX, l1 <= linksLength ? 0 : prevLimitX
+                        history[link[0]]?.x ?? 0, currentLimitX,
+                        currentLimitX, history[link[1]]?.x ?? 0
                     ],
                     'type': 'scatter'
                 })
                 clusterY = y.reduce((prev, curr) => prev + curr, 0) / 4
             }
-            history[linksLength + i] = { y: clusterY }
+            history[linksLength + i] = { y: clusterY, x: currentLimitX }
         })
 
         var layout2 = {

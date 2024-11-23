@@ -143,7 +143,7 @@ export default {
 
     data() {
         return {
-            dataScalingBehavior: false,
+            dataScalingBehavior: true,
             training: false,
             tuneModel: false,
             seed: 1,
