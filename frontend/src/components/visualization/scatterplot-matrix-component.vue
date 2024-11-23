@@ -50,15 +50,24 @@ export default {
     },
     methods: {
         async dispalySPLOM(dataframe) {
-            this.isLoading = true;
-            let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
-            let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1).map(column => column.name);
-            let features = numericColumns.concat(categorical_columns);
-            dataframe.dropNa({ axis: 1, inplace: true })
-            await chartController.ScatterplotMatrix(dataframe.loc({ columns: features }).values, features, dataframe.column(this.settings.modelTarget).values, categorical_columns.length,
-                this.settings.isClassification, numericColumns, categorical_columns, this.dataframe)
-            this.isLoading = false;
 
+            try {
+                this.isLoading = true;
+                let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
+                let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1).map(column => column.name);
+                let features = numericColumns.concat(categorical_columns);
+                console.log(features);
+                console.log(this.settings.modelTarget
+                );
+
+                dataframe.dropNa({ axis: 1, inplace: true })
+                await chartController.ScatterplotMatrix(dataframe.loc({ columns: features }).values, features, dataframe.column(this.settings.modelTarget).values, categorical_columns.length,
+                    this.settings.isClassification, numericColumns, categorical_columns, this.dataframe)
+                this.isLoading = false;
+
+            } catch (error) {
+                this.$buefy.toast.open("Somthing went wrong");
+            }
         },
         async scaleData() {
             this.df = new DataFrame(this.settings.rawData);

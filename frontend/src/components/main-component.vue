@@ -188,9 +188,6 @@ export default {
         }
     },
     methods: {
-        updateSPLOM() {
-            this.$refs.splom?.initSPLOM();
-        },
         renderStats() {
             if (this.settings.df?.columns?.length > 0) {
                 let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
@@ -209,6 +206,8 @@ export default {
                     }
                 });
                 this.sampleData = toJSON(this.settings.df.head(5));
+                this.$refs.splom?.initSPLOM();
+
             }
         },
         async correlationMatrix() {

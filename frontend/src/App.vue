@@ -36,8 +36,6 @@ export default {
     },
     updateFeatureStats() {
       this.$refs.main.renderStats();
-      this.$refs.main.updateSPLOM();
-
     },
     setSelectedFeatures(e) {
       this.selectedFeatures = e

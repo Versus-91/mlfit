@@ -228,6 +228,7 @@ export default {
                 }
             })
             this.modelTarget = this.dataframe.columns[this.dataframe.columns.length - 1];
+            this.settings.setTarget(this.modelTarget)
             let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
             for (let i = 0; i < selectedFeatures.length; i++) {
                 this.settings.addFeature(selectedFeatures[i])
