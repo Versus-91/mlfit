@@ -56,25 +56,36 @@ export default class LinearRegression extends ClassificationModel {
                     cols_to_scale <- setdiff(names, categorical_columns)
                     scale_df[cols_to_scale] <- scale(scale_df[cols_to_scale])
                     if(is_lasso){
-                        cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 1, family = "multinomial", type.multinomial = "ungrouped")
+                        cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 1, family = "multinomial", type.measure = "class")
                     }else{
-                       cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 0, family = "multinomial", type.multinomial = "ungrouped")
+                       cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 1, family = "multinomial", type.measure = "class")
                     }
                     betas = as.matrix(cvfit$glmnet.fit$beta)
                     lambdas = cvfit$lambda
                     names(lambdas) = colnames(betas)
                     
-                    df = with(cvfit,
-                            data.frame(lambda = lambdas,MSE = cvm,MSEhi=cvup,MSElow=cvlo))
-
+                    df  <- data.frame(
+                        log_lambda = log(cvfit$lambda),       
+                        mean_cv_error = cvfit$cvm,                
+                        lower_error = cvfit$cvup,    
+                        upper_error = cvfit$cvlo    
+                        )
+                    lambda_min <- log(cvfit$lambda.min) 
+                    lambda_1se <- log(cvfit$lambda.1se)  
             
-                    p <-ggplot(df,aes(x=lambda,y=MSE)) + 
+                    p <-ggplot(df,aes(x=log_lambda,y=mean_cv_error)) + 
                     geom_point(col="#f05454") + 
-                    scale_x_log10("lambda") + 
-                    geom_errorbar(aes(ymin = MSElow,ymax=MSEhi),col="#30475e") + 
-                    geom_vline(xintercept=c(cvfit$lambda.1se,cvfit$lambda.min),
+                    geom_errorbar(aes(ymin = lower_error,ymax=upper_error),col="#30475e") + 
+                    geom_vline(xintercept=c(lambda_1se,lambda_min),
                                 linetype="dashed")+
+                    annotate("text", x = lambda_min, y = max(df$mean_cv_error), 
+                            label = "Min", color = "black", hjust = -0.1) +
+                    annotate("text", x = lambda_1se, y = max(df$mean_cv_error) - 0.02, 
+                            label = "1-SE", color = "black", hjust = -0.1) +
                     theme_bw()
+
+
+                    
                     colnames(x_test) <- names
                     model <- nnet::multinom(y ~ . , data = as.data.frame(x))
                     s <- summary(model)
@@ -85,6 +96,22 @@ export default class LinearRegression extends ClassificationModel {
                     preds <- predict(model,newdata=as.data.frame(x_test))
                     preds_probs <- predict(model,type = 'probs',newdata=as.data.frame(x_test))
                     print(coefs)
+                    # confidence interval
+                    z <- 1.96  
+                    conf_int <- list()
+
+                    for (class in rownames(coef(model))) {
+                    conf_int[[class]] <- cbind(
+                        class = class,
+                        Estimate = coefs[class, ],
+                        Lower = coefs[class, ] - z * stds[class, ],
+                        Upper = coefs[class, ] + z * stds[class, ]
+                    )
+                    }
+                    conf_int_df <- do.call(rbind, conf_int)
+
+                    print(conf_int_df)
+
                     list(
                     plotly_json(p, pretty = FALSE)
                     ,rownames(coefs)
@@ -93,12 +120,12 @@ export default class LinearRegression extends ClassificationModel {
                     ,toJSON(z_scores,pretty = TRUE)
                     ,toJSON(p_values,pretty = TRUE)
                     ,preds_probs
-                    ,preds)
+                    ,preds ,toJSON(conf_int_df),rownames(conf_int_df))
                     `);
         let results = await plotlyData.toArray()
 
         this.summary = {
-            plot: await results[0].toArray(),
+            regularization_plot: JSON.parse(await results[0].toString()),
             classes: await results[1].toArray(),
             coefs: JSON.parse(await results[2].toArray()),
             stds: JSON.parse(await results[3].toArray()),
@@ -106,12 +133,27 @@ export default class LinearRegression extends ClassificationModel {
             p_values: JSON.parse(await results[5].toArray()),
             probabities: await results[6].toArray(),
             predictions: (await results[7].toArray()).map(pred => pred - 1),
+            confidence_intervals: JSON.parse(await results[8].toString()),
+            confidence_intervals_row_names: await results[9].toArray(),
         };
         this.model_stats_matrix = [];
         let cols = [...labels]
         cols.unshift("intercept")
         let min_ols_columns = []
         let se_ols_columns = []
+
+
+
+        this.summary.regularization_plot.layout['showlegend'] = false;
+        this.summary.regularization_plot.layout.legend = {
+            font: {
+
+                size: 8,
+                color: '#000'
+            },
+        };
+
+
         for (let j = 0; j < this.summary.classes.length; j++) {
             for (let i = 0; i < cols.length; i++) {
                 let row = [];
@@ -152,33 +194,56 @@ export default class LinearRegression extends ClassificationModel {
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
         let current = this;
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                new DataTable('#metrics_table_' + current.id, {
-                    responsive: false,
-                    "footerCallback": function (row, data, start, end, display) {
-                        var api = this.api();
-                        $(api.column(2).footer()).html(
-                            'R2 : '
-                        );
-                        $(api.column(5).footer()).html(
-                            'R2 : '
-                        );
-                        $(api.column(8).footer()).html(
-                            'R2 : '
-                        );
-                    },
-                    data: current.model_stats_matrix,
-                    info: false,
-                    search: false,
-                    ordering: false,
-                    searching: false,
-                    paging: false,
-                    bDestroy: true,
-                });
-                resolve('resolved');
-            }, 1000);
+        new DataTable('#metrics_table_' + current.id, {
+            responsive: false,
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api();
+                $(api.column(2).footer()).html(
+                    'R2 : '
+                );
+                $(api.column(5).footer()).html(
+                    'R2 : '
+                );
+                $(api.column(8).footer()).html(
+                    'R2 : '
+                );
+            },
+            data: current.model_stats_matrix,
+            info: false,
+            search: false,
+            ordering: false,
+            searching: false,
+            paging: false,
+            bDestroy: true,
         });
+        await Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { autosize: true });
+        let x = []
+        let y = []
+        let x_low = []
+        let x_high = []
+
+        this.summary.confidence_intervals_row_names.forEach((row, i) => {
+            x.push(this.summary.confidence_intervals[i][1]);
+            y.push(row + this.summary.confidence_intervals[i][0]);
+            x_low.push(Math.abs(this.summary.confidence_intervals[i][2]));
+            x_high.push(Math.abs(this.summary.confidence_intervals[i][3]));
+
+        })
+        var data = [
+            {
+                x: x,
+                y: y,
+                error_x: {
+                    type: 'data',
+                    symmetric: false,
+                    array: x_low,
+                    arrayminus: x_high
+                },
+                type: 'scatter'
+            }
+        ];
+        await Plotly.newPlot('parameters_plot_' + current.id, data);
+
 
     }
 }
