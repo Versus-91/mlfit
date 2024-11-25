@@ -1702,11 +1702,11 @@ export default class ChartController {
         })
     }
 
-    KNNPerformancePlot(results, optimalTrainSpec, optimalTestSpec, id) {
+    KNNPerformancePlot(results, best_n, id) {
         let traces = []
         traces.push({
-            x: results.map(m => m.k),
-            y: results.filter(n => n.metric === 'manhattan').map(m => Number((m.evaluation.accuracy / 100).toFixed(2))),
+            x: results.map(m => m[1]),
+            y: results.filter(n => n[0] === 'manhattan').map(m => Number(m[2])),
             mode: 'lines',
             name: 'manhattan test set',
             line: {
@@ -1716,8 +1716,8 @@ export default class ChartController {
         });
 
         traces.push({
-            x: results.map(m => m.k),
-            y: results.filter(n => n.metric === 'euclidean').map(m => Number((m.evaluation.accuracy / 100).toFixed(2))),
+            x: results.map(m => m[1]),
+            y: results.filter(n => n[0] === 'euclidean').map(m => Number(m[2])),
             mode: 'lines',
             name: 'euclidean test set',
             line: {
@@ -1725,39 +1725,7 @@ export default class ChartController {
                 width: 2
             }
         });
-        traces.push({
-            x: results.map(m => m.k),
-            y: results.filter(n => n.metric === 'manhattan').map(m => Number((m.evaluation_train.accuracy / 100).toFixed(2))),
-            mode: 'lines',
-            name: 'manhattan train set',
-            line: {
-                color: 'rgb(55, 128, 191)',
-                width: 1
-            }
-        });
-        traces.push({
-            x: results.map(m => m.k),
-            y: results.filter(n => n.metric === 'euclidean').map(m => Number((m.evaluation_train.accuracy / 100).toFixed(2))),
-            mode: 'lines',
-            name: 'euclidean train set',
-            line: {
-                color: 'rgb(219, 64, 82)',
-                width: 1
-            }
-        });
-        var min_y = Number.POSITIVE_INFINITY;
-        var max_y = Number.NEGATIVE_INFINITY;
-        traces.forEach(trace => {
-            let min = Math.min(...trace.y)
-            let max = Math.max(...trace.y)
-            if (min < min_y) {
-                min_y = min
-            }
-            if (max > max_y) {
-                max_y = max
-            }
 
-        })
         var layout = {
             showlegend: true,
             legend: {
@@ -1777,6 +1745,7 @@ export default class ChartController {
                 },
             },
             yaxis: {
+                range: [0, 1],
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
@@ -1787,21 +1756,12 @@ export default class ChartController {
             shapes: [
                 {
                     type: 'line',
-                    x0: optimalTrainSpec.k,
-                    y0: min_y,
-                    x1: optimalTrainSpec.k,
-                    y1: max_y,
+                    x0: best_n,
+                    y0: 0,
+                    x1: best_n,
+                    y1: 1,
                     line: {
-                        color: 'rgb(55, 128, 191)',
-                        width: 1
-                    }
-                }, {
-                    type: 'line',
-                    x0: optimalTestSpec.k,
-                    y0: min_y,
-                    x1: optimalTestSpec.k,
-                    y1: max_y,
-                    line: {
+                        dash: 'dot',
                         color: 'rgb(55, 128, 191)',
                         width: 1
                     }
