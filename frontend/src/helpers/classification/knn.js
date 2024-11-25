@@ -32,8 +32,6 @@ export default class KNNModel extends ClassificationModel {
         from sklearn.neighbors import KNeighborsClassifier
         from sklearn.metrics import accuracy_score
 
-        model = KNeighborsClassifier()
-        model.fit(X_train, y_train)
         k_neighbor_results=[]
         best_model = None
         best_accuracy = 0
