@@ -58,7 +58,7 @@ export default class LinearRegression extends ClassificationModel {
                     if(is_lasso){
                         cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 1, family = "multinomial", type.measure = "class")
                     }else{
-                       cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 1, family = "multinomial", type.measure = "class")
+                       cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 0, family = "multinomial", type.measure = "class")
                     }
                     betas = as.matrix(cvfit$glmnet.fit$beta)
                     lambdas = cvfit$lambda
@@ -95,7 +95,6 @@ export default class LinearRegression extends ClassificationModel {
                     p_values <- 2 * (1 - pnorm(abs(z_scores)))
                     preds <- predict(model,newdata=as.data.frame(x_test))
                     preds_probs <- predict(model,type = 'probs',newdata=as.data.frame(x_test))
-                    print(coefs)
                     # confidence interval
                     z <- 1.96  
                     conf_int <- list()
@@ -110,7 +109,84 @@ export default class LinearRegression extends ClassificationModel {
                     }
                     conf_int_df <- do.call(rbind, conf_int)
 
-                    print(conf_int_df)
+                    best_model <- glmnet(x, y, alpha =is_lasso,family = "multinomial", type.measure = "class", lambda = cvfit$lambda.min)
+                    coefficients <- coef(best_model)
+                    print(coefficients)
+                    non_zero_features <- list()
+                    for (class_name in names(coefficients)) {
+                    class_coefficients <- coefficients[[class_name]]
+                    dense_coefficients <- as.matrix(class_coefficients)
+                    non_zero_indices <- which(dense_coefficients != 0, arr.ind = TRUE)
+                    non_zero_features <- c(non_zero_features,rownames(dense_coefficients)[non_zero_indices[, 1]])
+                    }
+                    non_zero_features <- unique(non_zero_features)
+                    non_zero_features <- unlist(Filter(function(x) x != "", non_zero_features))
+                    print(non_zero_features)
+                    x_filterd <- x[,unlist(non_zero_features)]
+                    x_test_filterd <- x_test[,unlist(non_zero_features)]
+                    model_lambda_min <- nnet::multinom(y ~ . , data = as.data.frame(x_filterd))
+                    s <- summary(model_lambda_min)
+                    coefs_lambda_min <- s$coefficients
+                    stds_lambda_min <- s$standard.errors
+                    z_scores_lambda_min <- coefs_lambda_min / stds_lambda_min
+                    p_values_lambda_min <- 2 * (1 - pnorm(abs(z_scores_lambda_min)))
+                    preds_lambda_min <- predict(model,newdata=as.data.frame(x_test_filterd))
+                    preds_probs_lambda_min <- predict(model,type = 'probs',newdata=as.data.frame(x_test_filterd))
+                    # confidence interval
+                    z <- 1.96  
+                    conf_int <- list()
+
+                    for (class in rownames(coef(model_lambda_min))) {
+                    conf_int[[class]] <- cbind(
+                        class = class,
+                        Estimate = coefs_lambda_min[class, ],
+                        Lower = coefs_lambda_min[class, ] - z * stds_lambda_min[class, ],
+                        Upper = coefs_lambda_min[class, ] + z * stds_lambda_min[class, ]
+                    )
+                    }
+
+
+
+                    
+                    conf_int_lambda_min_df <- do.call(rbind, conf_int)
+
+                    best_model <- glmnet(x, y, alpha =is_lasso,family = "multinomial", type.measure = "class", lambda = cvfit$lambda.1se)
+                    coefficients <- coef(best_model)
+                    print(coefficients)
+                    non_zero_features <- list()
+                    for (class_name in names(coefficients)) {
+                    class_coefficients <- coefficients[[class_name]]
+                    dense_coefficients <- as.matrix(class_coefficients)
+                    non_zero_indices <- which(dense_coefficients != 0, arr.ind = TRUE)
+                    non_zero_features <- c(non_zero_features,rownames(dense_coefficients)[non_zero_indices[, 1]])
+                    }
+                    non_zero_features <- unique(non_zero_features)
+                    non_zero_features <- unlist(Filter(function(x) x != "", non_zero_features))
+                    print(non_zero_features)
+                    x_filterd <- x[,unlist(non_zero_features)]
+                    x_test_filterd <- x_test[,unlist(non_zero_features)]
+                    model_lambda_1se <- nnet::multinom(y ~ . , data = as.data.frame(x_filterd))
+                    s <- summary(model_lambda_1se)
+                    coefs_lambda_1se <- s$coefficients
+                    stds_lambda_1se <- s$standard.errors
+                    z_scores_lambda_1se <- coefs_lambda_1se / stds_lambda_1se
+                    p_values_lambda_1se <- 2 * (1 - pnorm(abs(z_scores_lambda_1se)))
+                    preds_lambda_1se <- predict(model,newdata=as.data.frame(x_test_filterd))
+                    preds_probs_lambda_1se <- predict(model,type = 'probs',newdata=as.data.frame(x_test_filterd))
+                    # confidence interval
+                    z <- 1.96  
+                    conf_int <- list()
+
+                    for (class in rownames(coef(model_lambda_1se))) {
+                    conf_int[[class]] <- cbind(
+                        class = class,
+                        Estimate = coefs_lambda_1se[class, ],
+                        Lower = coefs_lambda_1se[class, ] - z * stds_lambda_1se[class, ],
+                        Upper = coefs_lambda_1se[class, ] + z * stds_lambda_1se[class, ]
+                    )
+                    }
+                    conf_int_lambda_1se_df <- do.call(rbind, conf_int)
+
 
                     list(
                     plotly_json(p, pretty = FALSE)
