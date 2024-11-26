@@ -285,6 +285,7 @@ export default {
                 let labelEncoder, encoded_y, encoded_y_test;
                 if (this.settings.classificationTask) {
                     [labelEncoder, encoded_y, encoded_y_test] = this.encodeTarget(y_train.values, y_test.values)
+                    uniqueLabels = [...new Set(encoded_y)];
                 } else {
                     encoded_y = y_train.values;
                     encoded_y_test = y_test.values;
