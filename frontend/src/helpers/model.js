@@ -26,8 +26,11 @@ export class ClassificationModel {
         return await metrics(y, predictions, uniqueClasses);
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
+
+
         const evaluation_result = evaluate_classification(predictions, y_test, encoder);
         const classes = encoder.inverseTransform(Object.values(encoder.$labels));
+        
         await this.chartController.plotConfusionMatrix(tensorflow.tensor(predictions), tensorflow.tensor(y_test), classes, Object.values(encoder.$labels), this.id);
         await this.chartController.classificationPCA(x_test.values, encoder.inverseTransform(y_test), evaluation_result, uniqueLabels, this.id);
         this.ui.predictions_table(x_test, encoder.inverseTransform(y_test), encoder.inverseTransform(predictions), null, this.id);

@@ -1024,7 +1024,7 @@ export default class ChartController {
     }
     async plotConfusionMatrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
 
-        const confusionMatrix = await metrics.confusionMatrix(y, predictedLabels);
+        const confusionMatrix = await metrics.confusionMatrix(y, predictedLabels,uniqueClasses.length);
         let metric = await ClassificationMetric(y.arraySync(), predictedLabels.arraySync(), uniqueClasses)
         let accuracy = metric[4].toFixed(2);
         let f1Micro = metric[2].toFixed(2)
@@ -1039,19 +1039,6 @@ export default class ChartController {
         for (let j = 0; j < len; j++) {
             recalls.push(parseFloat(metric[1][j].toFixed(2)))
         }
-        // div.innerHTML =
-        //     `<div class="column is-12">
-
-        //     <span class="subtitle mb-1">Accuracy: ${metric[4].toFixed(2)}, </span>
-        //     <span class="subtitle mr-2">F1 micro: ${metric[3].toFixed(2)}, </span>
-        //     <span class="subtitle">F1 macro: ${metric[3].toFixed(2)}</span>
-        //     </div>`
-        //     ;
-        // $("#tabs_info li[data-index='" + tab_index + "'] #results_" + tab_index + "").append(div);
-        // $("#tabs_info li[data-index='" + tab_index + "'] #results_" + tab_index + "").append(`
-        // <div class="column is-6" id="confusion_matrix_${tab_index}" style="height:50vh">
-        // </div>
-        // `);
         tensorflow.dispose(y)
         tensorflow.dispose(predictedLabels)
         const metric_labels = ["Precession", "Recall", "F1 score", "Support"]
@@ -1086,7 +1073,7 @@ export default class ChartController {
             title: {
                 text: '',
                 style: {
-                    fontSize: '1em'
+                    fontSize: '0.75em'
                 }
             },
 
@@ -1137,14 +1124,16 @@ export default class ChartController {
                             sum = 0,
                             x = this.value;
                         each(series.options.data, function (p, i) {
-                            if (p[1] === x) {
-                                if (p[1] < uniqueClasses.length) {
-                                    sum += p[2];
-                                }
+                            if (p[1] < uniqueClasses.length) {
+                                if (p[1] === x) {
+                                    if (p[0] < uniqueClasses.length) {
+                                        sum += p[2];
+                                    }
 
+                                }
                             }
                         });
-                        return sum;
+                        return +sum.toFixed(2);
                     }
                 },
                 title: null
@@ -1154,8 +1143,8 @@ export default class ChartController {
                 minColor: '#FFFFFF',
                 maxColor: Highcharts.getOptions().colors[0]
             },
-
             legend: {
+                enabled: false,
                 align: 'center',
                 layout: 'horizontal',
                 margin: 0,
@@ -1176,16 +1165,16 @@ export default class ChartController {
                             if ((i + 1) % (uniqueClasses.length + 1) === 0) {
                                 return acc
                             }
-                            return acc + cur?.value;
+                            return +(acc + cur?.value).toFixed(2);
                         }, 0);
                         var count = this.point.value;
                         var skip = this.point.index >= this.series.data.length - (1 * (uniqueClasses.length + 1));
 
                         if (!skip && !((this.point.index + 1) % (uniqueClasses.length + 1) === 0)) {
-                            var percentage = ((count / totalCount) * 100).toFixed(2);
-                            return '<p style="margin:auto; text-align:center;">' + count + '<br/>(' + percentage + '%)</p> ';
+                            var percentage = +((count / totalCount) * 100).toFixed(2);
+                            return '<p style="margin:auto; text-align:center;">' + (+count.toFixed(2)) + '<br/>(' + (+percentage).toFixed(2) + '%)</p> ';
                         } else {
-                            return '<p style="margin:auto; text-align:center;">' + count + '</p>';
+                            return '<p style="margin:auto; text-align:center;">' + (+count.toFixed(2)) + '</p>';
                         }
                     }
                 }
@@ -1207,6 +1196,10 @@ export default class ChartController {
         });
         return [accuracy, f1Micro, f1Macro]
     }
+
+
+
+
     plot_regularization(weights, alphas, names, tab_index) {
         let content = `
                     <div class="column is-6" id="regularization_${tab_index}" style="height: 40vh;">
