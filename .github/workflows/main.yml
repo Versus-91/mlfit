@@ -11,7 +11,8 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: export NODE_OPTIONS="--max-old-space-size=8192"
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - run: cd /frontend
+      - run: sudo -E npm run build
       - name: List files in the repository
-        run: echo "🍏 This job's status is ${{ github.workspace }}"
+        run: echo "🍏 current working directory is  ${{ github.workspace }}"
       - run: echo "🍏 This job's status is ${{ job.status }}"
