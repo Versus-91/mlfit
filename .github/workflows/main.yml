@@ -11,7 +11,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: export NODE_OPTIONS="--max-old-space-size=8192"
-      - run:  cd ${{ github.workspace }}/frontend && export NODE_OPTIONS="--max-old-space-size=8192" && npm i && sudo -E npm run build
+      - run:  cd ${{ github.workspace }}/frontend && export NODE_OPTIONS="--max-old-space-size=8192" && npm i && sudo -E npm run build && sudo chown -R gg1991 /var/www/actions-runner/_work/mlfit/mlfit/frontend/dist
       - name: List files in the repository
         run: echo "🍏 current working directory is  ${{ github.workspace }}"
       - run: echo "🍏 This jobs status is ${{ job.status }}"
