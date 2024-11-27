@@ -11,9 +11,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: export NODE_OPTIONS="--max-old-space-size=8192"
-      - run: cd ${{ github.workspace }}/frontend
-      - run: echo "Current directory $(pwd)"
-      - run: sudo -E npm run build
+      - run:  cd ${{ github.workspace }}/frontend && sudo -E npm run build
       - name: List files in the repository
         run: echo "🍏 current working directory is  ${{ github.workspace }}"
       - run: echo "🍏 This job's status is ${{ job.status }}"
