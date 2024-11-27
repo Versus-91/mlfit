@@ -11,8 +11,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: export NODE_OPTIONS="--max-old-space-size=8192"
-      - run: export NODE_OPTIONS="--max-old-space-size=8192"
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: List files in the repository
-        run: -E npm run build
+        run: sudo -E npm run build
       - run: echo "🍏 This job's status is ${{ job.status }}"
