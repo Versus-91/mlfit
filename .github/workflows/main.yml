@@ -14,4 +14,4 @@ jobs:
       - run:  cd ${{ github.workspace }}/frontend && export NODE_OPTIONS="--max-old-space-size=8192" && npm i && sudo -E npm run build
       - name: List files in the repository
         run: echo "🍏 current working directory is  ${{ github.workspace }}"
-      - run: echo "🍏 This job's status is ${{ job.status }}"
+      - run: echo "🍏 This jobs status is ${{ job.status }}"
