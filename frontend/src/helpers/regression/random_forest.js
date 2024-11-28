@@ -25,6 +25,7 @@ export default class RandomForestRegressor extends RegressionModel {
             num_estimators: this.options.estimators.value <= 0 || !this.options.estimators.value ? 100 : +this.options.estimators.value,
             max_depth: this.options.depth.value <= 0 ? 5 : +this.options.depth.value,
             seed: this.seed,
+            explain: this.hasExplaination,
             features: [...Array(columns.length).keys()]
         };
         const script = `
@@ -33,18 +34,25 @@ export default class RandomForestRegressor extends RegressionModel {
             import matplotlib
             matplotlib.use("AGG")
             from sklearn.metrics import accuracy_score
-            from js import X_train,y_train,X_test,y_test,rf_type,max_features,num_estimators,max_depth,seed,features
+            from js import X_train,y_train,X_test,y_test,rf_type,max_features,num_estimators,max_depth,seed,features,explain
             from sklearn.inspection import PartialDependenceDisplay
             from sklearn.inspection import permutation_importance
 
+            features_importance = []
+            partial_dependence_plot_grids = []
+            partial_dependence_plot_avgs = []
             model = RandomForestRegressor(criterion=rf_type,max_features = max_features,n_estimators=num_estimators,max_depth = max_depth, random_state=seed)
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
-            pdp = PartialDependenceDisplay.from_estimator(model, X_train,features)
-            fi = permutation_importance(model,X_test,y_test,n_repeats=10)
-            avgs = list(map(lambda item:item['average'],pdp.pd_results))
-            grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
-            y_pred,avgs,[item[0].tolist() for item in grids ], list(fi.importances)            
+
+            if explain:
+                pdp = PartialDependenceDisplay.from_estimator(model, X_train, features)
+                fi = permutation_importance(model,X_test,y_test,n_repeats=10)
+                partial_dependence_plot_avgs = list(map(lambda item:item['average'],pdp.pd_results))
+                grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
+                features_importance = list(fi.importances)
+                partial_dependence_plot_grids = [item[0].tolist() for item in grids ]
+            y_pred,partial_dependence_plot_avgs,partial_dependence_plot_grids, features_importance           
         `;
         try {
             const { results, error } = await asyncRun(script, this.context);

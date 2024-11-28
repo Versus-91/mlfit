@@ -123,7 +123,7 @@ import { Settings, FeatureCategories, CV_OPTIONS } from '../helpers/settings'
 import { ModelFactory } from "@/helpers/model_factory";
 import { settingStore } from '@/stores/settings'
 import { applyDataTransformation, handle_missing_values, encode_dataset, evaluate_classification } from '@/helpers/utils';
-import { LabelEncoder, tensorflow } from 'danfojs/dist/danfojs-base';
+import { LabelEncoder, tensorflow, concat } from 'danfojs/dist/danfojs-base';
 import { toJSON, DataFrame } from 'danfojs';
 import axios from "axios";
 
@@ -196,7 +196,7 @@ export default {
             this.training = !this.training;
             this.$buefy.toast.open(
                 {
-                    duration: 3000,
+                    duration: 5000,
                     message: this.training ? 'started training ' + this.modelName : 'Successully fited ' + this.modelName,
                     type: this.training ? 'is-info' : 'is-success',
                 })
@@ -273,14 +273,45 @@ export default {
                 const targets = filterd_dataset.column(target)
                 filterd_dataset.drop({ columns: target, inplace: true })
                 const cross_validation_setting = this.crossValidationOption;
+
                 [filterd_dataset, categoricalFeatures] = encode_dataset(filterd_dataset, this.settings.items.filter(m => m.selected).filter(m => m.name !== this.settings.modelTarget).map(m => {
                     return {
                         name: m.name,
                         type: m.type
                     }
-                }), this.modelName)
-
-                let [x_train, y_train, x_test, y_test] = this.splitData(cross_validation_setting, filterd_dataset, targets);
+                }))
+                let x_train, y_train, x_test, y_test;
+                if (cross_validation_setting === CV_OPTIONS.KFOLD) {
+                    let performances = [];
+                    for (let i = 1; i < 6; i++) {
+                        [x_train, y_train, x_test, y_test] = this.kfoldSplit(filterd_dataset, targets, i);
+                        let uniqueLabels = [...new Set(y_train.values)];
+                        let labelEncoder, encoded_y, encoded_y_test;
+                        if (this.settings.classificationTask) {
+                            [labelEncoder, encoded_y, encoded_y_test] = this.encodeTarget(y_train.values, y_test.values)
+                        } else {
+                            encoded_y = y_train.values;
+                            encoded_y_test = y_test.values;
+                        }
+                        let model_factory = new ModelFactory();
+                        let model = model_factory.createModel(this.modelOption, this.modelConfigurations)
+                        model.hasExplaination = false;
+                        model.id = this.settings.getCounter
+                        this.toggleTraining()
+                        let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
+                        let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
+                        if (this.settings.classificationTask) {
+                            metrics = metrics[4]
+                        } else {
+                            metrics = metrics[0]
+                        }
+                        this.training = false;
+                        performances.push(metrics)
+                    }
+                    console.log(performances);
+                } else {
+                    [x_train, y_train, x_test, y_test] = this.splitData(cross_validation_setting, filterd_dataset, targets);
+                }
                 let uniqueLabels = [...new Set(y_train.values)];
                 let labelEncoder, encoded_y, encoded_y_test;
                 if (this.settings.classificationTask) {
@@ -293,6 +324,7 @@ export default {
                 let model = model_factory.createModel(this.modelOption, this.modelConfigurations)
                 model.id = this.settings.getCounter
                 this.toggleTraining()
+
                 let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
                 let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
 
@@ -355,16 +387,16 @@ export default {
         }
     },
     created: function () {
-        let x_train, y_train, x_test, y_test;
-        this.splitData = function (cross_validation_setting, filterd_dataset, targets) {
+        this.splitData = function (cross_validation_setting, filterd_dataset, targets, stepSize = 0.7) {
+            let x_train, y_train, x_test, y_test;
             let len = filterd_dataset.$data.length
             if (cross_validation_setting === CV_OPTIONS.SPLIT) {
-                const limit = Math.ceil(len * 70 / 100)
+                const limit = Math.ceil(len * stepSize)
                 const train_bound = `0:${limit}`
                 const test_bound = `${limit}:${len}`
-                x_train = filterd_dataset.iloc({ rows: [`0: ${limit}`] })
+                x_train = filterd_dataset.iloc({ rows: [train_bound] })
                 y_train = targets.iloc([train_bound])
-                x_test = filterd_dataset.iloc({ rows: [`${limit}: ${len}`] });
+                x_test = filterd_dataset.iloc({ rows: [test_bound] });
                 y_test = targets.iloc([test_bound]);
             } else if (cross_validation_setting === CV_OPTIONS.NO) {
                 x_train = filterd_dataset
@@ -373,6 +405,34 @@ export default {
                 y_test = targets
             }
             return [x_train, y_train, x_test, y_test]
+        }
+        this.kfoldSplit = function (filterd_dataset, targets, fold = 1) {
+            let x_train, y_train, x_test, y_test;
+            let len = filterd_dataset.$data.length
+            const lowerLimit = Math.ceil(len * ((fold - 1) * 0.2))
+            const upperLimit = Math.ceil(len * (fold * 0.2))
+            const train_bound_lower = lowerLimit != 0 ? `:${lowerLimit}` : null
+            const train_bound_upper = upperLimit != len ? `${upperLimit}:` : null
+            const test_bound = `${lowerLimit}:${upperLimit}`
+
+
+            let x_train_upper = train_bound_upper != null ? filterd_dataset.iloc({ rows: [train_bound_upper] }) : null
+            let y_train_upper = train_bound_upper != null ? targets.iloc([train_bound_upper]) : null
+            x_test = filterd_dataset.iloc({ rows: [test_bound] });
+            y_test = targets.iloc([test_bound]);
+            let x_train_lower = train_bound_lower != null ? filterd_dataset.iloc({ rows: [train_bound_lower] }) : null
+            let y_train_lower = train_bound_lower != null ? targets.iloc([train_bound_lower]) : null
+            if (x_train_lower && x_train_upper) {
+                x_train = concat({ dfList: [x_train_lower, x_train_upper], axis: 0 })
+                y_train = concat({ dfList: [y_train_lower, y_train_upper], axis: 0 })
+            } else {
+                x_train = x_train_lower == null ? x_train_upper : x_train_lower
+                y_train = x_train_lower == null ? y_train_upper : y_train_lower
+            }
+
+
+            return [x_train, y_train, x_test, y_test]
+
         }
         this.encodeTarget = function (y_train, y_test) {
             let labelEncoder = new LabelEncoder()

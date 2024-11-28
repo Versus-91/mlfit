@@ -15,6 +15,7 @@ export class ClassificationModel {
         this.plots = [];
         this.tables = [];
         this.seed = 1;
+        this.hasExplaination = true;
         this.id = null;
         this.helpSectionId = 'help';
 
@@ -30,7 +31,7 @@ export class ClassificationModel {
 
         const evaluation_result = evaluate_classification(predictions, y_test, encoder);
         const classes = encoder.inverseTransform(Object.values(encoder.$labels));
-        
+
         await this.chartController.plotConfusionMatrix(tensorflow.tensor(predictions), tensorflow.tensor(y_test), classes, Object.values(encoder.$labels), this.id);
         await this.chartController.classificationPCA(x_test.values, encoder.inverseTransform(y_test), evaluation_result, uniqueLabels, this.id);
         this.ui.predictions_table(x_test, encoder.inverseTransform(y_test), encoder.inverseTransform(predictions), null, this.id);

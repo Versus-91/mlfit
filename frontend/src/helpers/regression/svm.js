@@ -22,27 +22,34 @@ export default class SupportVectorMachineRegression extends RegressionModel {
             kernel: this.options.kernel,
             gamma: this.options.gamma,
             degree: this.options.degree,
+            explain: this.hasExplaination,
             seed: this.seed,
             features: [...Array(columns.length).keys()]
-
         };
         const script = `
         from sklearn import svm
         import matplotlib
         matplotlib.use("AGG")
-        from js import X_train,y_train,X_test,y_test,kernel,gamma,degree,seed,features
+        from js import X_train,y_train,X_test,y_test,kernel,gamma,degree,seed,features,explain
         from sklearn.inspection import PartialDependenceDisplay
         from sklearn.inspection import permutation_importance
 
+        
+        features_importance = []
+        partial_dependence_plot_grids = []
+        partial_dependence_plot_avgs = []
         model = svm.SVR(kernel=kernel)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 
-        pdp = PartialDependenceDisplay.from_estimator(model, X_train, features)
-        fi = permutation_importance(model,X_test,y_test,n_repeats=10)
-        avgs = list(map(lambda item:item['average'],pdp.pd_results))
-        grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
-        y_pred,avgs,[item[0].tolist() for item in grids ], list(fi.importances)
+        if explain:
+            pdp = PartialDependenceDisplay.from_estimator(model, X_train, features)
+            fi = permutation_importance(model,X_test,y_test,n_repeats=10)
+            partial_dependence_plot_avgs = list(map(lambda item:item['average'],pdp.pd_results))
+            grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
+            features_importance = list(fi.importances)
+            partial_dependence_plot_grids = [item[0].tolist() for item in grids ]
+        y_pred,partial_dependence_plot_avgs,partial_dependence_plot_grids, features_importance
     `;
         try {
             const { results, error } = await asyncRun(script, this.context);

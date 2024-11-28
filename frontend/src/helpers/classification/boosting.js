@@ -27,27 +27,32 @@ export default class Boosting extends ClassificationModel {
             estimators: this.options.estimators,
             seed: this.seed,
             pdpIndex: pdpIndex,
-            features: [...Array(columns.length).keys()]
-
-
+            features: [...Array(columns.length).keys()],
+            explain: this.hasExplaination
         };
         const script = `
         import matplotlib
         matplotlib.use("AGG")
-        from js import X_train,y_train,X_test,y_test,objective,max_depth,eta,estimators,seed,features
+        from js import X_train,y_train,X_test,y_test,objective,max_depth,eta,estimators,seed,features,explain
         from sklearn.inspection import PartialDependenceDisplay
         from sklearn.inspection import permutation_importance
         from sklearn.ensemble import GradientBoostingClassifier
 
+        features_importance = []
+        partial_dependence_plot_grids = []
+        partial_dependence_plot_avgs = []
+
         model = GradientBoostingClassifier(learning_rate = eta,n_estimators = estimators,max_depth =max_depth,random_state = seed )
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
-
-        pdp = PartialDependenceDisplay.from_estimator(model, X_train, features,target=0,method ='brute')
-        fi = permutation_importance(model,X_test,y_test,n_repeats=10)
-        avgs = list(map(lambda item:item['average'],pdp.pd_results))
-        grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
-        y_pred,avgs,[item[0].tolist() for item in grids ], list(fi.importances)
+        if explain:
+            pdp = PartialDependenceDisplay.from_estimator(model, X_train, features,target=0,method ='brute')
+            fi = permutation_importance(model,X_test,y_test,n_repeats=10)
+            partial_dependence_plot_avgs = list(map(lambda item:item['average'],pdp.pd_results))
+            grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
+            features_importance = list(fi.importances)
+            partial_dependence_plot_grids = [item[0].tolist() for item in grids ]
+        y_pred,partial_dependence_plot_avgs,partial_dependence_plot_grids, features_importance
     `;
         try {
             const { results, error } = await asyncRun(script, this.context);

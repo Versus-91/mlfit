@@ -20,6 +20,7 @@ export default class NaiveBayes extends ClassificationModel {
             X_train: x_train,
             y_train: y_train,
             y_test: y_test,
+            explain: this.hasExplaination,
             X_test: x_test,
             pdpIndex: pdpIndex,
             features: [...Array(columns.length).keys()]
@@ -30,13 +31,17 @@ export default class NaiveBayes extends ClassificationModel {
             from sklearn.naive_bayes import MultinomialNB
             import matplotlib
             matplotlib.use("AGG")
-            from js import X_train,y_train,X_test,nb_type,priors,smoothing,y_test,num_classes,features
+            from js import X_train,y_train,X_test,nb_type,priors,smoothing,y_test,num_classes,features,explain
             from sklearn.naive_bayes import GaussianNB
             from sklearn.inspection import PartialDependenceDisplay
             from sklearn.inspection import permutation_importance
             from sklearn.metrics import roc_auc_score
             from sklearn.metrics import roc_curve
             from sklearn.preprocessing import LabelBinarizer
+
+            features_importance = []
+            partial_dependence_plot_grids = []
+            partial_dependence_plot_avgs = []
             if priors is not None and priors.strip():
                 priors = [float(x) for x in priors.split(',')]
             else:
@@ -51,8 +56,6 @@ export default class NaiveBayes extends ClassificationModel {
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
             probas = model.predict_proba(X_test)
-            pdp = PartialDependenceDisplay.from_estimator(model, X_train, features,target=0)
-            fi = permutation_importance(model,X_test,y_test,n_repeats=10)
             tprs=[]
             fprs=[]
 
@@ -66,9 +69,15 @@ export default class NaiveBayes extends ClassificationModel {
                     fpr,tpr,_ = roc_curve(y_test_one_hot[:,i],probas[:,i])
                     fprs.append(fpr)
                     tprs.append(tpr)
-            avgs = list(map(lambda item:item['average'],pdp.pd_results))
-            grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
-            y_pred,avgs,[item[0].tolist() for item in grids ], list(fi.importances),fprs,tprs
+
+            if explain:
+                pdp = PartialDependenceDisplay.from_estimator(model, X_train, features,target=0,method ='brute')
+                fi = permutation_importance(model,X_test,y_test,n_repeats=10)
+                partial_dependence_plot_avgs = list(map(lambda item:item['average'],pdp.pd_results))
+                grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
+                features_importance = list(fi.importances)
+                partial_dependence_plot_grids = [item[0].tolist() for item in grids ]
+            y_pred,partial_dependence_plot_avgs,partial_dependence_plot_grids, features_importance,fprs,tprs
         `;
         try {
             const { results, error } = await asyncRun(script, this.context);

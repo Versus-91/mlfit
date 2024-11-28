@@ -1024,7 +1024,7 @@ export default class ChartController {
     }
     async plotConfusionMatrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
 
-        const confusionMatrix = await metrics.confusionMatrix(y, predictedLabels,uniqueClasses.length);
+        const confusionMatrix = await metrics.confusionMatrix(y, predictedLabels, uniqueClasses.length);
         let metric = await ClassificationMetric(y.arraySync(), predictedLabels.arraySync(), uniqueClasses)
         let accuracy = metric[4].toFixed(2);
         let f1Micro = metric[2].toFixed(2)
@@ -1094,7 +1094,7 @@ export default class ChartController {
                             sum = 0,
                             x = this.value;
 
-                        each(series.options.data, function (p, i) {
+                        series.options.data.forEach(function (p, i) {
                             if (p[0] === x) {
                                 if (p[1] < uniqueClasses.length) {
                                     sum += p[2];
@@ -1123,7 +1123,7 @@ export default class ChartController {
                             series = chart.series[0],
                             sum = 0,
                             x = this.value;
-                        each(series.options.data, function (p, i) {
+                        series.options.data.forEach(function (p, i) {
                             if (p[1] < uniqueClasses.length) {
                                 if (p[1] === x) {
                                     if (p[0] < uniqueClasses.length) {

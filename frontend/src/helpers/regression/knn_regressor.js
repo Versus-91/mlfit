@@ -20,22 +20,25 @@ export default class KNNRegressor extends RegressionModel {
             y_test: y_test,
             min: +this.options.min.value,
             max: +this.options.max.value,
-
+            explain: this.hasExplaination,
             features: [...Array(columns.length).keys()]
         };
         const script = `
         import matplotlib
         matplotlib.use("AGG")
-        from js import X_train,y_train,X_test,y_test,features,min,max
+        from js import X_train,y_train,X_test,y_test,features,min,max,explain
         from sklearn.inspection import PartialDependenceDisplay
         from sklearn.inspection import permutation_importance
         from sklearn.neighbors import KNeighborsRegressor
 
-
+        features_importance = []
+        partial_dependence_plot_grids = []
+        partial_dependence_plot_avgs = []
         k_neighbor_results=[]
         best_model = None
         best_r2 = 0
         best_preds = []
+
         for i,metric in enumerate(['manhattan','euclidean']):
             for n in range(min,max+1):
                 model = KNeighborsRegressor(n_neighbors=n,metric=metric)
@@ -48,12 +51,15 @@ export default class KNNRegressor extends RegressionModel {
                     best_model = model
                     best_n = n
                     best_preds = preds
-    
-        pdp = PartialDependenceDisplay.from_estimator(best_model, X_train, features,target=0)
-        fi = permutation_importance(best_model,X_test,y_test,n_repeats=10)
-        avgs = list(map(lambda item:item['average'],pdp.pd_results))
-        grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
-        best_preds,avgs,[item[0].tolist() for item in grids ], list(fi.importances),k_neighbor_results,best_n
+
+        if explain:
+            pdp = PartialDependenceDisplay.from_estimator(best_model, X_train, features)
+            fi = permutation_importance(best_model,X_test,y_test,n_repeats=10)
+            partial_dependence_plot_avgs = list(map(lambda item:item['average'],pdp.pd_results))
+            grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
+            features_importance = list(fi.importances)
+            partial_dependence_plot_grids = [item[0].tolist() for item in grids ]
+        best_preds,partial_dependence_plot_avgs,partial_dependence_plot_grids, features_importance,k_neighbor_results,best_n
     `;
         try {
             const { results, error } = await asyncRun(script, this.context);
