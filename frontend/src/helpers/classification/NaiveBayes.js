@@ -63,8 +63,12 @@ export default class NaiveBayes extends ClassificationModel {
             y_test_one_hot = label_binrize.transform(y_test)
             
             try:
-                curve = roc_curve(y_test,probas)
-            except:
+                fpr,tpr,_  = roc_curve(y_test,probas[:,1])
+                fprs.append(fpr)
+                tprs.append(tpr)
+
+            except Exception as e:
+                print(e)
                 for i in range(num_classes):
                     fpr,tpr,_ = roc_curve(y_test_one_hot[:,i],probas[:,i])
                     fprs.append(fpr)

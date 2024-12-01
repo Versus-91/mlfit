@@ -166,6 +166,7 @@ export default class ChartController {
             name: 'diagonal',
         };
         var layout = {
+            showlegend: false,
             title: 'ROC Curve',
             xaxis: { title: 'False Positive Rate' },
             yaxis: { title: 'True Positive Rate' },
@@ -1102,7 +1103,7 @@ export default class ChartController {
                             }
                         });
 
-                        return sum;
+                        return +sum.toFixed(2);
                     }
                 }
             }],
@@ -2167,7 +2168,7 @@ export default class ChartController {
                 xref: 'paper',
                 x: 0.05,
             },
-            legend: { "orientation": "h" },
+            showlegend: false,
             xaxis: {
                 linecolor: 'black',
                 linewidth: 1,
@@ -2431,22 +2432,40 @@ export default class ChartController {
                 }
             )
         });
+        traces.push(
+            {
+                x: [0, 1],
+                y: [0, 1],
+                mode: 'line',
+                name: 'Chance Line',
+                marker: { color: 'black' },
+                line: {
+                    dash: 'dot',
+                    width: 1
+                }
+            }
+        )
         var layout = {
-            autosize: true,
+            margin: {
+                b: 40,
+            },
+            showlegend: false,
             xaxis: {
                 linecolor: 'black',
                 linewidth: 1,
+                range: [-0.1, 1.1],
                 mirror: true,
                 title: {
-                    text: 'false positive rate',
+                    text: 'False positive rate',
                 },
             },
             yaxis: {
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
+                range: [-0.1, 1.1],
                 title: {
-                    text: 'true positive rate',
+                    text: 'True positive rate',
                 }
             },
         };
