@@ -4,7 +4,7 @@ import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import PCA from './dimensionality-reduction/pca';
 import { binarize } from './utils'
 import * as ss from "simple-statistics"
-import { schemeTableau10, interpolateYlGnBu } from 'd3-scale-chromatic';
+import { schemeTableau10, interpolateBlues } from 'd3-scale-chromatic';
 import { FeatureCategories } from "./settings";
 import { metrics as ClassificationMetric, encode_name } from './utils.js';
 import { metrics } from '@tensorflow/tfjs-vis';
@@ -15,7 +15,7 @@ import { MinMaxScaler } from 'danfojs/dist/danfojs-base';
 export default class ChartController {
     constructor() {
         this.color_scheme = schemeTableau10;
-        this.color_scheme_sequential = interpolateYlGnBu;
+        this.color_scheme_sequential = interpolateBlues;
 
     }
 
@@ -2148,13 +2148,13 @@ export default class ChartController {
         });
         let max = Math.max(...avgs)
         importances.forEach((importance, index) => {
+
             traces.push(
                 {
                     x: Array.from(importance),
                     type: 'box',
                     name: columns[index],
-                    marker: { color: this.color_scheme_sequential((avgs[index] / max) + 0.2) },
-
+                    marker: { color: this.color_scheme_sequential((avgs[index] / max) + 0.3) },
                 }
             )
         });

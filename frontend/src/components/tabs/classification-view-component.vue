@@ -36,8 +36,6 @@
         </div>
         <div class="column is-6" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
         <div class="column is-6" style="height: 400px;" :id="'pca_results_' + result.id"></div>
-        <div class="column is-6">
-        </div>
         <div class="column is-12" v-if="result.name === 'Logistic Regression'">
             <div class="columns is-multiline">
 
