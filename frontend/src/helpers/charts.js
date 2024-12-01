@@ -2418,7 +2418,7 @@ export default class ChartController {
 
         Plotly.newPlot('autoencoder', data, layout);
     }
-    plotROC(id, fprs, tprs, labels) {
+    plotROC(id, fprs, tprs, labels, auc) {
 
         let traces = []
         fprs.forEach((fpr, index) => {
@@ -2447,7 +2447,7 @@ export default class ChartController {
         )
         var layout = {
             title: {
-                text: labels.length > 2 ? ' One-vs-Rest Strategy ROC Curve' : 'ROC Curve',
+                text: (labels.length > 2 ? ' One-vs-Rest Strategy ROC Curve' : 'ROC Curve') + ' AUC: ' + (+auc).toFixed(2),
                 font: {
                     size: 14
                 },

@@ -58,17 +58,22 @@ export default class NaiveBayes extends ClassificationModel {
             probas = model.predict_proba(X_test)
             tprs=[]
             fprs=[]
+            aucs = []
 
             label_binrize = LabelBinarizer().fit(y_train)
             y_test_one_hot = label_binrize.transform(y_test)
             
             try:
                 fpr,tpr,_  = roc_curve(y_test,probas[:,1])
+                auc = roc_auc_score(y_test,probas[:,1])
+                aucs.append(auc)
                 fprs.append(fpr)
                 tprs.append(tpr)
 
             except Exception as e:
                 print(e)
+                auc = roc_auc_score(y_test,probas,multi_class = 'ovr')
+                aucs.append(auc)
                 for i in range(num_classes):
                     fpr,tpr,_ = roc_curve(y_test_one_hot[:,i],probas[:,i])
                     fprs.append(fpr)
@@ -81,7 +86,7 @@ export default class NaiveBayes extends ClassificationModel {
                 grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
                 features_importance = list(fi.importances)
                 partial_dependence_plot_grids = [item[0].tolist() for item in grids ]
-            y_pred,partial_dependence_plot_avgs,partial_dependence_plot_grids, features_importance,fprs,tprs
+            y_pred,partial_dependence_plot_avgs,partial_dependence_plot_grids, features_importance,fprs,tprs,aucs
         `;
         try {
             const { results, error } = await asyncRun(script, this.context);
@@ -93,6 +98,7 @@ export default class NaiveBayes extends ClassificationModel {
                 this.importances = Array.from(results[3]);
                 this.fpr = Array.from(results[4]);
                 this.tpr = Array.from(results[5]);
+                this.auc = Array.from(results[6]);
 
             } else if (error) {
                 console.log("pyodideWorker error: ", error);
@@ -110,7 +116,7 @@ export default class NaiveBayes extends ClassificationModel {
             this.chartController.PFIBoxplot(this.id, this.importances, columns);
             this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
         }
-        this.chartController.plotROC(this.id, this.fpr, this.tpr, uniqueLabels);
+        this.chartController.plotROC(this.id, this.fpr, this.tpr, uniqueLabels, this.auc);
 
     }
 }

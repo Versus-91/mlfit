@@ -144,8 +144,8 @@ export default {
 
     data() {
         return {
-            dataScalingBehavior: true,
-            explainModel: false,
+            dataScalingBehavior: false,
+            explainModel: true,
             training: false,
             tuneModel: false,
             seed: 1,
