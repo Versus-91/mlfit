@@ -63,13 +63,14 @@
                     <b-checkbox v-model="dataScalingBehavior" size="is-small">Standardize by default</b-checkbox>
                 </b-field>
                 <b-field>
+                    <b-checkbox v-model="explainModel" size="is-small">Explain the model</b-checkbox>
+                </b-field>
+                <b-field>
                     <b-button @click="train" size="is-small" icon-pack="fas" icon-left="play" :loading="training"
                         :disabled="!dataframe">
                         train</b-button>
                 </b-field>
-
                 <b-loading :is-full-page="false" v-model="training"></b-loading>
-
             </div>
         </section>
         <section v-else>
@@ -144,6 +145,7 @@ export default {
     data() {
         return {
             dataScalingBehavior: true,
+            explainModel: false,
             training: false,
             tuneModel: false,
             seed: 1,
@@ -324,13 +326,14 @@ export default {
                 let model = model_factory.createModel(this.modelOption, this.modelConfigurations)
                 model.id = this.settings.getCounter
                 this.toggleTraining()
-
+                model.hasExplaination = this.explainModel;
                 let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
                 let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
 
                 this.settings.addResult({
                     id: model.id,
                     helpSectionId: model.helpSectionId,
+                    hasExplaination: model.hasExplaination,
                     snapshot: {
                         x: x_train.values,
                         y: encoded_y,

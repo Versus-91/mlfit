@@ -72,8 +72,10 @@ export default class DiscriminantAnalysis extends ClassificationModel {
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
-        this.chartController.PFIBoxplot(this.id, this.importances, columns);
-        this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
+        if (this.hasExplaination) {
+            this.chartController.PFIBoxplot(this.id, this.importances, columns);
+            this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
+        }
     }
 
 }

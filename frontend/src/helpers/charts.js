@@ -4,7 +4,7 @@ import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import PCA from './dimensionality-reduction/pca';
 import { binarize } from './utils'
 import * as ss from "simple-statistics"
-import { schemeCategory10, interpolateYlGnBu } from 'd3-scale-chromatic';
+import { schemeTableau10, interpolateYlGnBu } from 'd3-scale-chromatic';
 import { FeatureCategories } from "./settings";
 import { metrics as ClassificationMetric, encode_name } from './utils.js';
 import { metrics } from '@tensorflow/tfjs-vis';
@@ -14,7 +14,7 @@ import { MinMaxScaler } from 'danfojs/dist/danfojs-base';
 
 export default class ChartController {
     constructor() {
-        this.color_scheme = schemeCategory10;
+        this.color_scheme = schemeTableau10;
         this.color_scheme_sequential = interpolateYlGnBu;
 
     }
@@ -1871,7 +1871,7 @@ export default class ChartController {
                 y: names,
                 type: 'heatmap',
                 hoverongaps: false,
-                colorscale: 'YlGnBu',
+                colorscale: 'Greens',
                 showscale: false,
             }
         ];
@@ -1927,7 +1927,7 @@ export default class ChartController {
             y: names,
             z: correlations,
             type: 'heatmap',
-            colorscale: 'YlGnBu',
+            colorscale: 'Greens',
             xaxis: 'x',
             yaxis: 'y',
             colorbar: {

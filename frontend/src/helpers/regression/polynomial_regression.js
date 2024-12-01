@@ -11,6 +11,7 @@ export default class PolynomialRegression extends RegressionModel {
         super();
         this.options = options;
         this.model = null;
+        this.hasExplaination = false    
         this.summary = null;
         this.model_stats_matrix = null;
 

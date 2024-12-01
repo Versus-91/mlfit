@@ -13,6 +13,7 @@ export default class LinearRegression extends RegressionModel {
         this.model = null;
         this.summary = null;
         this.model_stats_matrix = null;
+        this.hasExplaination = false;
 
     }
 

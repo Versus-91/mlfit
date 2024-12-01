@@ -84,8 +84,10 @@ export default class KNNModel extends ClassificationModel {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
         this.chartController.KNNPerformancePlot(this.k_neighbor_results, this.best_n, this.id);
         this.plots.push('knn_table_' + this.id);
-        this.chartController.PFIBoxplot(this.id, this.importances, columns);
-        this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
+        if (this.hasExplaination) {
+            this.chartController.PFIBoxplot(this.id, this.importances, columns);
+            this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
+        }
 
     }
 

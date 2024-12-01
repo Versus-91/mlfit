@@ -7,6 +7,8 @@ export default class BSplineRegression extends RegressionModel {
         super();
         this.options = options;
         this.model = null;
+        this.hasExplaination = false;
+
     }
     async train(x_train, y_train, x_test, y_test, columns) {
         this.context = {
@@ -15,8 +17,9 @@ export default class BSplineRegression extends RegressionModel {
             X_test: x_test,
             y_test: y_test,
             knots: +this.options.knots.value,
+            explain: this.hasExplaination,
             degree: +this.options.degree.value,
-            feaures: [...Array(columns.length).keys()]
+            features: [...Array(columns.length).keys()]
 
 
         };
@@ -31,8 +34,12 @@ export default class BSplineRegression extends RegressionModel {
         from sklearn import linear_model
         from sklearn.metrics import mean_squared_error
         from sklearn.pipeline import make_pipeline
-        from js import X_train,y_train,X_test,knots,degree,y_test,feaures
+        from js import X_train,y_train,X_test,knots,degree,y_test,features,explain
 
+
+        features_importance = []
+        partial_dependence_plot_grids = []
+        partial_dependence_plot_avgs = []
         
         model = make_pipeline(
             SplineTransformer(n_knots=knots, degree=degree), 
@@ -41,15 +48,16 @@ export default class BSplineRegression extends RegressionModel {
         model.fit(X_train, y_train)
         pred_train = model.predict(X_train)
         rmse_train = mean_squared_error(y_train, pred_train, squared=True)
-        # Test data
         y_pred = model.predict(X_test)
+        if explain:
+            pdp = PartialDependenceDisplay.from_estimator(model, X_train, features,method ='brute')
+            fi = permutation_importance(model,X_test,y_test,n_repeats=10)
+            partial_dependence_plot_avgs = list(map(lambda item:item['average'],pdp.pd_results))
+            grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
+            features_importance = list(fi.importances)
+            partial_dependence_plot_grids = [item[0].tolist() for item in grids ]
+        y_pred,partial_dependence_plot_avgs,partial_dependence_plot_grids, features_importance
 
-        pdp = PartialDependenceDisplay.from_estimator(model, X_train, feaures)
-        fi = permutation_importance(model,X_test,y_test)
-        avgs = list(map(lambda item:item['average'],pdp.pd_results))
-        grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
-
-        y_pred,avgs,[item[0].tolist() for item in grids ], list(fi.importances)
         `;
         try {
             const { results, error } = await asyncRun(script, this.context);
@@ -70,7 +78,9 @@ export default class BSplineRegression extends RegressionModel {
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
-        this.chartController.PFIBoxplot(this.id, this.importances, columns);
-        this.chartController.plotPDPRegression(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
+        if (this.hasExplaination) {
+            this.chartController.PFIBoxplot(this.id, this.importances, columns);
+            this.chartController.plotPDPRegression(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
+        }
     }
 }

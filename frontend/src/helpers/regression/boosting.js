@@ -29,11 +29,11 @@ export default class BoostingRegression extends RegressionModel {
             estimators: this.options.estimators,
             seed: this.seed,
             explain: this.hasExplaination,
-            feaures: [...Array(columns.length).keys()]
+            features: [...Array(columns.length).keys()]
         };
         const script = `
 
-        from js import X_train,y_train,X_test,y_test,objective,max_depth,eta,estimators,seed,feaures,explain
+        from js import X_train,y_train,X_test,y_test,objective,max_depth,eta,estimators,seed,features,explain
         from sklearn.inspection import PartialDependenceDisplay
         from sklearn.inspection import permutation_importance
         from sklearn.ensemble import GradientBoostingRegressor
@@ -79,8 +79,11 @@ export default class BoostingRegression extends RegressionModel {
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
-        this.chartController.PFIBoxplot(this.id, this.importances, columns);
-        this.chartController.plotPDPRegression(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
+        if (this.hasExplaination) {
+            this.chartController.PFIBoxplot(this.id, this.importances, columns);
+            this.chartController.plotPDPRegression(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
+        }
+
     }
 
 }

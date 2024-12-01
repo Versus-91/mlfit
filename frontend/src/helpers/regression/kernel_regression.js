@@ -5,6 +5,7 @@ export default class KernelRegression {
     constructor(options) {
         this.options = options;
         this.model = null;
+        this.hasExplaination = false;
 
     }
     async train(x_train, y_train, x_test, _, labels) {

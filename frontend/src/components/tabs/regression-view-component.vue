@@ -29,8 +29,7 @@
                 <p class="ml-2 my-1 subtitle is-size-7 ">MSE : {{ result.metrics[0].toFixed(2) }}</p>
                 <p class="ml-2 my-1 subtitle is-size-7 ">R2 : {{ result.metrics[1].toFixed(2) }}</p>
                 <button class="button is-danger has-text-white is-small" @click="deleteTab()">Delete </button>
-                <button class="button is-success is-small"
-                    @click="toggleHelp(result.helpSectionId)">Help</button>
+                <button class="button is-success is-small" @click="toggleHelp(result.helpSectionId)">Help</button>
 
             </b-message>
         </div>
@@ -134,9 +133,8 @@
                 <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
                     v-if="result.name.toString().includes('neighbour')">
                 </div>
-                <div class="column is-6">
-                </div>
-                <div class="column is-12" style="height: 400px;" :id="'pfi_boxplot_' + result.id">
+                <div class="column is-6" style="height: 400px;" v-show="result.hasExplaination"
+                    :id="'pfi_boxplot_' + result.id">
                 </div>
             </div>
         </div>
@@ -177,7 +175,7 @@ export default {
     },
     created() {
         this.pdpFeature = this.settings.features.filter(feature => feature.name != this.settings.target)[0].name;
-        
+
     },
 
     data() {
