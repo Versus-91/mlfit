@@ -2446,6 +2446,12 @@ export default class ChartController {
             }
         )
         var layout = {
+            title: {
+                text: labels.length > 2 ? ' One-vs-Rest Strategy ROC Curve' : 'ROC Curve',
+                font: {
+                    size: 14
+                },
+            },
             margin: {
                 b: 40,
             },
