@@ -18,8 +18,7 @@
                         {{ feature + ', ' }}
                     </span></p>
                 <p class="ml-2 my-1 subtitle is-6 is-size-7">Transformations :
-                    <span  v-for="transformation in result.transformations" :key="transformation.name"
-                        >
+                    <span v-for="transformation in result.transformations" :key="transformation.name">
                         {{ transformation.name + ': ' + transformation.scaler + ',' }}
                     </span>
                 </p>
@@ -134,6 +133,8 @@
         <div class="column is-6" style="height: 400px;" :id="'roc_plot_' + result.id">
         </div>
         <div class="column is-6" style="height: 400px;" :id="'proba_plot_' + result.id">
+        </div>
+        <div class="column is-6" style="height: 400px;" :id="'proba_violin_plot_' + result.id">
         </div>
     </div>
 </template>

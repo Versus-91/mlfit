@@ -932,8 +932,7 @@ export default class ChartController {
     }
     probabilities_boxplot(probs, labels, true_labels, index) {
 
-        var colorIndices = labels.map((label, i) => this.indexToColor(i));
-        const num_columns = probs[0].length;
+        var colorIndices = labels.map((_, i) => this.indexToColor(i));
         let traces = [];
         let probablitiesFormatted = []
         let subsets = {};
@@ -947,7 +946,6 @@ export default class ChartController {
             const classProbas = subsets[trueClass];
             classProbas.forEach((proba) => {
                 const max = Math.max(...proba)
-                const maxProbablityIndex = proba.findIndex(prob => prob == max)
                 probablitiesFormatted.push({
                     trueClass: trueClass,
                     predicted: proba.findIndex(prob => prob == max),
@@ -981,57 +979,71 @@ export default class ChartController {
         // Plot the box plots using Plotly
         Plotly.newPlot("proba_plot_" + index, traces, {
             yaxis: {
-                title: 'Predicted Probability'
+                title: 'Predicted Probability',
+                zeroline: false
             },
             legend: {
                 x: 1,
                 xanchor: 'right',
                 y: 1
             },
-            margin: {
-                l: 60,
-                r: 30,
-                b: 60,
-                t: 0,
-                pad: 20
-            },
             boxmode: 'group'
-        });
+        }, { responsive: true });
     }
-    probablities_violin_plot(probs, classes, labels) {
-        var colorIndices = labels.map((label, i) => this.indexToColor(i));
-        const arrayColumn = (arr, n) => arr.map(x => x[n]);
-        const num_columns = probs[0].length
-        let traces = []
-        for (let i = 0; i < num_columns; i++) {
-            traces.push({
-                name: classes[i],
-                type: 'violin',
-                y: arrayColumn(probs, i),
-                points: 'none',
-                box: {
-                    visible: true
-                },
-                boxpoints: false,
-                line: {
-                    color: colorIndices[i]
-                },
-                fillcolor: colorIndices[i],
-                opacity: 0.6,
-                meanline: {
-                    visible: true
-                },
+    probabilities_violin(probs, labels, true_labels, index) {
 
-            });
-        }
-        var layout = {
-            title: "Violin Plot",
-            yaxis: {
-                zeroline: false
+        var colorIndices = labels.map((_, i) => this.indexToColor(i));
+        let traces = [];
+        let probablitiesFormatted = []
+        let subsets = {};
+        true_labels.forEach((true_label, i) => {
+            if (!(true_label in subsets)) {
+                subsets[true_label] = [];
             }
+            subsets[true_label].push(probs[i]);
+        });
+        for (const trueClass in subsets) {
+            const classProbas = subsets[trueClass];
+            classProbas.forEach((proba) => {
+                const max = Math.max(...proba)
+                probablitiesFormatted.push({
+                    trueClass: trueClass,
+                    predicted: proba.findIndex(prob => prob == max),
+                    probablity: proba
+                })
+            })
+        }
+        let i = 0;
+        let x = probablitiesFormatted.map(prob => prob.predicted);
+        for (let true_label in subsets) {
+            traces.push({
+                legendgroup: true_label,
+                scalegroup: true_label,
+                type: 'violin',
+                name: true_label,
+                line: {
+                    color: colorIndices[i],
+                },
+                y: probablitiesFormatted.map(m => m.probablity[i]),
+                x: x
+            });
+            i++;
         }
 
-        Plotly.newPlot('probs_violin_plot', traces, layout);
+
+        // Plot the box plots using Plotly
+        Plotly.newPlot("proba_violin_plot_" + index, traces, {
+            yaxis: {
+                title: 'Predicted Probability',
+                zeroline: false
+            },
+            legend: {
+                x: 1,
+                xanchor: 'right',
+                y: 1
+            },
+            violinmode: 'group'
+        }, { responsive: true });
     }
     async plotConfusionMatrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
 

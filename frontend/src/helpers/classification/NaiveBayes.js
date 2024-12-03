@@ -118,6 +118,8 @@ export default class NaiveBayes extends ClassificationModel {
         }
         this.chartController.plotROC(this.id, this.fpr, this.tpr, uniqueLabels, this.auc);
         this.chartController.probabilities_boxplot(this.probas, predictions, y_test, this.id);
+        this.chartController.probabilities_violin(this.probas, predictions, y_test, this.id);
+
 
     }
 }
