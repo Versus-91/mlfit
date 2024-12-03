@@ -931,13 +931,11 @@ export default class ChartController {
         }, 0);
     }
     probabilities_boxplot(probs, labels, true_labels, index) {
-        true_labels.filter(m => m == 0).length
-        true_labels.filter(m => m == 1).length
+
         var colorIndices = labels.map((label, i) => this.indexToColor(i));
         const num_columns = probs[0].length;
         let traces = [];
-
-        // Create subsets of probabilities based on the true labels
+        let probablitiesFormatted = []
         let subsets = {};
         true_labels.forEach((true_label, i) => {
             if (!(true_label in subsets)) {
@@ -945,31 +943,43 @@ export default class ChartController {
             }
             subsets[true_label].push(probs[i]);
         });
-        // Generate box plots for each true label class
+        for (const trueClass in subsets) {
+            const classProbas = subsets[trueClass];
+            classProbas.forEach((proba) => {
+                const max = Math.max(...proba)
+                const maxProbablityIndex = proba.findIndex(prob => prob == max)
+                probablitiesFormatted.push({
+                    trueClass: trueClass,
+                    predicted: proba.findIndex(prob => prob == max),
+                    probablity: proba
+                })
+            })
+        }
+        let i = 0;
+        let x = probablitiesFormatted.map(prob => prob.predicted);
         for (let true_label in subsets) {
-            let subset = subsets[true_label];
-            for (let j = 0; j < num_columns; j++) {
-                let data = subset.map(item => item[j]);
-                traces.push({
-                    type: 'box',
-                    name: ` class ${true_label} : Predicted ${labels[j]}`,
-                    marker: {
-                        color: colorIndices[j]
-                    },
-                    y: data
-                });
-            }
+            traces.push({
+                type: 'box',
+                name: true_label,
+                marker: {
+                    color: colorIndices[i],
+                    size: 2,
+                    line: {
+                        outlierwidth: 0.3
+                    }
+                },
+                line: {
+                    width: 0.5
+                },
+                y: probablitiesFormatted.map(m => m.probablity[i]),
+                x: x
+            });
+            i++;
         }
 
-        // Create a div for the plot
-        let content = `
-            <div class="column is-6" id="probs_box_plot_${index}" style="height: 350px;">
-            </div>
-        `;
-        $("#tabs_info li[data-index='" + index + "'] #results_" + index + "").append(content);
 
         // Plot the box plots using Plotly
-        Plotly.newPlot("probs_box_plot_" + index, traces, {
+        Plotly.newPlot("proba_plot_" + index, traces, {
             yaxis: {
                 title: 'Predicted Probability'
             },
@@ -1570,11 +1580,18 @@ export default class ChartController {
                                             boxtraces.push({
                                                 y: box_items.map(item => item[i]),
                                                 marker: {
-                                                    color: this.indexToColor(m)
+                                                    color: this.indexToColor(m),
+                                                    size: 2,
+                                                    line: {
+                                                        outlierwidth: 0.3
+                                                    }
                                                 },
                                                 type: 'box',
                                                 xaxis: 'x' + (index),
                                                 yaxis: 'y' + (index),
+                                                line: {
+                                                    width: 0.5
+                                                }
                                             })
                                         }
                                     }

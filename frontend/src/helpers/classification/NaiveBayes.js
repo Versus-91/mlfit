@@ -86,7 +86,7 @@ export default class NaiveBayes extends ClassificationModel {
                 grids = list(map(lambda item:item['grid_values'],pdp.pd_results))
                 features_importance = list(fi.importances)
                 partial_dependence_plot_grids = [item[0].tolist() for item in grids ]
-            y_pred,partial_dependence_plot_avgs,partial_dependence_plot_grids, features_importance,fprs,tprs,aucs
+            y_pred,partial_dependence_plot_avgs,partial_dependence_plot_grids, features_importance,fprs,tprs,aucs,probas
         `;
         try {
             const { results, error } = await asyncRun(script, this.context);
@@ -99,7 +99,7 @@ export default class NaiveBayes extends ClassificationModel {
                 this.fpr = Array.from(results[4]);
                 this.tpr = Array.from(results[5]);
                 this.auc = Array.from(results[6]);
-
+                this.probas = Array.from(results[7]);
             } else if (error) {
                 console.log("pyodideWorker error: ", error);
             }
@@ -117,6 +117,7 @@ export default class NaiveBayes extends ClassificationModel {
             this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
         }
         this.chartController.plotROC(this.id, this.fpr, this.tpr, uniqueLabels, this.auc);
+        this.chartController.probabilities_boxplot(this.probas, predictions, y_test, this.id);
 
     }
 }

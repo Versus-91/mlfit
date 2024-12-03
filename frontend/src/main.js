@@ -9,7 +9,6 @@ import { createPinia, PiniaVuePlugin } from 'pinia'
 import VueMathjax from 'vue-mathjax'
 Plotly.setPlotConfig({
   autosize: true,
-  staticPlot: true,
   displaylogo: false,
   modeBarButtonsToRemove: ['resetScale2d', 'zoom2d', 'pan', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '], // Remove certain buttons from the mode bar
 });
