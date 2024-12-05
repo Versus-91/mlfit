@@ -4,6 +4,7 @@ export default class DiscriminantAnalysis extends ClassificationModel {
     constructor(options) {
         super();
         this.options = options
+        this.hasProbability = true;
         this.helpSectionId = 'discriminant_analysis_help';
 
     }

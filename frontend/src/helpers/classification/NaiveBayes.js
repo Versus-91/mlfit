@@ -7,6 +7,8 @@ export default class NaiveBayes extends ClassificationModel {
         this.options = options
         this.model = null;
         this.helpSectionId = 'naive_bayes_help';
+        this.hasProbability = true;
+
 
     }
     // eslint-disable-next-line no-unused-vars
@@ -22,6 +24,7 @@ export default class NaiveBayes extends ClassificationModel {
             y_test: y_test,
             explain: this.hasExplaination,
             X_test: x_test,
+
             pdpIndex: pdpIndex,
             features: [...Array(columns.length).keys()]
 

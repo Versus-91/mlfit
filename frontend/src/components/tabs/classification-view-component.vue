@@ -130,11 +130,12 @@
         <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
             v-if="result.name.toString().includes('neighbour')">
         </div>
-        <div class="column is-6" style="height: 400px;" :id="'roc_plot_' + result.id">
+        <div class="column is-6" v-show="result.showProbas" style="height: 400px;" :id="'roc_plot_' + result.id">
         </div>
-        <div class="column is-6" style="height: 400px;" :id="'proba_plot_' + result.id">
+        <div class="column is-6" v-show="result.showProbas" style="height: 400px;" :id="'proba_plot_' + result.id">
         </div>
-        <div class="column is-6" style="height: 400px;" :id="'proba_violin_plot_' + result.id">
+        <div class="column is-6" v-show="result.showProbas" style="height: 400px;"
+            :id="'proba_violin_plot_' + result.id">
         </div>
     </div>
 </template>

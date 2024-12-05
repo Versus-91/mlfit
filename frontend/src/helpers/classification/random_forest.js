@@ -8,7 +8,9 @@ export default class RandomForest extends ClassificationModel {
         this.helpSectionId = 'cart_help';
         this.options = options;
         this.model = null;
-        this.predictions = []
+        this.predictions = [];
+        this.hasProbability = true;
+
     }
     // eslint-disable-next-line no-unused-vars
     async train(x_train, y_train, x_test, y_test, columns, __, pdpIndex) {

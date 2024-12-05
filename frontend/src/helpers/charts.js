@@ -1790,7 +1790,7 @@ export default class ChartController {
                     }
                 },]
         };
-        Plotly.newPlot("knn_table_" + id, traces, layout);
+        Plotly.newPlot("knn_table_" + id, traces, layout, { responsive: true });
     }
     KNNPerformancePlotRegression(results, optimalTrainSpec, optimalTestSpec, id) {
         let traces = []

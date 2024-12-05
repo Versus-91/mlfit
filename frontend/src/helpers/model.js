@@ -12,6 +12,7 @@ export class ClassificationModel {
         this.ui = new UI(null, null)
         this.task = null;
         this.predictions = [];
+        this.hasProbability = false;
         this.plots = [];
         this.tables = [];
         this.seed = 1;

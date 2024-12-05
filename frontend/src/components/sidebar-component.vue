@@ -334,6 +334,7 @@ export default {
 
                 this.settings.addResult({
                     id: model.id,
+                    showProbas: model.hasProbability,
                     helpSectionId: model.helpSectionId,
                     hasExplaination: model.hasExplaination,
                     snapshot: {
