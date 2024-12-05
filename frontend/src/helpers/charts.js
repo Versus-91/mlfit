@@ -2202,6 +2202,7 @@ export default class ChartController {
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
+                zeroline: false,
 
             },
             yaxis: {
@@ -2209,6 +2210,7 @@ export default class ChartController {
                 linewidth: 1,
                 mirror: true,
                 automargin: true,
+                zeroline: false,
 
             },
         };

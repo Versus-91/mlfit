@@ -9,7 +9,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                    }})</p>
+                                        }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -34,9 +34,29 @@
                         <div class="column is-12">
                             <article class="message is-dark">
                                 <div class="message-body">
-                                    <b-button class="is-success is-small mb-2" @click="correlationMatrix"
-                                        :disabled="loading" :loading="loading">Correlation
-                                        Cluster Diagram</b-button>
+                                    <b-field>
+                                        <b-select placeholder="Method" v-model="method">
+                                            <option value="single">single</option>
+                                            <option value="complete">complete</option>
+                                            <option value="average">average</option>
+                                            <option value="weighted">weighted</option>
+                                            <option value="centroid">centroid</option>
+                                            <option value="median">median</option>
+                                            <option value="ward">ward</option>
+                                        </b-select>
+                                        <b-select placeholder="Metric" v-model="metric">
+                                            <option value="euclidean">euclidean</option>
+                                            <option value="hamming">hamming</option>
+                                            <option value="mahalanobis">mahalanobis</option>
+                                            <option value="matching">matching</option>
+                                        </b-select>
+                                        <p class="control">
+                                            <b-button class="is-success" @click="correlationMatrix" :disabled="loading"
+                                                :loading="loading">Correlation
+                                                Cluster Diagram</b-button>
+                                        </p>
+                                    </b-field>
+
                                     <div class="columns is-multiline is-centered mb-2">
                                         <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
                                         <div class="column is-5" id="correlation_matrix_ordered" style="height: 400px;">
@@ -169,6 +189,8 @@ export default {
     },
     data() {
         return {
+            metric: 'euclidean',
+            method: 'single',
             img: null,
             continuousFeaturesStats: [
             ],
@@ -221,7 +243,7 @@ export default {
                 this.hasCorrelationMatrix = true;
                 await chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns, 'Correlation Matrix');
                 let mtx = new Clustermap();
-                let [dendogram, orderedMatrix, columns] = await mtx.train(values, numericColumns);
+                let [dendogram, orderedMatrix, columns] = await mtx.train(values, numericColumns, this.metric, this.method);
                 await chartController.dendogramPlot('correlation_matrix_ordered', orderedMatrix, dendogram, columns, numericColumns);
                 this.loading = false;
 

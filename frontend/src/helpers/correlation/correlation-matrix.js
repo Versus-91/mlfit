@@ -6,23 +6,25 @@ export default class Clustermap {
         this.model = null;
 
     }
-    async train(x_train, columns) {
+    async train(x_train, columns, metric, method) {
         this.context = {
             X_train: x_train,
-            columns: columns
+            columns: columns,
+            metric: metric,
+            method: method,
         };
         const script = `
         import matplotlib
         matplotlib.use("AGG")
         import matplotlib.pyplot as plt
-        from js import X_train,columns
+        from js import X_train,columns,method,metric
         import seaborn as sns
         import pandas as pd
 
         sns.set(font_scale=1.5)
         df = pd.DataFrame(X_train,columns = columns)
         plt.figure(figsize=(12, 8))
-        plot = sns.clustermap(df.corr(),cmap="YlGnBu_r",annot = True, fmt=".2f")
+        plot = sns.clustermap(df.corr(),cmap="YlGnBu_r",annot = True, fmt=".2f",method=method,metric=metric)
         reordered_index = plot.dendrogram_row.reordered_ind
         reordered_columns = plot.dendrogram_col.reordered_ind
         clustered_corr = df.corr().iloc[reordered_index, :].iloc[:, reordered_columns]

@@ -80,37 +80,39 @@
             <section>
 
                 <p class="my-2 title is-size-7">Configure Features :</p>
-
-                <table class="table is-narrow is-size-7 is-fullwidth">
-                    <thead>
-                        <tr>
-                            <th>
-                                select
-                            </th>
-                            <th>
-                                name
-                            </th>
-                            <th>
-                                scale
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(feature, index) in featureSettings" :key="index">
-                            <td> <b-checkbox v-model="feature.selected"></b-checkbox>
-                            </td>
-                            <td>{{ feature.name }}</td>
-                            <td>
-                                <b-select :expanded="true" v-model="feature.type" size="is-small"
-                                    @input="checkmodelTask">
-                                    <option v-for="option in featureTypeOptions" :value="option.id" :key="option.id">
-                                        {{ option.name }}
-                                    </option>
-                                </b-select>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-container">
+                    <table class="table is-striped is-bordered is-narrow is-size-7 is-fullwidth">
+                        <thead>
+                            <tr>
+                                <th>
+                                    select
+                                </th>
+                                <th>
+                                    name
+                                </th>
+                                <th>
+                                    scale
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(feature, index) in featureSettings" :key="index">
+                                <td> <b-checkbox v-model="feature.selected"></b-checkbox>
+                                </td>
+                                <td>{{ feature.name }}</td>
+                                <td>
+                                    <b-select :expanded="true" v-model="feature.type" size="is-small"
+                                        @input="checkmodelTask">
+                                        <option v-for="option in featureTypeOptions" :value="option.id"
+                                            :key="option.id">
+                                            {{ option.name }}
+                                        </option>
+                                    </b-select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </section>
         </section>
     </div>
