@@ -33,7 +33,7 @@ export class RegressionModel {
                 predictions.forEach((element, i) => {
                     residuals.push(y[i] - element)
                 });
-                current.ui.yhat_plot(y, predictions, 'regression_y_yhat_' + current.id, 'OLS predictions')
+                current.ui.yhat_plot(y, predictions, 'regression_y_yhat_' + current.id, 'Predictions')
                 current.ui.residual_plot(predictions, residuals, 'errors_' + current.id, 'Residuals')
                 this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
                 this.plots.push('regression_y_yhat_' + current.id);

@@ -269,7 +269,67 @@
                 :formula="'$$ y \\sim Bernoulli(\\phi)   ,   x|y = 0 \\sim \\mathcal{N(\\mu_0,\\Sigma)}$$'"></vue-mathjax>
 
         </p>
+        <h4>Partial Dependence Plot</h4>
+        <p>
+            The partial dependence plot (short PDP or PD plot) shows the marginal effect one or two features have on the
+            predicted outcome of a machine learning model. A partial dependence plot can show
+            whether the relationship between the target and a feature is linear, monotonic or more complex. For example,
+            when applied to a linear regression model, partial dependence plots always show a linear relationship.
 
+            The partial dependence function for regression is defined as:
+            <vue-mathjax :formula="'$$ f_s(x_s) = \\int{f(x_s,x_c)dP(x_c)}$$'"></vue-mathjax>
+            The x<sub>s</sub>
+            are the features for which the partial dependence function should be plotted and
+            X<sub>c</sub>
+            are the other features used in the machine learning model
+            ^
+            f
+            , which are here treated as random variables. Usually, there are only one or two features in the set S. The
+            feature(s) in S are those for which we want to know the effect on the prediction. The feature vectors
+            X<sub>s</sub>
+            and
+            X<sub>c</sub>
+            combined make up the total feature space x. Partial dependence works by marginalizing the machine learning
+            model output over the distribution of the features in set C, so that the function shows the relationship
+            between the features in set S we are interested in and the predicted outcome. By marginalizing over the
+            other features, we get a function that depends only on features in S, interactions with other features
+            included.
+
+            The partial function
+            ^
+            f
+            S
+            is estimated by calculating averages in the training data, also known as Monte Carlo method:
+
+            <vue-mathjax :formula="'$$ f_s(x_s) = \\frac{1}{n} \\sum_{n = 1}^{n} f(x_s,x_c)$$'"></vue-mathjax>
+
+            The partial function tells us for given value(s) of features S what the average marginal effect on the
+            prediction is. In this formula,
+            x
+            (
+            i
+            )
+            C
+            are actual feature values from the dataset for the features in which we are not interested, and n is the
+            number of instances in the dataset. An assumption of the PDP is that the features in C are not correlated
+            with the features in S. If this assumption is violated, the averages calculated for the partial dependence
+            plot will include data points that are very unlikely or even impossible (see disadvantages).
+
+            For classification where the machine learning model outputs probabilities, the partial dependence plot
+            displays the probability for a certain class given different values for feature(s) in S. An easy way to deal
+            with multiple classes is to draw one line or plot per class.
+
+            The partial dependence plot is a global method: The method considers all instances and gives a statement
+            about the global relationship of a feature with the predicted outcome.
+        </p>
+        <h4>Categorical features</h4>
+        <p>
+            So far, we have only considered numerical features. For categorical features, the partial dependence is very
+            easy to calculate. For each of the categories, we get a PDP estimate by forcing all data instances to have
+            the same category. For example, if we look at the bike rental dataset and are interested in the partial
+            dependence plot for the season, we get four numbers, one for each season. To compute the value for “summer”,
+            we replace the season of all data instances with “summer” and average the predictions.
+        </p>
     </section>
 
 

@@ -978,9 +978,17 @@ export default class ChartController {
 
         // Plot the box plots using Plotly
         Plotly.newPlot("proba_plot_" + index, traces, {
+            xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+            },
             yaxis: {
                 title: 'Predicted Probability',
-                zeroline: false
+                linecolor: 'black',
+                zeroline: false,
+                linewidth: 1,
+                mirror: true,
             },
             legend: {
                 x: 1,
@@ -1033,9 +1041,17 @@ export default class ChartController {
 
         // Plot the box plots using Plotly
         Plotly.newPlot("proba_violin_plot_" + index, traces, {
+            xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+            },
             yaxis: {
                 title: 'Predicted Probability',
-                zeroline: false
+                linecolor: 'black',
+                zeroline: false,
+                linewidth: 1,
+                mirror: true,
             },
             legend: {
                 x: 1,
@@ -1408,7 +1424,7 @@ export default class ChartController {
     ScatterplotMatrix(items, features, labels, number_of_categoricals, is_classification = true, numeric_columns, categorical_columns, dataset) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                let unique_labels = [...new Set(labels)];
+                let unique_labels = [...new Set(labels)].sort((a, b) => a - b);
                 var colors = labels.map(label => this.indexToColor(unique_labels.indexOf(label)));
                 let traces = []
                 let index = 1;
@@ -1423,6 +1439,7 @@ export default class ChartController {
                             let breaks = []
                             let allData = []
                             if (is_classification) {
+
                                 if (i >= features.length - number_of_categoricals) {
                                     if (i === features.length - 1) {
                                         for (let k = 0; k < unique_labels.length; k++) {
@@ -1436,6 +1453,7 @@ export default class ChartController {
                                             yaxis: 'y' + (index),
                                             marker: {
                                                 color: unique_labels.map((_, z) => this.indexToColor(z))
+                                                , opacity: 0.7
                                             }
                                         })
                                     } else {
@@ -1460,6 +1478,7 @@ export default class ChartController {
                                                 yaxis: 'y' + (index),
                                                 marker: {
                                                     color: this.indexToColor(i)
+                                                    , opacity: 0.7
                                                 }
                                             })
                                         })
@@ -1497,6 +1516,7 @@ export default class ChartController {
                                             fill: 'tozeroy',
                                             line: {
                                                 color: this.indexToColor(i),
+                                                opacity: 0.7,
                                                 width: 3
                                             }
                                         })
@@ -1550,6 +1570,7 @@ export default class ChartController {
                                         name: 'Red',
                                         line: {
                                             color: 'rgb(219, 64, 82)',
+                                            opacity: 0.7,
                                             width: 3
                                         }
                                     })
@@ -1565,6 +1586,7 @@ export default class ChartController {
                                 marker: {
                                     colorscale: 'Portland',
                                     color: is_classification ? colors : labels,
+                                    opacity: 0.7,
                                     size: 2,
                                 },
                                 type: 'scattergl',
