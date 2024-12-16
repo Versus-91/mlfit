@@ -9,7 +9,7 @@ import { FeatureCategories } from "./settings";
 import { metrics as ClassificationMetric, encode_name } from './utils.js';
 import { metrics } from '@tensorflow/tfjs-vis';
 import { scale_data } from './utils';
-import { tensorflow } from 'danfojs/dist/danfojs-base';
+import { tensorflow, LabelEncoder } from 'danfojs/dist/danfojs-base';
 import { MinMaxScaler } from 'danfojs/dist/danfojs-base';
 
 export default class ChartController {
@@ -2530,5 +2530,50 @@ export default class ChartController {
         };
 
         Plotly.newPlot('roc_plot_' + id, traces, layout, { responsive: true });
+    }
+    parallelCoordinatePlot(features, labels, column_names, is_classification) {
+        if (is_classification) {
+            let labelEncoder = new LabelEncoder()
+            labelEncoder.fit(labels)
+            labels = labelEncoder.transform(labels)
+
+        }
+
+        var uniqueLabels = [...new Set(labels)];
+        var colors = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label)));
+        var data = [{
+            type: 'parcoords',
+            pad: [40, 40, 40, 40],
+            line: {
+                colorscale: 'Jet',
+                color: labels
+            },
+            dimensions: []
+        }];
+
+        column_names.forEach((column_name, i) => {
+            data[0].dimensions.push({
+                label: column_name,
+                values: features.map(m => m[i])
+            })
+
+        })
+
+        var layout = {
+            width: 800,
+            annotations: [
+                {
+                    showarrow: false,
+                    text: 'Higher',
+                    x: 0, y: 1, xref: 'paper', yref: 'paper'
+                },
+                {
+                    showarrow: false,
+                    text: 'Lower',
+                    x: 0.9, y: .25, xref: 'paper', yref: 'paper'
+                }]
+        };
+
+        Plotly.newPlot('parallel_coordinate_plot', data, layout);
     }
 }

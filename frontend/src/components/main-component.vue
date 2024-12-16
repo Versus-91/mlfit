@@ -9,7 +9,7 @@
                                 <div class="column is-12 has-text-left">
                                     <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                         this.settings.datasetShape.columns
-                                        }})</p>
+                                    }})</p>
                                 </div>
                                 <div class="column is-6">
                                     <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -30,6 +30,9 @@
                         </b-message>
                         <section>
                             <scatterplot-matrix-component ref="splom"></scatterplot-matrix-component>
+                        </section>
+                        <section>
+                            <parallel-coordinate-plot-component></parallel-coordinate-plot-component>
                         </section>
                         <div class="column is-12">
                             <article class="message is-dark">
@@ -159,6 +162,7 @@ import { toJSON } from 'danfojs';
 import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
 import ResultsComponent from './tabs/results-component.vue'
 import SPLOMComponent from './visualization/scatterplot-matrix-component.vue'
+import PCPComponent from './visualization/parallel-coordinate-plot-component.vue'
 import MethodsTabComponent from './tabs/methods-tab-component.vue'
 
 import { FeatureCategories } from '../helpers/settings'
@@ -176,6 +180,7 @@ export default {
         'dmensionality-reduction-component': PCAComponent,
         'results-component': ResultsComponent,
         'scatterplot-matrix-component': SPLOMComponent,
+        'parallel-coordinate-plot-component': PCPComponent,
         'methods-tab-component': MethodsTabComponent
 
     },
