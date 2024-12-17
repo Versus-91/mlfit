@@ -1740,7 +1740,7 @@ export default class ChartController {
                 }
 
                 Plotly.react('scatterplot_mtx', traces, layout, {
-                    staticPlot: true
+                    staticPlot: false
                 })
                 resolve()
             }, 1000);
@@ -1923,7 +1923,14 @@ export default class ChartController {
                 y: names,
                 type: 'heatmap',
                 hoverongaps: false,
-                colorscale: 'Greens',
+                colorscale: [
+                    [-1.0, 'rgb(255, 0, 0)'],     // Red for -1.0
+                    [-0.5, 'rgb(255, 100, 100)'], // Light red for -0.5
+                    [0.0, 'rgb(255, 255, 255)'],  // White for 0.0
+                    [0.5, 'rgb(100, 255, 100)'],  // Light green for 0.5
+                    [1.0, 'rgb(0, 255, 0)'],      // Green for 1.0
+
+                ],
                 showscale: false,
             }
         ];
@@ -1979,12 +1986,19 @@ export default class ChartController {
             y: names,
             z: correlations,
             type: 'heatmap',
-            colorscale: 'Greens',
+            colorscale: [
+                ['-1.0', 'red'],   // -1 maps to red
+                ['0', 'white'],  // 0 maps to white
+                ['1.0', 'green']   // 1 maps to green
+            ],
             xaxis: 'x',
             yaxis: 'y',
             colorbar: {
                 thickness: 10,
-                len: 0.5
+                len: 0.5,
+                cmin: 0,
+                cmax: 1
+
             }
         };
         let indices = []
@@ -2543,7 +2557,7 @@ export default class ChartController {
         var colors = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label)));
         var data = [{
             type: 'parcoords',
-            pad: [40, 40, 40, 40],
+            pad: [20, 20, 20, 20],
             line: {
                 colorscale: 'Jet',
                 color: labels

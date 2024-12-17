@@ -34,8 +34,9 @@
                         <section>
                             <parallel-coordinate-plot-component></parallel-coordinate-plot-component>
                         </section>
-                        <div class="column is-12">
-                            <article class="message is-dark">
+                        <section>
+                            <article class="message is-info">
+                                <div class="message-header">correlation matrix</div>
                                 <div class="message-body">
                                     <b-field>
                                         <b-select placeholder="Method" v-model="method">
@@ -68,7 +69,7 @@
                                 </div>
 
                             </article>
-                        </div>
+                        </section>
                     </section>
                     <section v-else>
                         <b-message type="is-danger" has-icon icon-pack="fas">

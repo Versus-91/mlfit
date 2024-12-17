@@ -1,9 +1,14 @@
 <template>
-    <section>
-        <div id="parallel_coordinate_plot"></div>
-        <button class="button is-info is-small" @click="ParallelCoordinatePlot()">
-            Parallel Coordinate Plot
-        </button>
+    <section class="my-1">
+        <article class="message is-info">
+            <div class="message-header">Parallel Coordinate Plot</div>
+            <div class="message-body">
+                <div id="parallel_coordinate_plot"></div>
+                <button class="button is-info is-small" @click="ParallelCoordinatePlot()">
+                    Parallel Coordinate Plot
+                </button>
+            </div>
+        </article>
     </section>
 
 </template>

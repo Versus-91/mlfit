@@ -450,7 +450,9 @@ export default class UI {
         let categoricalFeaturesStats = []
 
         const continuousHeaders =
-            [{ field: 'name', label: '#' }, { field: 'min', label: 'Min' }, { field: 'max', label: 'Max' }, { field: 'median', label: 'Median' }
+            [{ field: 'name', label: '#' }, { field: 'min', label: 'Min' }, { field: 'max', label: 'Max' },
+            { field: 'mean', label: 'Mean' },
+            { field: 'median', label: 'Median' }
                 , { field: 'std', label: 'std' }, { field: 'missingVlauesCount', label: '# NAs' }
             ];
         const categoricalHeaders =
