@@ -1,5 +1,5 @@
 <template>
-    <div class="columns is-multiline">
+    <article class="columns is-multiline">
         <div class="column is-12 mb-1">
             <b-message type="is-info " has-icon icon-pack="fas" class="has-text-left">
                 <p class="my-1 is-size-7">
@@ -30,8 +30,9 @@
                 <p class="ml-2 my-1 subtitle is-size-7">f1 micro : {{ result.metrics[2].toFixed(2) }}</p>
                 <p class="ml-2 my-1 subtitle is-size-7"> f1 macro :{{ result.metrics[3].toFixed(2) }}</p>
                 <button class="button is-danger has-text-white is-small" @click="deleteTab()">Delete </button>
-                <button class="button is-success is-small" @click="toggleHelp(result.helpSectionId)">Help
+                <button class="button is-success is-small" @click="toggleHelp(result.helpSectionId)">Method description
                 </button>
+                <button class="button is-info is-small">Download the code</button>
             </b-message>
         </div>
         <div class="column is-6" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
@@ -124,20 +125,40 @@
                 </div>
             </div>
         </div>
-        <div class="column is-6 my-1" style="height: 400px;" :id="'pfi_boxplot_' + result.id"
-            v-show="result.hasExplaination">
+        <div class="column is-12" v-show="result.hasExplaination">
+            <article class="message is-info">
+                <div class="message-header"> Partial Dependence Plot and Permutation Feature Importance</div>
+                <div class="message-body mx-1">
+                    <div class="columns is-multiline">
+                        <div class="column is-6 my-1" style="height: 400px;" :id="'pfi_boxplot_' + result.id">
+                        </div>
+                        <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
+                            v-if="result.name.toString().includes('neighbour')">
+                        </div>
+                    </div>
+                    <br>
+                </div>
+            </article>
         </div>
-        <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
-            v-if="result.name.toString().includes('neighbour')">
+        <div class="column is-12" v-show="result.showProbas">
+            <article class="message is-info">
+                <div class="message-header"> Probabilities</div>
+                <div class="message-body mx-1">
+                    <div class="columns is-multiline">
+                        <div class="column is-6" style="height: 400px;" :id="'roc_plot_' + result.id">
+                        </div>
+                        <div class="column is-6" style="height: 400px;" :id="'proba_plot_' + result.id">
+                        </div>
+                        <div class="column is-6" style="height: 400px;" :id="'proba_violin_plot_' + result.id">
+                        </div>
+                    </div>
+                    <br>
+
+                </div>
+            </article>
         </div>
-        <div class="column is-6" v-show="result.showProbas" style="height: 400px;" :id="'roc_plot_' + result.id">
-        </div>
-        <div class="column is-6" v-show="result.showProbas" style="height: 400px;" :id="'proba_plot_' + result.id">
-        </div>
-        <div class="column is-6" v-show="result.showProbas" style="height: 400px;"
-            :id="'proba_violin_plot_' + result.id">
-        </div>
-    </div>
+    </article>
+
 </template>
 
 <script>
