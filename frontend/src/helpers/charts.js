@@ -2545,22 +2545,30 @@ export default class ChartController {
 
         Plotly.newPlot('roc_plot_' + id, traces, layout, { responsive: true });
     }
+
+    uniformSplist(n) {
+        let numbers = []
+        for (let i = 0; i < n; i++) {
+            numbers.push(i / (n - 1))
+        }
+        return numbers;
+    }
     parallelCoordinatePlot(features, labels, column_names, is_classification) {
+        let labelEncoder = new LabelEncoder()
         if (is_classification) {
-            let labelEncoder = new LabelEncoder()
             labelEncoder.fit(labels)
             labels = labelEncoder.transform(labels)
-
         }
+        var uniqueLabels = [...new Set(labels)].sort((a, b) => a - b);
+        let points = this.uniformSplist(uniqueLabels.length)
+        let colorMapping = uniqueLabels.map((label, i) => [points[i], this.indexToColor(label)])
 
-        var uniqueLabels = [...new Set(labels)];
-        var colors = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label)));
         var data = [{
             type: 'parcoords',
             pad: [20, 20, 20, 20],
             line: {
-                colorscale: 'Jet',
-                color: labels
+                color: labels,
+                colorscale: is_classification ? colorMapping : 'jet',
             },
             dimensions: []
         }];
@@ -2574,20 +2582,8 @@ export default class ChartController {
         })
 
         var layout = {
-            width: 800,
-            annotations: [
-                {
-                    showarrow: false,
-                    text: 'Higher',
-                    x: 0, y: 1, xref: 'paper', yref: 'paper'
-                },
-                {
-                    showarrow: false,
-                    text: 'Lower',
-                    x: 0.9, y: .25, xref: 'paper', yref: 'paper'
-                }]
         };
 
-        Plotly.newPlot('parallel_coordinate_plot', data, layout);
+        Plotly.newPlot('parallel_coordinate_plot', data, layout, { responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
     }
 }
