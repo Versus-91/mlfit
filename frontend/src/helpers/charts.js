@@ -1740,7 +1740,8 @@ export default class ChartController {
                 }
 
                 Plotly.react('scatterplot_mtx', traces, layout, {
-                    staticPlot: false
+                    staticPlot: false,
+                    modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath ']
                 })
                 resolve()
             }, 1000);
@@ -1923,14 +1924,10 @@ export default class ChartController {
                 y: names,
                 type: 'heatmap',
                 hoverongaps: false,
-                colorscale: [
-                    [-1.0, 'rgb(255, 0, 0)'],     // Red for -1.0
-                    [-0.5, 'rgb(255, 100, 100)'], // Light red for -0.5
-                    [0.0, 'rgb(255, 255, 255)'],  // White for 0.0
-                    [0.5, 'rgb(100, 255, 100)'],  // Light green for 0.5
-                    [1.0, 'rgb(0, 255, 0)'],      // Green for 1.0
-
-                ],
+                colorscale: [[0, 'red'],
+                [0.5, 'white'],
+                [0.5, 'white'],
+                [1.0, 'green']],
                 showscale: false,
             }
         ];
@@ -1956,9 +1953,9 @@ export default class ChartController {
                 var currentValue = correlations[i][j];
                 let textColor
                 if (currentValue <= 0.0) {
-                    textColor = 'white';
-                } else {
                     textColor = 'black';
+                } else {
+                    textColor = 'white';
                 }
                 var result = {
                     xref: 'x1',
@@ -1968,7 +1965,7 @@ export default class ChartController {
                     text: currentValue.toFixed(2),
                     font: {
                         family: 'Arial',
-                        size: 10,
+                        size: 7,
                         color: textColor
                     },
                     showarrow: false,
@@ -1987,16 +1984,18 @@ export default class ChartController {
             z: correlations,
             type: 'heatmap',
             colorscale: [
-                ['-1.0', 'red'],   // -1 maps to red
-                ['0', 'white'],  // 0 maps to white
-                ['1.0', 'green']   // 1 maps to green
+                [0, 'red'],
+                [0.5, 'white'],
+                [0.5, 'white'],
+                [1.0, 'green']
             ],
+
             xaxis: 'x',
             yaxis: 'y',
             colorbar: {
                 thickness: 10,
                 len: 0.5,
-                cmin: 0,
+                cmin: -1,
                 cmax: 1
 
             }
@@ -2192,6 +2191,12 @@ export default class ChartController {
                 ticktext: names,
             },
             showlegend: false,
+            coloraxis: {
+                colorscale: 'YlGnBu',
+                showscale: true,
+                cmin: -1,
+                cmax: 1
+            },
             margin: { l: 60, r: 30, b: 60, t: 30 },
         };
 
