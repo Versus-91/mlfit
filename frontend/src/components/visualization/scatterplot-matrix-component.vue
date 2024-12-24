@@ -18,7 +18,15 @@
                         <p class="title is-size-7 mt-1" v-else>{{ feature.name }}</p>
                     </div>
                     <br>
-                    <button @click="scaleData()" class="button mt-2 is-info is-small">update</button>
+                    <div class="column is-12">
+                        <h5 class="title is-7 has-text-left">Merge classes
+                        </h5>
+                        <b-table class="is-size-7" :data="classesInfo" :columns="classesInfoColumns" checkable
+                            :narrowed="true" :checked-rows.sync="selectedClasses"></b-table>
+                    </div>
+                    <div class="column is-12">
+                        <button @click="scaleData()" class="button mt-2 is-info is-small">update</button>
+                    </div>
                 </div>
 
                 <b-loading :is-full-page="false" v-model="isLoading"></b-loading>
@@ -53,11 +61,13 @@ export default {
             features: [],
             df: null,
             rawData: null,
+            classesInfo: [],
+            selectedClasses: [],
+            classesInfoColumns: [],
         }
     },
     methods: {
         async dispalySPLOM(dataframe) {
-
             try {
                 this.isLoading = true;
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
@@ -70,6 +80,27 @@ export default {
                 dataframe.dropNa({ axis: 1, inplace: true })
                 await chartController.ScatterplotMatrix(dataframe.loc({ columns: features }).values, features, dataframe.column(this.settings.modelTarget).values, categorical_columns.length,
                     this.settings.isClassification, numericColumns, categorical_columns, this.dataframe)
+                if (this.settings.isClassification) {
+
+                    let targetValues = this.settings.df.column(this.settings.modelTarget).values;
+                    let samplesLength = targetValues.length;
+                    let classes = new Set(...[targetValues]);
+                    let result = []
+                    classes.forEach(cls => {
+                        result.push({
+                            class: cls,
+                            mode: (targetValues.filter(val => val === cls).length / samplesLength).toFixed(2)
+                        })
+                    });
+                    this.classesInfo = result;
+                    this.classesInfoColumns = [{
+                        field: 'class',
+                        label: ' class'
+                    }, {
+                        field: 'mode',
+                        label: ' mode'
+                    }]
+                }
                 this.isLoading = false;
 
             } catch (error) {
@@ -78,15 +109,25 @@ export default {
         },
         async scaleData() {
             this.df = new DataFrame(this.settings.rawData);
+            if (this.settings.isClassification) {
+                let newClass = this.selectedClasses.map(m => m.class).join('-');
+                this.selectedClasses.forEach(cls => {
+                    this.df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
+                });
+                this.settings.setClassTransformation(this.selectedClasses)
+            }
+
             let validTransformations = this.settings.items.filter(column => column.selected && column.type === 1)
             this.isLoading = true;
             Plotly.purge('scatterplot_mtx')
             applyDataTransformation(this.df, validTransformations.map(transformation => transformation.name), validTransformations);
             await this.dispalySPLOM(this.df)
             this.isLoading = false;
+            this.selectedClasses = []
             validTransformations.forEach(transformation => {
                 this.settings.addTransformation(transformation)
             });
+            this.$emit('coordinate-plot', true)
         },
         initSPLOM() {
             this.df = new DataFrame(this.settings.rawData);

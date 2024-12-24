@@ -464,8 +464,8 @@ export default class UI {
             const column = continuousFeatures[i];
             continuousFeaturesStats.push({
                 name: column,
-                min: data.column(column).min(),
-                max: data.column(column).max(),
+                min: data.column(column).min().toFixed(2),
+                max: data.column(column).max().toFixed(2),
                 median: data.column(column).median().toFixed(2),
                 mean: data.column(column).mean().toFixed(2),
                 std: data.column(column).std().toFixed(2),

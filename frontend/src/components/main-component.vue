@@ -26,13 +26,16 @@
                                     <b-table class="is-size-7" :data="sampleData" :columns="datasetColumns"
                                         :narrowed="true"></b-table>
                                 </div>
+
                             </div>
                         </b-message>
                         <section>
-                            <scatterplot-matrix-component ref="splom"></scatterplot-matrix-component>
+                            <scatterplot-matrix-component @coordinate-plot="showCoordinatePlot()"
+                                ref="splom"></scatterplot-matrix-component>
                         </section>
                         <section>
-                            <parallel-coordinate-plot-component></parallel-coordinate-plot-component>
+                            <parallel-coordinate-plot-component
+                                ref="coordinate_plot"></parallel-coordinate-plot-component>
                         </section>
                         <section>
                             <article class="message is-info">
@@ -210,6 +213,7 @@ export default {
             ],
             datasetColumns: [
             ],
+
             isActive: true,
             hasCorrelationMatrix: false,
             loading: false
@@ -234,9 +238,13 @@ export default {
                     }
                 });
                 this.sampleData = toJSON(this.settings.df.head(5));
+
                 this.$refs.splom?.initSPLOM();
 
             }
+        },
+        showCoordinatePlot() {
+            this.$refs.coordinate_plot.ParallelCoordinatePlot()
         },
         async correlationMatrix() {
             this.loading = true;

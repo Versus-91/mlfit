@@ -8,6 +8,7 @@ export const settingStore = defineStore({
         rawData: {},
         features: [],
         transformations: [],
+        classTransformations: [],
         results: [],
         datasetName: '',
         activeTab: 0,
@@ -84,6 +85,9 @@ export const settingStore = defineStore({
                 return
             }
             this.features.push(feature)
+        },
+        setClassTransformation(transformations) {
+            this.classTransformations = transformations
         },
         addTransformation(transformation) {
             let index = this.transformations.findIndex(m => m.name === transformation.name);
