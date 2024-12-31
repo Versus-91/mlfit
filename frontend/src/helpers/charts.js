@@ -4,7 +4,7 @@ import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import PCA from './dimensionality-reduction/pca';
 import { binarize } from './utils'
 import * as ss from "simple-statistics"
-import { schemeTableau10, interpolateBlues } from 'd3-scale-chromatic';
+import { schemeTableau10, interpolateBlues, interpolateRainbow } from 'd3-scale-chromatic';
 import { FeatureCategories } from "./settings";
 import { metrics as ClassificationMetric, encode_name } from './utils.js';
 import { metrics } from '@tensorflow/tfjs-vis';
@@ -15,7 +15,7 @@ import { MinMaxScaler } from 'danfojs/dist/danfojs-base';
 export default class ChartController {
     constructor() {
         this.color_scheme = schemeTableau10;
-        this.color_scheme_sequential = interpolateBlues;
+        this.color_scheme_sequential = interpolateRainbow;
 
     }
 
@@ -185,8 +185,8 @@ export default class ChartController {
                 .cast('float32');
         });
     }
-    indexToColor(index) {
-        return this.color_scheme[index + 1 % this.color_scheme.length];
+    indexToColor(index, max) {
+        return this.color_scheme_sequential((index + 1) / max);
     }
     reshape(array, shape) {
         if (shape.length === 0) return array[0];
@@ -244,7 +244,7 @@ export default class ChartController {
                     name: label,
                     marker: {
                         size: 4,
-                        color: this.indexToColor(i),
+                        color: this.indexToColor(i, uniqueLabels.length),
                     }
                 })
             })
@@ -400,7 +400,7 @@ export default class ChartController {
             }
             let column_values = raw_values.values;
             let subsets = [];
-            var colorIndices = uniqueLabels.map(label => this.indexToColor(uniqueLabels.indexOf(label)));
+            var colorIndices = uniqueLabels.map(label => this.indexToColor(uniqueLabels.indexOf(label), uniqueLabels.legend));
             if (!is_classification) {
                 subsets.push(dataset[column].values);
             } else {
@@ -626,7 +626,7 @@ export default class ChartController {
     async classificationPCA(dataset, labels, missclassifications, uniqueLabels, index) {
 
         const pca = new PCA(dataset, { center: true, scale: true });
-        var colorIndices = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label)));
+        var colorIndices = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label), uniqueLabels.length));
         const pca_data = await pca.predict(dataset, { nComponents: 2 })
         let x = []
         let y = []
@@ -740,7 +740,7 @@ export default class ChartController {
                     name: label,
                     marker: {
                         size: 4,
-                        color: this.indexToColor(i),
+                        color: this.indexToColor(i, uniqueLabels.length),
                     }
                 })
             })
@@ -751,7 +751,7 @@ export default class ChartController {
                 mode: 'markers',
                 type: 'scatter',
                 marker: {
-                    color: x,
+                    color: this.indexToColor(x),
                     colorscale: 'YlOrRd',
                     size: 4,
                     colorbar: {
@@ -931,8 +931,8 @@ export default class ChartController {
         }, 0);
     }
     probabilities_boxplot(probs, labels, true_labels, index) {
-
-        var colorIndices = labels.map((_, i) => this.indexToColor(i));
+        var uniqueLabels = [...new Set(labels)];
+        var colorIndices = labels.map((_, i) => this.indexToColor(i, uniqueLabels.length));
         let traces = [];
         let probablitiesFormatted = []
         let subsets = {};
@@ -999,8 +999,8 @@ export default class ChartController {
         }, { responsive: true });
     }
     probabilities_violin(probs, labels, true_labels, index) {
-
-        var colorIndices = labels.map((_, i) => this.indexToColor(i));
+        var uniqueLabels = [...new Set(labels)];
+        var colorIndices = labels.map((_, i) => this.indexToColor(i, uniqueLabels.length));
         let traces = [];
         let probablitiesFormatted = []
         let subsets = {};
@@ -1425,7 +1425,7 @@ export default class ChartController {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 let unique_labels = [...new Set(labels)].sort((a, b) => a - b);
-                var colors = labels.map(label => this.indexToColor(unique_labels.indexOf(label)));
+                var colors = labels.map(label => this.indexToColor(unique_labels.indexOf(label), unique_labels.length));
                 let traces = []
                 let index = 1;
                 if (unique_labels.length === 2) {
@@ -1452,7 +1452,7 @@ export default class ChartController {
                                             xaxis: 'x' + (index),
                                             yaxis: 'y' + (index),
                                             marker: {
-                                                color: unique_labels.map((_, z) => this.indexToColor(z))
+                                                color: unique_labels.map((_, z) => this.indexToColor(z, unique_labels.length))
                                                 , opacity: 0.7
                                             }
                                         })
@@ -1477,7 +1477,7 @@ export default class ChartController {
                                                 xaxis: 'x' + (index),
                                                 yaxis: 'y' + (index),
                                                 marker: {
-                                                    color: this.indexToColor(i)
+                                                    color: this.indexToColor(i, unique_labels.length)
                                                     , opacity: 0.7
                                                 }
                                             })
@@ -1515,7 +1515,7 @@ export default class ChartController {
                                             name: 'Red',
                                             fill: 'tozeroy',
                                             line: {
-                                                color: this.indexToColor(i),
+                                                color: this.indexToColor(i, allData.length),
                                                 opacity: 0.7,
                                                 width: 3
                                             }
@@ -1614,7 +1614,7 @@ export default class ChartController {
                                             boxtraces.push({
                                                 y: box_items.map(item => item[i]),
                                                 marker: {
-                                                    color: this.indexToColor(m),
+                                                    color: this.indexToColor(m, unique_labels.length),
                                                     size: 2,
                                                     line: {
                                                         outlierwidth: 0.3
@@ -1927,7 +1927,7 @@ export default class ChartController {
                 colorscale: [[0, 'red'],
                 [0.5, 'white'],
                 [0.5, 'white'],
-                [1.0, 'green']],
+                [1.0, '#228B22']],
                 showscale: false,
             }
         ];
@@ -1987,7 +1987,7 @@ export default class ChartController {
                 [0, 'red'],
                 [0.5, 'white'],
                 [0.5, 'white'],
-                [1.0, 'green']
+                [1.0, '#228B22']
             ],
 
             xaxis: 'x',
@@ -2280,7 +2280,7 @@ export default class ChartController {
                             y: Array.from(average),
                             type: 'bar',
                             name: labels[index],
-                            marker: { color: this.indexToColor(index) }
+                            marker: { color: this.indexToColor(index, averages[i].length) }
                         }
                     )
                 } else {
@@ -2290,7 +2290,7 @@ export default class ChartController {
                             y: Array.from(average),
                             mode: 'line',
                             name: labels[index],
-                            marker: { color: this.indexToColor(index) }
+                            marker: { color: this.indexToColor(index, averages[i].length) }
                         }
                     )
                 }
@@ -2372,7 +2372,7 @@ export default class ChartController {
                             y: Array.from(average),
                             mode: 'line',
                             name: columns[i],
-                            marker: { color: this.indexToColor(i) }
+                            marker: { color: this.indexToColor(i, averages[i].length) }
                         }
                     )
                 });
@@ -2384,7 +2384,7 @@ export default class ChartController {
                             y: Array.from(average),
                             type: 'bar',
                             name: columns[i],
-                            marker: { color: this.indexToColor(i), opacity: 0.7 }
+                            marker: { color: this.indexToColor(i, averages[i].length), opacity: 0.7 }
                         }
                     )
                 });
@@ -2566,7 +2566,7 @@ export default class ChartController {
         }
         var uniqueLabels = [...new Set(labels)].sort((a, b) => a - b);
         let points = this.uniformSplist(uniqueLabels.length)
-        let colorMapping = uniqueLabels.map((label, i) => [points[i], this.indexToColor(label)])
+        let colorMapping = uniqueLabels.map((label, i) => [points[i], this.indexToColor(label, uniqueLabels.length)])
 
         var data = [{
             type: 'parcoords',
