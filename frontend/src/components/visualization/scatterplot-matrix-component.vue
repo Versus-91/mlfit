@@ -18,7 +18,7 @@
                         <p class="title is-size-7 mt-1" v-else>{{ feature.name }}</p>
                     </div>
                     <br>
-                    <div class="column is-12">
+                    <div class="column is-12" v-if="this.settings.isClassification">
                         <h5 class="title is-7 has-text-left">Merge classes
                         </h5>
                         <b-table class="is-size-7" :data="classesInfo" :columns="classesInfoColumns" checkable

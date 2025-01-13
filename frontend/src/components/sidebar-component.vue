@@ -273,7 +273,20 @@ export default {
                 if (index === -1) {
                     selected_columns.push(target)
                 }
+
                 let filterd_dataset = dataset.loc({ columns: selected_columns })
+                // add class transformation
+                if (this.settings.isClassification) {
+                    let selectedClasses = this.settings.mergedClases
+                    if (selectedClasses?.length > 0) {
+                        let newClass = selectedClasses.map(m => m.class).join('-');
+                        selectedClasses.forEach(cls => {
+                            filterd_dataset.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
+                        });
+                        this.settings.setClassTransformation(this.selectedClasses)
+                    }
+
+                }
                 const targets = filterd_dataset.column(target)
                 filterd_dataset.drop({ columns: target, inplace: true })
                 const cross_validation_setting = this.crossValidationOption;

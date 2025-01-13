@@ -42,6 +42,9 @@ export const settingStore = defineStore({
         currentTab: (state) => {
             return state.activeTab
         },
+        mergedClases: (state) => {
+            return state.classTransformations
+        },
         outputs: (state) => state.results,
         transformationsList: (state) => state.transformations,
         modelTarget: (state) => state.target,

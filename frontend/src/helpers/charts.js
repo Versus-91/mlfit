@@ -623,11 +623,11 @@ export default class ChartController {
         }
     }
 
-    async classificationPCA(dataset, labels, missclassifications, uniqueLabels, index) {
+    async classificationPCA(dataset, labels, missclassifications, uniqueLabels, index, n) {
 
         const pca = new PCA(dataset, { center: true, scale: true });
         var colorIndices = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label), uniqueLabels.length));
-        const pca_data = await pca.predict(dataset, { nComponents: 2 })
+        const pca_data = await pca.predict(dataset, n)
         let x = []
         let y = []
         let x_error = []
@@ -709,13 +709,13 @@ export default class ChartController {
         }, { staticPlot: false, responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
 
     }
-    async draw_pca(dataset, labels, regression_labels, x_axis, y_axis) {
+    async draw_pca(dataset, labels, regression_labels, numberOfComponents) {
         const pca = new PCA(dataset, { center: true, scale: true });
 
         labels = labels.flat()
         var uniqueLabels = [...new Set(labels)];
 
-        const pca_x = await pca.predict(dataset, { nComponents: 3 })
+        const pca_x = await pca.predict(dataset, numberOfComponents)
         const pca_data = pca_x[0]
 
         let x = []
