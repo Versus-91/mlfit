@@ -709,7 +709,10 @@ export default class ChartController {
         }, { staticPlot: false, responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
 
     }
-    async draw_pca(dataset, labels, regression_labels, numberOfComponents) {
+    purge_charts(id) {
+        Plotly.purge(id)
+    }
+    async draw_pca(dataset, labels, regression_labels, numberOfComponents, axes) {
         const pca = new PCA(dataset, { center: true, scale: true });
 
         labels = labels.flat()
@@ -720,50 +723,85 @@ export default class ChartController {
 
         let x = []
         let pc1 = []
-        pca_data.forEach((element, i) => {
-            pc1.push({
-                x: element[x_axis - 1],
-                y: element[y_axis - 1],
-                label: labels[i]
-            })
-            x.push(regression_labels[i][0])
-        });
-        let traces1 = []
-        if (uniqueLabels.length !== 0) {
-            uniqueLabels.forEach((label, i) => {
-                var items_for_label = pc1.filter(m => m.label === label)
+        for (let i = 0; i < axes.length; i++) {
+            let axis = axes[i]
+            pca_data.forEach((element, i) => {
+                pc1.push({
+                    x: element[axis[0] - 1],
+                    y: element[axis[1] - 1],
+                    label: labels[i]
+                })
+                x.push(regression_labels[i][0])
+            });
+            let traces1 = []
+            if (uniqueLabels.length !== 0) {
+                uniqueLabels.forEach((label, i) => {
+                    var items_for_label = pc1.filter(m => m.label === label)
+                    traces1.push({
+                        x: items_for_label.map(m => m.x),
+                        y: items_for_label.map(m => m.y),
+                        mode: 'markers',
+                        type: 'scatter',
+                        name: label,
+                        marker: {
+                            size: 4,
+                            color: this.indexToColor(i, uniqueLabels.length),
+                        }
+                    })
+                })
+            } else {
                 traces1.push({
-                    x: items_for_label.map(m => m.x),
-                    y: items_for_label.map(m => m.y),
+                    x: pc1.map(m => m.x),
+                    y: pc1.map(m => m.y),
                     mode: 'markers',
                     type: 'scatter',
-                    name: label,
                     marker: {
+                        color: this.indexToColor(x),
+                        colorscale: 'YlOrRd',
                         size: 4,
-                        color: this.indexToColor(i, uniqueLabels.length),
-                    }
-                })
-            })
-        } else {
-            traces1.push({
-                x: pc1.map(m => m.x),
-                y: pc1.map(m => m.y),
-                mode: 'markers',
-                type: 'scatter',
-                marker: {
-                    color: this.indexToColor(x),
-                    colorscale: 'YlOrRd',
-                    size: 4,
-                    colorbar: {
-                        title: 'Color Scale Legend',
-                        titleside: 'right',
-                        thickness: 10,
-                        len: 0.5
-                    }
-                },
+                        colorbar: {
+                            title: 'Color Scale Legend',
+                            titleside: 'right',
+                            thickness: 10,
+                            len: 0.5
+                        }
+                    },
 
-            })
+                })
+            }
+            Plotly.newPlot('pca_' + i, traces1, {
+                showlegend: true,
+                margin: {
+                    l: 40,
+                    r: 40,
+                    b: 40,
+                    t: 40,
+                    pad: 10
+                },
+                legend: {
+                    x: 1,
+                    xanchor: 'right',
+                    y: 1
+                },
+                xaxis: {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                    title: 'PC' + axis[0]
+                },
+                yaxis: {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                    title: 'PC' + axis[1]
+                }
+            }, { responsive: true });
+
         }
+
+
+
+
         let cumulatedExplainedVaraince = []
         let sum = 0
         pca_x[2].forEach(element => {
@@ -837,33 +875,7 @@ export default class ChartController {
             }],
 
         });
-        Plotly.newPlot('pca-1', traces1, {
-            showlegend: true,
-            margin: {
-                l: 40,
-                r: 40,
-                b: 40,
-                t: 40,
-                pad: 10
-            },
-            legend: {
-                x: 1,
-                xanchor: 'right',
-                y: 1
-            },
-            xaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
-                title: 'PC' + x_axis
-            },
-            yaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
-                title: 'PC' + y_axis
-            }
-        }, { responsive: true });
+
     }
     // eslint-disable-next-line no-unused-vars
     drawStackedHorizontalChart(categories, lable) {

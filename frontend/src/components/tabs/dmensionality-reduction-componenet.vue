@@ -2,22 +2,22 @@
     <section v-if="this.settings?.items.length > 2">
         <b-message title="Principle Component Analysis" type="is-info" :closable="false">
             <b-field>
-                <b-input v-model="numberOfComponents" size="is-small" type="number"
+                <b-input v-model="numberOfComponents" size="is-small" type="number" min="2"
+                    :max="this.settings.items.filter(column => column.selected && column.type === 1).length"
                     placeholder="Number of Components"></b-input>
                 <p class="control">
-                    <b-button :disabled="!numberOfComponents" size="is-small" @click="findPCA" type="is-info"
-                        :loading="loadingPCA" label="Find PCA" />
+                    <b-button
+                        :disabled="numberOfComponents < 2 || numberOfComponents > this.settings.items.filter(column => column.selected && column.type === 1)?.length"
+                        size="is-small" @click="findPCA" type="is-info" :loading="loadingPCA" label="Find PCA" />
                 </p>
             </b-field>
-            <div class="columns">
-                {{ this.pcaContainers }}
-                <div class="column is-6" v-for="(item, index) in this.pcaContainers" :key="index">
-                    {{ item }}
-                    <div id="pca-1" style="height: 300px;"></div>
+            <div class="columns is-multiline" id="pca_container">
+                <div class="column is-4" v-for="(item, index) in this.pcaContainers" :key="index">
+                    <div :id="'pca_' + index" style="height: 300px;"></div>
                 </div>
-                <div class="column is-6">
-                    <div id="scree_plot" style="height: 300px;"></div>
-                </div>
+            </div>
+            <div class="column is-6">
+                <div id="scree_plot" style="height: 300px;"></div>
             </div>
         </b-message>
         <b-message title="t-distributed stochastic neighbor embedding" type="is-info" :closable="false">
@@ -84,12 +84,24 @@ export default {
         async findPCA() {
             this.loadingPCA = true;
             this.hasPCA = true;
+            for (let i = 0; i < this.pcaContainers.length; i++) {
+                chartController.purge_charts('pca_' + i)
+            }
+            for (let i = 0; i < this.numberOfComponents; i++) {
+                for (let j = i + 1; j < this.numberOfComponents; j++) {
+                    let index = this.pcaContainers.findIndex(m => m[0] == i + 1 && m[1] == j + 1)
+                    if (index === -1) {
+                        this.pcaContainers.push([i + 1, j + 1]);
+                    }
+                }
+            }
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
-            await chartController.draw_pca(this.dataframe.loc({ columns: numericColumns }).values,
+            await chartController.draw_pca(
+                this.dataframe.loc({ columns: numericColumns }).values,
                 this.settings.isClassification ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [],
-                this.dataframe.loc({ columns: [this.settings.modelTarget] }).values
-                , this.numberOfComponents)
-            console.log(this.numberOfComponents);
+                this.dataframe.loc({ columns: [this.settings.modelTarget] }).values,
+                this.numberOfComponents,
+                this.pcaContainers)
 
             this.loadingPCA = false;
 
