@@ -9,7 +9,7 @@
                         v-for="feature in this.settings.items.filter(column => column.selected)" :key="feature.id">
                         <b-field :label="feature.name" :label-position="'on-border'" v-if="feature.type == 1"
                             class="ml-1">
-                            <b-select size="is-small" v-model="feature.scaler">
+                            <b-select @input="scaleData()" size="is-small" v-model="feature.scaler">
                                 <option v-for="option in ScaleOptions" :value="option.id" :key="option.id">
                                     {{ option.name }}
                                 </option>
@@ -18,15 +18,19 @@
                         <p class="title is-size-7 mt-1" v-else>{{ feature.name }}</p>
                     </div>
                     <br>
-                    <div class="column is-12" v-if="this.settings.isClassification">
-                        <h5 class="title is-7 has-text-left">Merge classes
-                        </h5>
-                        <b-table class="is-size-7" :data="classesInfo" :columns="classesInfoColumns" checkable
-                            :narrowed="true" :checked-rows.sync="selectedClasses"></b-table>
-                    </div>
-                    <div class="column is-12">
-                        <button @click="scaleData()" class="button mt-2 is-info is-small">update</button>
-                    </div>
+                </div>
+                <div class="column is-12">
+                    <parallel-coordinate-plot-component ref="coordinate_plot">
+                    </parallel-coordinate-plot-component>
+                </div>
+                <div class="column is-12" v-if="this.settings.isClassification">
+                    <h5 class="title is-7 has-text-left">Merge classes
+                    </h5>
+                    <b-table class="is-size-7" :data="classesInfo" :columns="classesInfoColumns" checkable
+                        :narrowed="true" :checked-rows.sync="selectedClasses"></b-table>
+                </div>
+                <div class="column is-12">
+                    <button @click="scaleData()" class="button mt-2 is-info is-small">Merge Classes</button>
                 </div>
 
                 <b-loading :is-full-page="false" v-model="isLoading"></b-loading>
@@ -42,9 +46,13 @@ import { ScaleOptions } from '@/helpers/settings'
 import { applyDataTransformation } from '@/helpers/utils';
 import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import { DataFrame } from 'danfojs/dist/danfojs-base';
+import PCPComponent from '../visualization/parallel-coordinate-plot-component.vue'
 
 let chartController = new ChartController();
 export default {
+    components: {
+        'parallel-coordinate-plot-component': PCPComponent,
+    },
     setup() {
         const settings = settingStore()
         return { settings }
@@ -101,6 +109,7 @@ export default {
                         label: ' mode'
                     }]
                 }
+                this.$refs.coordinate_plot?.ParallelCoordinatePlot()
                 this.isLoading = false;
 
             } catch (error) {

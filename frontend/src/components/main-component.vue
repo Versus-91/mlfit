@@ -11,7 +11,7 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                            }})</p>
+                                        }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -37,10 +37,7 @@
                         <section>
                             <scatterplot-matrix-component @coordinate-plot="showCoordinatePlot()"
                                 ref="splom"></scatterplot-matrix-component>
-                        </section>
-                        <section>
-                            <parallel-coordinate-plot-component
-                                ref="coordinate_plot"></parallel-coordinate-plot-component>
+
                         </section>
                         <section>
                             <article class="message">
@@ -171,7 +168,6 @@ import { toJSON } from 'danfojs';
 import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
 import ResultsComponent from './tabs/results-component.vue'
 import SPLOMComponent from './visualization/scatterplot-matrix-component.vue'
-import PCPComponent from './visualization/parallel-coordinate-plot-component.vue'
 import MethodsTabComponent from './tabs/methods-tab-component.vue'
 
 import { FeatureCategories } from '../helpers/settings'
@@ -190,9 +186,7 @@ export default {
         'dmensionality-reduction-component': PCAComponent,
         'results-component': ResultsComponent,
         'scatterplot-matrix-component': SPLOMComponent,
-        'parallel-coordinate-plot-component': PCPComponent,
         'methods-tab-component': MethodsTabComponent
-
     },
     setup() {
         const settings = settingStore()
@@ -268,14 +262,9 @@ export default {
                 this.$refs.splom?.initSPLOM();
                 setTimeout(() => {
                     this.correlationMatrix();
-                    this.showCoordinatePlot();
                 }, 500);
             }
         },
-        showCoordinatePlot() {
-            this.$refs.coordinate_plot.ParallelCoordinatePlot()
-        },
-
     },
 
 }
