@@ -43,7 +43,7 @@
                             <article class="message">
                                 <div class="message-header">correlation matrix and Dendrogram</div>
                                 <div class="message-body">
-                                    <b-field>
+                                    <b-field label="Linkage method, Distance Metric">
                                         <b-select placeholder="Method" v-model="method">
                                             <option value="single">single</option>
                                             <option value="complete">complete</option>
@@ -199,7 +199,7 @@ export default {
     data() {
         return {
             metric: 'euclidean',
-            method: 'single',
+            method: 'ward',
             img: null,
             continuousFeaturesStats: [
             ],

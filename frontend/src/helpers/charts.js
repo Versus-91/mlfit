@@ -11,7 +11,14 @@ import { metrics } from '@tensorflow/tfjs-vis';
 import { scale_data } from './utils';
 import { tensorflow, LabelEncoder } from 'danfojs/dist/danfojs-base';
 import { MinMaxScaler } from 'danfojs/dist/danfojs-base';
-
+const plotlyImageExportConfig = {
+    toImageButtonOptions: {
+        format: 'png', // one of png, svg, jpeg, webp
+        height: null,
+        width: null,
+        scale: 2
+    }
+};
 export default class ChartController {
     constructor() {
         this.color_scheme = schemeTableau10;
@@ -706,7 +713,7 @@ export default class ChartController {
                 mirror: true,
                 title: 'PC2'
             }
-        }, { staticPlot: false, responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
+        }, { ...plotlyImageExportConfig, staticPlot: false, responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
 
     }
     purge_charts(id) {
@@ -795,7 +802,7 @@ export default class ChartController {
                     mirror: true,
                     title: 'PC' + axis[1]
                 }
-            }, { responsive: true });
+            }, { ...plotlyImageExportConfig, responsive: true });
 
         }
 
@@ -1752,6 +1759,7 @@ export default class ChartController {
                 }
 
                 Plotly.react('scatterplot_mtx', traces, layout, {
+                    ...plotlyImageExportConfig,
                     staticPlot: false,
                     modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath ']
                 })
@@ -2011,7 +2019,7 @@ export default class ChartController {
             }
         }
 
-        await Plotly.newPlot(id, data, layout);
+        await Plotly.newPlot(id, data, layout, plotlyImageExportConfig);
     }
     async dendogramPlot(id, correlations, linkage, names, originalColumns, colorScales) {
 
@@ -2237,7 +2245,7 @@ export default class ChartController {
 
         data = data.concat(trace4)
 
-        Plotly.newPlot(id, data, layout2);
+        Plotly.newPlot(id, data, layout2, plotlyImageExportConfig);
     }
     PFIBoxplot(id, importances, columns) {
         let traces = []
@@ -2358,7 +2366,7 @@ export default class ChartController {
                 },
             };
 
-            Plotly.newPlot(chartId, traces, layout, { responsive: true });
+            Plotly.newPlot(chartId, traces, layout, { ...plotlyImageExportConfig, responsive: true });
         });
     }
     plotPDPRegression(id, averages, grids, labels, columns, categoricals) {
@@ -2452,7 +2460,7 @@ export default class ChartController {
                 }
             },
         };
-        Plotly.newPlot(chartId, traces, layout, { responsive: true });
+        Plotly.newPlot(chartId, traces, layout, { ...plotlyImageExportConfig, responsive: true });
         var layout2 = {
             title: {
                 text: 'Partial Dependence Plot',
@@ -2618,6 +2626,6 @@ export default class ChartController {
         var layout = {
         };
 
-        Plotly.newPlot('parallel_coordinate_plot', data, layout, { responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
+        Plotly.newPlot('parallel_coordinate_plot', data, layout, { ...plotlyImageExportConfig, responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
     }
 }
