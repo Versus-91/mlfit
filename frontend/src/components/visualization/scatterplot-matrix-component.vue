@@ -23,13 +23,11 @@
                     <parallel-coordinate-plot-component ref="coordinate_plot">
                     </parallel-coordinate-plot-component>
                 </div>
-                <div class="column is-12" v-if="this.settings.isClassification">
+                <div class="column is-12" v-if="this.settings.isClassification && classesInfo?.length > 2">
                     <h5 class="title is-7 has-text-left">Merge classes
                     </h5>
                     <b-table class="is-size-7" :data="classesInfo" :columns="classesInfoColumns" checkable
                         :narrowed="true" :checked-rows.sync="selectedClasses"></b-table>
-                </div>
-                <div class="column is-12">
                     <button @click="scaleData()" class="button mt-2 is-info is-small">Merge Classes</button>
                 </div>
 
