@@ -2,7 +2,7 @@
     <div class="column is-10">
         <section>
             <b-tabs v-model="settings.activeTab" :position="'is-centered'" :animated="false" type="success">
-                <b-tab-item label="Data Anaysis">
+                <b-tab-item label="Data Analysis">
                     <section v-if="this.settings.datasetShape?.count > 0">
                         <b-message title="Data summary" v-model="isActive" type="is-info" :closable="false">
                             <div class="columns is-multiline">

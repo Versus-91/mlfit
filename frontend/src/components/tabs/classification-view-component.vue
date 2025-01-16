@@ -32,7 +32,7 @@
                 <button class="button is-danger has-text-white is-small" @click="deleteTab()">Delete </button>
                 <button class="button is-success is-small" @click="toggleHelp(result.helpSectionId)">Method description
                 </button>
-                <button class="button is-info is-small">Download the code</button>
+                <button class="button is-info is-small" @click="downloadPythonCode()">Download the code</button>
             </b-message>
         </div>
         <div class="column is-6" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
@@ -191,6 +191,20 @@ export default {
         },
         deleteTab() {
             this.$emit("delete-result", this.result.id)
+        },
+        downloadPythonCode() {
+            let model_factory = new ModelFactory();
+            let model = model_factory.createModel(this.result.snapshot.id, this.result.options);
+            let pyCode = model.generatePythonCode()
+            const blob = new Blob([pyCode], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'example.py';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         },
         async updatePartialDependencePlot() {
             let model_factory = new ModelFactory();
