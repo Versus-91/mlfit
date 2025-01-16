@@ -4,7 +4,7 @@
 // `pyodide.js`, and all its associated `.asm.js`, `.json`,
 // and `.wasm` files as well:
 // eslint-disable-next-line no-undef
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js");
+importScripts("https://cdn.jsdelivr.net/pyodide/v0.27.1/full/pyodide.js");
 
 async function loadPyodideAndPackages() {
   // eslint-disable-next-line no-undef
