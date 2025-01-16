@@ -1928,9 +1928,10 @@ export default class ChartController {
         };
         Plotly.newPlot("knn_table_" + id, traces, layout);
     }
-    async correaltoinMatrixColorscale(correlations) {
+    correaltoinMatrixColorscale(correlations) {
         let featuresCount = correlations[0].length;
         let corrs = [];
+
         for (let i = 0; i < featuresCount; i++) {
             corrs.push(...correlations[i])
         }
@@ -1943,11 +1944,16 @@ export default class ChartController {
                 break
             }
         }
+
         let portionOfNegativeValues = countNegatives / corrs.length
         let colorscale = [
-            [0, 'blue'],
-            [portionOfNegativeValues, 'blue'],
-            [1.0, 'red']]
+            [0, 'rgb(0, 0, 100)'],
+            [portionOfNegativeValues / 2, 'rgb(0, 0, 200)'],
+
+            [portionOfNegativeValues, 'rgb(0, 0, 255)'],
+            [portionOfNegativeValues + 0.0001, 'rgb(100, 0, 0)'],
+            [1.0, 'rgb(255, 0, 0)']
+        ]
         return colorscale
     }
     async correlationHeatmap(id, correlations, names, colorscale) {
