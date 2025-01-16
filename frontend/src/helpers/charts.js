@@ -1928,7 +1928,29 @@ export default class ChartController {
         };
         Plotly.newPlot("knn_table_" + id, traces, layout);
     }
-    async correlationHeatmap(id, correlations, names, title) {
+    async correaltoinMatrixColorscale(correlations) {
+        let featuresCount = correlations[0].length;
+        let corrs = [];
+        for (let i = 0; i < featuresCount; i++) {
+            corrs.push(...correlations[i])
+        }
+        corrs.sort()
+        let countNegatives = 0
+        for (let i = 0; i < corrs.length; i++) {
+            if (corrs[i] < 0) {
+                countNegatives += 1
+            } else {
+                break
+            }
+        }
+        let portionOfNegativeValues = countNegatives / corrs.length
+        let colorscale = [
+            [0, 'blue'],
+            [portionOfNegativeValues, 'blue'],
+            [1.0, 'red']]
+        return colorscale
+    }
+    async correlationHeatmap(id, correlations, names, colorscale) {
         var data = [
             {
                 z: correlations,
@@ -1936,10 +1958,7 @@ export default class ChartController {
                 y: names,
                 type: 'heatmap',
                 hoverongaps: false,
-                colorscale: [[0, 'red'],
-                [0.5, 'white'],
-                [0.5, 'white'],
-                [1.0, '#228B22']],
+                colorscale: colorscale,
                 showscale: false,
             }
         ];
@@ -1965,7 +1984,7 @@ export default class ChartController {
                 var currentValue = correlations[i][j];
                 let textColor
                 if (currentValue <= 0.0) {
-                    textColor = 'black';
+                    textColor = 'white';
                 } else {
                     textColor = 'white';
                 }
@@ -1988,28 +2007,20 @@ export default class ChartController {
 
         await Plotly.newPlot(id, data, layout);
     }
-    async dendogramPlot(id, correlations, linkage, names, originalColumns) {
+    async dendogramPlot(id, correlations, linkage, names, originalColumns, colorScales) {
 
         var trace4 = {
             x: names,
             y: names,
             z: correlations,
             type: 'heatmap',
-            colorscale: [
-                [0, 'red'],
-                [0.5, 'white'],
-                [0.5, 'white'],
-                [1.0, '#228B22']
-            ],
+            colorscale: colorScales,
 
             xaxis: 'x',
             yaxis: 'y',
             colorbar: {
                 thickness: 10,
                 len: 0.5,
-                cmin: -1,
-                cmax: 1
-
             }
         };
         let indices = []

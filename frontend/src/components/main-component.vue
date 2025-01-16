@@ -11,7 +11,7 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                        }})</p>
+                                            }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -44,7 +44,7 @@
                         </section>
                         <section>
                             <article class="message">
-                                <div class="message-header">correlation matrix</div>
+                                <div class="message-header">correlation matrix and Dendrogram</div>
                                 <div class="message-body">
                                     <b-field>
                                         <b-select placeholder="Method" v-model="method">
@@ -178,6 +178,7 @@ import { FeatureCategories } from '../helpers/settings'
 import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
 import { Matrix, correlation } from 'ml-matrix';
+// eslint-disable-next-line no-unused-vars
 import Clustermap from '@/helpers/correlation/correlation-matrix'
 
 let ui = new UI(null, null);
@@ -225,6 +226,27 @@ export default {
         }
     },
     methods: {
+        async correlationMatrix() {
+            this.loading = true;
+            try {
+                let numericColumns = this.settings.items.filter(m => m.selected && m.type === FeatureCategories.Numerical.id).map(m => m.name);
+                let values = this.settings.df.loc({ columns: numericColumns })
+                values = values.dropNa({ axis: 1 }).values
+                let matrix = new Matrix(values)
+                let correlations = correlation(matrix)
+                this.hasCorrelationMatrix = true;
+                let colorScales = chartController.correaltoinMatrixColorscale(correlations.data)
+                await chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns, colorScales);
+                let mtx = new Clustermap();
+                let [dendogram, orderedMatrix, columns] = await mtx.train(values, numericColumns, this.metric, this.method);
+                await chartController.dendogramPlot('correlation_matrix_ordered', orderedMatrix, dendogram, columns, numericColumns, colorScales);
+                this.loading = false;
+
+            } catch (error) {
+                this.loading = false;
+                throw error
+            }
+        },
         renderStats() {
             if (this.settings.df?.columns?.length > 0) {
                 let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
@@ -243,34 +265,17 @@ export default {
                     }
                 });
                 this.sampleData = toJSON(this.settings.df.head(5));
-
                 this.$refs.splom?.initSPLOM();
-
+                setTimeout(() => {
+                    this.correlationMatrix();
+                    this.showCoordinatePlot();
+                }, 500);
             }
         },
         showCoordinatePlot() {
             this.$refs.coordinate_plot.ParallelCoordinatePlot()
         },
-        async correlationMatrix() {
-            this.loading = true;
-            try {
-                let numericColumns = this.settings.items.filter(m => m.selected && m.type === FeatureCategories.Numerical.id).map(m => m.name);
-                let values = this.settings.df.loc({ columns: numericColumns })
-                values = values.dropNa({ axis: 1 }).values
-                let matrix = new Matrix(values)
-                let correlations = correlation(matrix)
-                this.hasCorrelationMatrix = true;
-                await chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns, 'Correlation Matrix');
-                let mtx = new Clustermap();
-                let [dendogram, orderedMatrix, columns] = await mtx.train(values, numericColumns, this.metric, this.method);
-                await chartController.dendogramPlot('correlation_matrix_ordered', orderedMatrix, dendogram, columns, numericColumns);
-                this.loading = false;
 
-            } catch (error) {
-                this.loading = false;
-                throw error
-            }
-        }
     },
 
 }
