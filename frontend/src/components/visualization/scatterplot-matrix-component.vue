@@ -1,6 +1,6 @@
 <template>
     <section style="overflow-y: auto;overflow-x: auto;">
-        <article class="message is-info">
+        <article class="message">
             <div class="message-header">Scatterplot Matrix</div>
             <div class="message-body">
                 <div id="scatterplot_mtx"></div>

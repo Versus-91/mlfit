@@ -4,31 +4,36 @@
             <b-tabs v-model="settings.activeTab" :position="'is-centered'" :animated="false" type="success">
                 <b-tab-item label="Data Analysis">
                     <section v-if="this.settings.datasetShape?.count > 0">
-                        <b-message title="Data summary" v-model="isActive" type="is-info" :closable="false">
-                            <div class="columns is-multiline">
-                                <div class="column is-12 has-text-left">
-                                    <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
-                                        this.settings.datasetShape.columns
-                                    }})</p>
+                        <div class="message" v-if="isActive" :closable="false">
+                            <div class="message-header">Data summary</div>
+                            <div class="message-body">
+                                <div class="columns is-multiline">
+                                    <div class="column is-12 has-text-left">
+                                        <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
+                                            this.settings.datasetShape.columns
+                                        }})</p>
+                                    </div>
+                                    <div class="column is-6">
+                                        <h5 class="title is-7 has-text-left">Continuous Features :</h5>
+                                        <b-table class="is-size-7" :data="continuousFeaturesStats"
+                                            :columns="continuousFeaturesColumns" :narrowed="true" :bordered="true"
+                                            :striped="true" :hoverable="true"></b-table>
+                                    </div>
+                                    <div class="column is-6">
+                                        <h5 class="title is-7 has-text-left">Categorical Features :</h5>
+                                        <b-table class="is-size-7" :data="categoricalFeaturesStats"
+                                            :columns="categoricalFeaturesColumns" :narrowed="true" :bordered="true"
+                                            :striped="true" :hoverable="true"></b-table>
+                                    </div>
+                                    <div class="column is-6">
+                                        <h5 class="title is-7 has-text-left">Sample Data :</h5>
+                                        <b-table class="is-size-7" :data="sampleData" :columns="datasetColumns"
+                                            :narrowed="true" :bordered="true" :striped="true"
+                                            :hoverable="true"></b-table>
+                                    </div>
                                 </div>
-                                <div class="column is-6">
-                                    <h5 class="title is-7 has-text-left">Continuous Features :</h5>
-                                    <b-table class="is-size-7" :data="continuousFeaturesStats"
-                                        :columns="continuousFeaturesColumns" :narrowed="true"></b-table>
-                                </div>
-                                <div class="column is-6">
-                                    <h5 class="title is-7 has-text-left">Categorical Features :</h5>
-                                    <b-table class="is-size-7" :data="categoricalFeaturesStats"
-                                        :columns="categoricalFeaturesColumns" :narrowed="true"></b-table>
-                                </div>
-                                <div class="column is-6">
-                                    <h5 class="title is-7 has-text-left">Sample Data :</h5>
-                                    <b-table class="is-size-7" :data="sampleData" :columns="datasetColumns"
-                                        :narrowed="true"></b-table>
-                                </div>
-
                             </div>
-                        </b-message>
+                        </div>
                         <section>
                             <scatterplot-matrix-component @coordinate-plot="showCoordinatePlot()"
                                 ref="splom"></scatterplot-matrix-component>
@@ -38,7 +43,7 @@
                                 ref="coordinate_plot"></parallel-coordinate-plot-component>
                         </section>
                         <section>
-                            <article class="message is-info">
+                            <article class="message">
                                 <div class="message-header">correlation matrix</div>
                                 <div class="message-body">
                                     <b-field>
