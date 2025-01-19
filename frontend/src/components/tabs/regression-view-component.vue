@@ -133,8 +133,17 @@
                 <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
                     v-if="result.name.toString().includes('neighbour')">
                 </div>
-                <div class="column is-6" style="height: 400px;" v-show="result.hasExplaination"
-                    :id="'pfi_boxplot_' + result.id">
+                <div class="column is-12">
+                    <article class="message">
+                        <div class="message-header"> Partial Dependence Plot and Permutation Feature Importance</div>
+                        <div class="message-body">
+                            <div class="columns is-multiline">
+                                <div class="column is-6" style="height: 400px;" v-show="result.hasExplaination"
+                                    :id="'pfi_boxplot_' + result.id">
+                                </div>
+                            </div>
+                        </div>
+                    </article>
                 </div>
             </div>
         </div>

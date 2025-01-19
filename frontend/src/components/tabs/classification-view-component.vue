@@ -39,15 +39,12 @@
             <article class="message">
                 <div class="message-header"> Confusion Matrix and PCA of predictions</div>
                 <div class="message-body mx-1">
-                    <div class="columns is-multiline">
                         <div class="column is-6" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
                         <div class="column is-6" style="height: 400px;" :id="'pca_results_' + result.id"></div>
-                    </div>
                 </div>
             </article>
         </div>
-        <div class="column is-12" v-if="result.name === 'Logistic Regression'">
-            <div class="columns is-multiline">
+        <div class="column is-12" v-show="result.name === 'Logistic Regression'">
                 <div class="column is-7">
                     <div class="table-container">
                         <table
@@ -85,55 +82,14 @@
                         </table>
                     </div>
                 </div>
-                <div class="column is-5" :id="'parameters_plot_' + result.id" width="100%">
+                <div class="column is-5" :id="'parameters_plot_' + result.id">
                 </div>
-                <!-- <div class="column is-12" :id="'metrics_' + result.id">
-            </div> -->
-
-                <div class="column is-6" :id="'errors_' + result.id" width="100%" style="height:250px">
+                <div class="column is-6" :id="'errors_' + result.id" style="height:250px">
                 </div>
-                <div class="column is-6" :id="'regularization_' + result.id" width="100%" style="height:250px">
+                <div class="column is-6" :id="'regularization_' + result.id" style="height:250px">
                 </div>
-                <div class="column is-4">
-                    <div :id="'regression_y_yhat_' + result.id" width="100%" style="height:200px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'regression_y_yhat_min_' + result.id" width="100%" style="height:200px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'regression_y_yhat_1se_' + result.id" width="100%" style="height:200px">
-                    </div>
-                </div>
-
-                <div class="column is-4">
-                    <div :id="'regression_residual_' + result.id" width="100%" style="height:200px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'regression_residual_min_' + result.id" width="100%" style="height:200px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'regression_residual_1se_' + result.id" width="100%" style="height:200px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'qqplot_ols_' + result.id" width="100%" style="height:200px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'qqplot_min_' + result.id" width="100%" style="height:200px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'qqplot_1se_' + result.id" width="100%" style="height:200px">
-                    </div>
-                </div>
-            </div>
         </div>
-        <div class="column is-12" v-show="result.hasExplaination">
+        <div class="column is-12" v-show="result.hasExplaination && result.name !== 'Logistic Regression'">
             <article class="message">
                 <div class="message-header"> Partial Dependence Plot and Permutation Feature Importance</div>
                 <div class="message-body mx-1">
