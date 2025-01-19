@@ -196,7 +196,24 @@ export default class LinearRegression extends ClassificationModel {
                     ,toJSON(z_scores,pretty = TRUE)
                     ,toJSON(p_values,pretty = TRUE)
                     ,preds_probs
-                    ,preds ,toJSON(conf_int_df),rownames(conf_int_df))
+                    ,preds 
+                    ,toJSON(conf_int_df)
+                    ,rownames(conf_int_df)
+
+                    ,rownames(conf_int_lambda_min_df)
+                    ,toJSON(coefs_lambda_min,pretty = TRUE)
+                    ,toJSON(stds_lambda_min,pretty = TRUE)
+                    ,toJSON(p_values_lambda_min,pretty = TRUE)
+
+                    ,rownames(conf_int_lambda_1se_df)
+                    ,toJSON(coefs_lambda_1se,pretty = TRUE)
+                    ,toJSON(stds_lambda_1se,pretty = TRUE)
+                    ,toJSON(p_values_lambda_1se,pretty = TRUE)
+                    ,model[["AIC"]]
+                    ,model_lambda_min[["AIC"]]
+                    ,model_lambda_1se[["AIC"]]
+                    )
+
                     `);
         let results = await plotlyData.toArray()
 
@@ -211,12 +228,28 @@ export default class LinearRegression extends ClassificationModel {
             predictions: (await results[7].toArray()).map(pred => pred - 1),
             confidence_intervals: JSON.parse(await results[8].toString()),
             confidence_intervals_row_names: await results[9].toArray(),
+            aic: await results[18].toNumber(),
+            best_fit_min: {
+                names: await results[10].toArray(),
+                coefs: JSON.parse(await results[11].toArray()),
+                stds: JSON.parse(await results[12].toArray()),
+                p_values: JSON.parse(await results[13].toArray()),
+                aic: await results[19].toNumber(),
+
+            },
+            best_fit_1se: {
+                names: await results[14].toArray(),
+                coefs: JSON.parse(await results[15].toArray()),
+                stds: JSON.parse(await results[16].toArray()),
+                p_values: JSON.parse(await results[17].toArray()),
+                aic: await results[20].toNumber(),
+            }
         };
         this.model_stats_matrix = [];
         let cols = [...labels]
         cols.unshift("intercept")
-        let min_ols_columns = []
-        let se_ols_columns = []
+        let min_ols_columns = this.summary['best_fit_min'].names;
+        let se_ols_columns = this.summary['best_fit_1se'].names;
 
 
 
@@ -240,9 +273,12 @@ export default class LinearRegression extends ClassificationModel {
 
                 let index = min_ols_columns.findIndex(m => m === cols[i])
                 if (index !== -1) {
-                    row.push(this.summary['best_fit_min']['coefs'][index]?.toFixed(2) ?? ' ')
-                    row.push(this.summary['best_fit_min']['bse'][index]?.toFixed(2) ?? ' ')
-                    row.push(this.summary['best_fit_min']['pvalues'][index]?.toFixed(2) ?? ' ')
+                    let coef = this.summary['best_fit_min']['coefs'][j][index]
+                    let std = this.summary['best_fit_min']['stds'][j][index]
+                    let pval = this.summary['best_fit_min']['p_values'][j][index]
+                    row.push(isNaN(coef) ? 0 : coef.toFixed(2))
+                    row.push(isNaN(std) ? 0 : coef.toFixed(2))
+                    row.push(isNaN(pval) ? 0 : coef.toFixed(2))
                 } else {
                     row.push(' ')
                     row.push(' ')
@@ -250,9 +286,12 @@ export default class LinearRegression extends ClassificationModel {
                 }
                 index = se_ols_columns.findIndex(m => m === cols[i])
                 if (index !== -1) {
-                    row.push(this.summary['best_fit_1se']['coefs'][index]?.toFixed(2) ?? ' ')
-                    row.push(this.summary['best_fit_1se']['bse'][index]?.toFixed(2) ?? ' ')
-                    row.push(this.summary['best_fit_1se']['pvalues'][index]?.toFixed(2) ?? ' ')
+                    let coef = this.summary['best_fit_1se']['coefs'][j][index]
+                    let std = this.summary['best_fit_1se']['stds'][j][index]
+                    let pval = this.summary['best_fit_1se']['p_values'][j][index]
+                    row.push(isNaN(coef) ? 0 : coef.toFixed(2))
+                    row.push(isNaN(std) ? 0 : coef.toFixed(2))
+                    row.push(isNaN(pval) ? 0 : coef.toFixed(2))
                 } else {
                     row.push(' ')
                     row.push(' ')
@@ -275,13 +314,13 @@ export default class LinearRegression extends ClassificationModel {
             "footerCallback": function (row, data, start, end, display) {
                 var api = this.api();
                 $(api.column(2).footer()).html(
-                    'R2 : '
+                    'BIC : ' + current.summary.aic.toFixed(2)
                 );
                 $(api.column(5).footer()).html(
-                    'R2 : '
+                    'BIC : ' + current.summary["best_fit_min"].aic.toFixed(2)
                 );
                 $(api.column(8).footer()).html(
-                    'R2 : '
+                    'BIC : ' + current.summary["best_fit_1se"].aic.toFixed(2)
                 );
             },
             data: current.model_stats_matrix,
