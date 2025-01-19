@@ -35,11 +35,19 @@
                 <button class="button is-info is-small" @click="downloadPythonCode()">Download the code</button>
             </b-message>
         </div>
-        <div class="column is-6" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
-        <div class="column is-6" style="height: 400px;" :id="'pca_results_' + result.id"></div>
+        <div class="column is-12">
+            <article class="message">
+                <div class="message-header"> Confusion Matrix and PCA of predictions</div>
+                <div class="message-body mx-1">
+                    <div class="columns is-multiline">
+                        <div class="column is-6" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
+                        <div class="column is-6" style="height: 400px;" :id="'pca_results_' + result.id"></div>
+                    </div>
+                </div>
+            </article>
+        </div>
         <div class="column is-12" v-if="result.name === 'Logistic Regression'">
             <div class="columns is-multiline">
-
                 <div class="column is-7">
                     <div class="table-container">
                         <table
@@ -126,7 +134,7 @@
             </div>
         </div>
         <div class="column is-12" v-show="result.hasExplaination">
-            <article class="message is-info">
+            <article class="message">
                 <div class="message-header"> Partial Dependence Plot and Permutation Feature Importance</div>
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
