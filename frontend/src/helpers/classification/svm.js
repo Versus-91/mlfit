@@ -73,6 +73,12 @@ export default class SupportVectorMachine extends ClassificationModel {
             );
         }
     }
+    generatePythonCode() {
+        let model_import = "from sklearn import svm"
+        let model_fit = `
+model = model = svm.SVC(kernel="${this.options.kernel}",random_state = ${this.seed})`
+        return super.generatePythonCode(model_import, model_fit)
+    }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
         if (this.hasExplaination) {

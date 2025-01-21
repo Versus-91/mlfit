@@ -74,8 +74,7 @@ export default class Boosting extends ClassificationModel {
     generatePythonCode() {
         let model_import = "from sklearn.ensemble import GradientBoostingClassifier"
         let model_fit = 
-`model = GradientBoostingClassifier(learning_rate = ${this.options.eta} ,n_estimators = ${this.options.estimators} ,max_depth =${this.options.max_depth} ,random_state = ${this.seed} )
-model.fit()`;
+`model = GradientBoostingClassifier(learning_rate = ${this.options.eta} ,n_estimators = ${this.options.estimators} ,max_depth =${this.options.max_depth} ,random_state = ${this.seed} )`;
         return super.generatePythonCode(model_import, model_fit)
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {

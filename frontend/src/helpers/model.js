@@ -50,6 +50,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 # Fit the model
 ${model_fit}
+model.fit(X_train,y_train)
 # Confusion Matrix
 y_pred = model.predict(X_test)
 conf_matrix = confusion_matrix(y_test, y_pred, labels=np.unique(y))
