@@ -104,6 +104,13 @@ export default class RandomForest extends ClassificationModel {
         }
         return this.predictions
     }
+    generatePythonCode() {
+        let model_import = "from sklearn.ensemble import RandomForestClassifier"
+        let model_fit = `
+model = RandomForestClassifier(criterion="${this.options.criteria.value}",max_features = ${this.options.features.value},n_estimators=${this.options.estimators.value},max_depth = ${this.options.depth.value}, random_state=${this.seed})
+model.fit()`
+        return super.generatePythonCode(model_import, model_fit)
+    }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
         if (this.hasExplaination) {
