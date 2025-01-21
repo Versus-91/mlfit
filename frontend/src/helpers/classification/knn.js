@@ -80,6 +80,29 @@ export default class KNNModel extends ClassificationModel {
             );
         }
     }
+    generatePythonCode() {
+        let model_import = `
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score`.trim();
+        let model_fit = `
+best_model = None
+best_accuracy = 0
+best_preds = []
+for i,metric in enumerate(['manhattan','euclidean']):
+    for n in range(${+this.options.min.value},${+this.options.max.value + 1}):
+        model = KNeighborsClassifier(n_neighbors=n,metric=metric)
+        model.fit(X_train, y_train)
+        preds = model.predict(X_test)
+        accuracy = accuracy_score(y_test,preds)
+        if accuracy > best_accuracy:
+            best_accuracy = accuracy
+            best_model = model
+            best_n = n
+            best_preds = preds
+model = best_model
+`.trim();
+        return super.generatePythonCode(model_import, model_fit)
+    }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
         this.chartController.KNNPerformancePlot(this.k_neighbor_results, this.best_n, this.id);
