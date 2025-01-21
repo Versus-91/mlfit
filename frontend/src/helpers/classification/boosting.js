@@ -72,14 +72,9 @@ export default class Boosting extends ClassificationModel {
         }
     }
     generatePythonCode() {
-        return `
-        from sklearn.inspection import PartialDependenceDisplay
-        from sklearn.inspection import permutation_importance
-        from sklearn.ensemble import GradientBoostingClassifier
-
-        model = GradientBoostingClassifier(learning_rate = ${this.options.eta},n_estimators = ${this.options.estimators},max_depth =${this.options.max_depth},random_state = ${this.seed} )
-        model.fit(X_train, y_train)
-        y_pred = model.predict(X_test)`
+        let model_import = "from sklearn.ensemble import GradientBoostingClassifier"
+        let model_fit = `model = GradientBoostingClassifier(learning_rate = ${this.options.eta} ,n_estimators = ${this.options.estimators} ,max_depth =${this.options.max_depth} ,random_state = ${this.seed} )`
+        return super.generatePythonCode(model_import, model_fit)
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
