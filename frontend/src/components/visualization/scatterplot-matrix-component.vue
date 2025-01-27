@@ -132,8 +132,9 @@ export default {
             });
             this.$emit('coordinate-plot', true)
         },
-        initSPLOM() {
+        async initSPLOM() {
             this.df = new DataFrame(this.settings.rawData);
+            this.df = await this.df.sample(this.df.$data.length, { seed:this.settings.getSeed });
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(function (column) {
                 return { 'name': column.name, type: column.type }
             });
@@ -153,8 +154,8 @@ export default {
 
         }
     },
-    created: function () {
-        this.initSPLOM()
+    created: async function () {
+        await this.initSPLOM()
     },
     computed: {
         column_width: {

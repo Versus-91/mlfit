@@ -19,6 +19,7 @@ export const settingStore = defineStore({
         },
         target: null,
         isClassification: true,
+        seed: 142,
     }),
     getters: {
         items: (state) => {
@@ -45,12 +46,18 @@ export const settingStore = defineStore({
         mergedClases: (state) => {
             return state.classTransformations
         },
+        getSeed: (state) => {
+            return state.seed
+        },
         outputs: (state) => state.results,
         transformationsList: (state) => state.transformations,
         modelTarget: (state) => state.target,
         classificationTask: (state) => state.isClassification,
     },
     actions: {
+        setSeed(seed) {
+            this.seed = seed
+        },
         setDatasetName(name) {
             this.datasetName = name;
         },

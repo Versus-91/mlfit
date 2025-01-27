@@ -255,6 +255,7 @@ export default {
                     this.getDefaultModelConfiguration()
                 }
                 let seed = this.seed;
+                this.settings.setSeed(seed)
                 let categoricalFeatures = []
                 let dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
                 let numericColumns = this.settings.items.filter(m => m.selected && m.type === FeatureCategories.Numerical.id).map(m => m.name);

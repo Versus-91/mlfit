@@ -949,13 +949,12 @@ export default class ChartController {
             return currentValue > array[maxIndex] ? currentIndex : maxIndex;
         }, 0);
     }
-    probabilities_boxplot(probs, labels, true_labels, index) {
-        var uniqueLabels = [...new Set(labels)];
-        var colorIndices = labels.map((_, i) => this.indexToColor(i, uniqueLabels.length));
+    probabilities_boxplot(probs, labels, uniqueLabels, encoder, index) {
+        labels = encoder.inverseTransform(labels)
         let traces = [];
         let probablitiesFormatted = []
         let subsets = {};
-        true_labels.forEach((true_label, i) => {
+        labels.forEach((true_label, i) => {
             if (!(true_label in subsets)) {
                 subsets[true_label] = [];
             }
@@ -977,9 +976,9 @@ export default class ChartController {
         for (let true_label in subsets) {
             traces.push({
                 type: 'box',
-                name: true_label,
+                name:  true_label,
                 marker: {
-                    color: colorIndices[i],
+                    color: this.indexToColor(uniqueLabels.indexOf(true_label), uniqueLabels.length),
                     size: 2,
                     line: {
                         outlierwidth: 0.3
@@ -993,7 +992,6 @@ export default class ChartController {
             });
             i++;
         }
-
 
         // Plot the box plots using Plotly
         Plotly.newPlot("proba_plot_" + index, traces, {
@@ -1017,13 +1015,13 @@ export default class ChartController {
             boxmode: 'group'
         }, { responsive: true });
     }
-    probabilities_violin(probs, labels, true_labels, index) {
-        var uniqueLabels = [...new Set(labels)];
-        var colorIndices = labels.map((_, i) => this.indexToColor(i, uniqueLabels.length));
+    probabilities_violin(probs, labels, uniqueLabels, encoder, index) {
+        labels = encoder.inverseTransform(labels)
+
         let traces = [];
         let probablitiesFormatted = []
         let subsets = {};
-        true_labels.forEach((true_label, i) => {
+        labels.forEach((true_label, i) => {
             if (!(true_label in subsets)) {
                 subsets[true_label] = [];
             }
@@ -1047,9 +1045,9 @@ export default class ChartController {
                 legendgroup: true_label,
                 scalegroup: true_label,
                 type: 'violin',
-                name: true_label,
+                name:  true_label,
                 line: {
-                    color: colorIndices[i],
+                    color: this.indexToColor(uniqueLabels.indexOf(true_label), uniqueLabels.length),
                 },
                 y: probablitiesFormatted.map(m => m.probablity[i]),
                 x: x
@@ -1443,13 +1441,13 @@ export default class ChartController {
     ScatterplotMatrix(items, features, labels, number_of_categoricals, is_classification = true, numeric_columns, categorical_columns, dataset) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                let unique_labels = [...new Set(labels)].sort((a, b) => a - b);
-                var colors = labels.map(label => this.indexToColor(unique_labels.indexOf(label), unique_labels.length));
-                let traces = []
-                let index = 1;
+                let unique_labels = [...new Set(labels)];
                 if (unique_labels.length === 2) {
                     unique_labels.sort()
                 }
+                var colors = labels.map(label => this.indexToColor(unique_labels.indexOf(label), unique_labels.length));
+                let traces = []
+                let index = 1;
                 for (let i = 0; i < features.length; i++) {
                     for (let j = 0; j < features.length; j++) {
                         if (i === j) {
