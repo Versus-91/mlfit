@@ -26,9 +26,9 @@
             </b-select>
         </b-field>
         <b-field label="Sample data" :label-position="'on-border'">
-            <b-select :expanded="true" @input="handleFileSelect" size="is-small">
+            <b-select :expanded="true" @input="handleFileSelect" size="is-small" v-model="sampleDataset">
                 <option v-for="option in samplDataOptions" :value="option.name" :key="option.id">
-                    {{ option.name }}
+                    {{ option.label }}
                 </option>
             </b-select>
         </b-field>
@@ -52,7 +52,7 @@ export default {
     },
     data() {
         return {
-            sampleDataset: 0,
+            sampleDataset: 'none',
             file: null,
             separator: 2,
             header: true,
@@ -86,20 +86,33 @@ export default {
                     {
                         id: 0,
                         name: 'none',
+                        label: 'Select toy dataset',
 
                     },
                     {
                         id: 1,
                         name: 'iris',
-
+                        label: 'iris',
                     }, {
                         id: 2,
                         name: 'wine',
+                        label: 'wine',
+
                     }
                     , {
                         id: 3,
                         name: 'diabetes',
-                    }]
+                        label: 'diabetes',
+                    }, {
+                        id: 4,
+                        name: 'housing',
+                        label: 'California Housing',
+                    }, {
+                        id: 5,
+                        name: 'Titanic',
+                        label: 'Titanic',
+
+                    },]
             ,
         }
     },

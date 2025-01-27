@@ -1652,7 +1652,9 @@ export default class ChartController {
                                 if (j < features.length - 1) {
                                     for (let i = 0; i < (boxtraces.length) / 2; i++) {
                                         boxtraces[i]['x'] = Array(boxtraces[i]['y'].length).fill(i);
-                                        boxtraces[((boxtraces.length) / 2) + i]['x'] = Array(boxtraces[i]['y'].length).fill(i + 0.5);
+                                        if (boxtraces[((boxtraces.length) / 2) + i]) {
+                                            boxtraces[((boxtraces.length) / 2) + i]['x'] = Array(boxtraces[i]['y'].length).fill(i + 0.5);
+                                        }
                                     }
                                     traces = traces.concat(boxtraces)
                                 } else {
