@@ -79,10 +79,6 @@ export default {
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
                 let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1).map(column => column.name);
                 let features = numericColumns.concat(categorical_columns);
-                console.log(features);
-                console.log(this.settings.modelTarget
-                );
-
                 dataframe.dropNa({ axis: 1, inplace: true })
                 await chartController.ScatterplotMatrix(dataframe.loc({ columns: features }).values, features, dataframe.column(this.settings.modelTarget).values, categorical_columns.length,
                     this.settings.isClassification, numericColumns, categorical_columns, this.dataframe)
@@ -104,7 +100,7 @@ export default {
                         label: ' class'
                     }, {
                         field: 'mode',
-                        label: ' mode'
+                        label: 'Samples in each class (%)'
                     }]
                 }
                 this.$refs.coordinate_plot?.ParallelCoordinatePlot()
@@ -124,7 +120,7 @@ export default {
                 this.settings.setClassTransformation(this.selectedClasses)
             }
 
-            let validTransformations = this.settings.items.filter(column => column.selected && column.type === 1)
+            let validTransformations = this.settings.items.filter(feature => feature.selected && feature.type === 1 && feature.scaler != 0)
             this.isLoading = true;
             Plotly.purge('scatterplot_mtx')
             applyDataTransformation(this.df, validTransformations.map(transformation => transformation.name), validTransformations);

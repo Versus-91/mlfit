@@ -17,7 +17,8 @@
                         v-for="feature in result.numericColumns " :key="feature">
                         {{ feature + ', ' }}
                     </span></p>
-                <p class="ml-2 my-1 subtitle is-6 is-size-7">Transformations :
+                <p class="ml-2 my-1 subtitle is-6 is-size-7" v-show="result.transformations?.length > 0">Transformations
+                    :
                     <span v-for="transformation in result.transformations" :key="transformation.name">
                         {{ transformation.name + ': ' + transformation.scaler + ',' }}
                     </span>
@@ -109,7 +110,7 @@
             </article>
         </div>
         <div class="column is-12" v-show="result.showProbas">
-            <article class="message is-info">
+            <article class="message">
                 <div class="message-header"> Probabilities</div>
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
