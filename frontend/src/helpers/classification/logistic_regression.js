@@ -254,9 +254,9 @@ export default class LinearRegression extends ClassificationModel {
 
 
         this.summary.regularization_plot.layout['showlegend'] = false;
+        this.summary.regularization_plot.layout['autosize'] = true;
         this.summary.regularization_plot.layout.legend = {
             font: {
-
                 size: 8,
                 color: '#000'
             },
@@ -308,57 +308,65 @@ export default class LinearRegression extends ClassificationModel {
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
-        let current = this;
-        new DataTable('#metrics_table_' + current.id, {
-            responsive: false,
-            "footerCallback": function (row, data, start, end, display) {
-                var api = this.api();
-                $(api.column(2).footer()).html(
-                    'BIC : ' + current.summary.aic.toFixed(2)
-                );
-                $(api.column(5).footer()).html(
-                    'BIC : ' + current.summary["best_fit_min"].aic.toFixed(2)
-                );
-                $(api.column(8).footer()).html(
-                    'BIC : ' + current.summary["best_fit_1se"].aic.toFixed(2)
-                );
-            },
-            data: current.model_stats_matrix,
-            info: false,
-            search: false,
-            ordering: false,
-            searching: false,
-            paging: false,
-            bDestroy: true,
-        });
-        await Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { autosize: true });
-        let x = []
-        let y = []
-        let x_low = []
-        let x_high = []
-
-        this.summary.confidence_intervals_row_names.forEach((row, i) => {
-            x.push(this.summary.confidence_intervals[i][1]);
-            y.push(row + this.summary.confidence_intervals[i][0]);
-            x_low.push(Math.abs(this.summary.confidence_intervals[i][2]));
-            x_high.push(Math.abs(this.summary.confidence_intervals[i][3]));
-
-        })
-        var data = [
-            {
-                x: x,
-                y: y,
-                error_x: {
-                    type: 'data',
-                    symmetric: false,
-                    array: x_low,
-                    arrayminus: x_high
+        setTimeout(async () => {
+            let current = this;
+            new DataTable('#metrics_table_' + current.id, {
+                responsive: false,
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api();
+                    $(api.column(2).footer()).html(
+                        'AIC : ' + current.summary.aic.toFixed(2)
+                    );
+                    $(api.column(5).footer()).html(
+                        'AIC : ' + current.summary["best_fit_min"].aic.toFixed(2)
+                    );
+                    $(api.column(8).footer()).html(
+                        'AIC : ' + current.summary["best_fit_1se"].aic.toFixed(2)
+                    );
                 },
-                type: 'scatter'
-            }
-        ];
-        await Plotly.newPlot('parameters_plot_' + current.id, data);
+                data: current.model_stats_matrix,
+                info: false,
+                search: false,
+                ordering: false,
+                searching: false,
+                paging: false,
+                bDestroy: true,
+            });
+            await Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { autosize: true });
+            let x = []
+            let y = []
+            let x_low = []
+            let x_high = []
 
+            this.summary.confidence_intervals_row_names.forEach((row, i) => {
+                x.push(this.summary.confidence_intervals[i][1]);
+                y.push(row + this.summary.confidence_intervals[i][0]);
+                x_low.push(Math.abs(this.summary.confidence_intervals[i][2]));
+                x_high.push(Math.abs(this.summary.confidence_intervals[i][3]));
+
+            })
+            var data = [
+                {
+                    x: x,
+                    y: y,
+                    error_x: {
+                        type: 'data',
+                        symmetric: false,
+                        array: x_low,
+                        arrayminus: x_high
+                    },
+                    type: 'scatter'
+                }
+            ];
+            await Plotly.newPlot('parameters_plot_' + current.id, {
+                'data': data,
+                'layout': {
+                    autosize: true
+                }
+            });
+
+            window.dispatchEvent(new Event('resize'));
+        }, 500);
 
     }
 }
