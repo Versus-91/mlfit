@@ -30,7 +30,8 @@
                 <p class="ml-2 my-1 subtitle is-size-7">Accuracy : {{ result.metrics[4].toFixed(2) }}</p>
                 <p class="ml-2 my-1 subtitle is-size-7">f1 micro : {{ result.metrics[2].toFixed(2) }}</p>
                 <p class="ml-2 my-1 subtitle is-size-7"> f1 macro :{{ result.metrics[3].toFixed(2) }}</p>
-                <button class="button is-danger has-text-white is-small" @click="deleteTab()">Delete </button>
+                <button class="button is-danger has-text-white is-small" style="color:#fff !important"
+                    @click="deleteTab()">Delete </button>
                 <button class="button is-success is-small" @click="toggleHelp(result.helpSectionId)">Method description
                 </button>
                 <button class="button is-info is-small" @click="downloadPythonCode()">Download the code</button>
