@@ -1,11 +1,13 @@
 <template>
-  <div class="container">
-    <div class="columns is-multiline" id="app">
-      <SidebarComponent @updateFeatures="updateFeatureStats" @selected-features="setSelectedFeatures">
-      </SidebarComponent>
-      <MainComponent ref="main" :dataframe="this.settings.df" :selectedFeatures="selectedFeatures"></MainComponent>
+
+    <div class="container">
+      <div class="columns is-multiline" id="app">
+        <SidebarComponent @updateFeatures="updateFeatureStats" @selected-features="setSelectedFeatures">
+        </SidebarComponent>
+        <MainComponent ref="main" :dataframe="this.settings.df" :selectedFeatures="selectedFeatures"></MainComponent>
+      </div>
     </div>
-  </div>
+
 </template>
 
 <script>
