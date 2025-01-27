@@ -1,9 +1,8 @@
 <template>
     <section v-if="this.settings?.items.length > 2">
-        <b-message title="Principle Component Analysis" type="is-info" :closable="false">
+        <b-message title="Principle Component Analysis" :closable="false">
             <b-field>
                 <b-input v-model="numberOfComponents" size="is-small" type="number" min="2"
-                    :max="this.settings.items.filter(column => column.selected && column.type === 1).length"
                     placeholder="Number of Components"></b-input>
                 <p class="control">
                     <b-button
@@ -20,14 +19,14 @@
                 <div id="scree_plot" style="height: 300px;"></div>
             </div>
         </b-message>
-        <b-message title="t-distributed stochastic neighbor embedding" type="is-info" :closable="false">
+        <b-message title="t-distributed stochastic neighbor embedding" :closable="false">
             <b-button @click="findTSNE" size="is-small" type="is-info" :loading="loadingTSNE" label="find t-SNE" />
             <div class="column is-6" id="dimensionality_reduction_panel_tsne">
                 <div id="tsne">
                 </div>
             </div>
         </b-message>
-        <b-message title="Auto Encoder" type="is-info" :closable="false">
+        <b-message title="Auto Encoder"  :closable="false">
             <b-field>
                 <b-input v-model="hiddenLayerSize" size="is-small" type="number"
                     placeholder="Hidden layer size"></b-input>
@@ -122,21 +121,21 @@ export default {
             let unitsLength = numericColumns.length;
             let values = this.settings.df.loc({ columns: numericColumns }).values
             const encoder = tensorflow.layers.dense({
-                units: Math.floor(unitsLength / 2),
+                units: 2,
                 batchInputShape: [null, unitsLength],
                 activation: 'relu',
                 kernelInitializer: "randomNormal",
-                biasInitializer: tensorflow.initializers.ones()
+                biasInitializer: "ones"
             });
-            const decoder = tensorflow.layers.dense({ units: unitsLength, activation: 'linear' });
+            const decoder = tensorflow.layers.dense({ units: unitsLength, activation: 'relu' });
             model.add(encoder);
             model.add(decoder);
-            await model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
+            await model.compile({ optimizer: 'sgd', loss: 'meanSquaredError' });
             console.log('compliled');
 
             const xs = tensorflow.tensor2d(values);
             // eslint-disable-next-line no-unused-vars
-            let h = await model.fit(xs, xs, { epochs: 64, batchSize: 32, shuffle: false, validationSplit: 0.2 });
+            let h = await model.fit(xs, xs, { epochs: 128, batchSize: 16, shuffle: true, validationSpit: 0.1 });
             xs.dispose();
             const tidyWrapper = tensorflow.tidy(() => {
                 const predictor = tensorflow.sequential();
