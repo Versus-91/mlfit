@@ -103,6 +103,7 @@ export default class DiscriminantAnalysis extends ClassificationModel {
             );
         }
     }
+
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {
         await super.visualize(x_test, y_test, uniqueLabels, predictions, encoder)
         if (this.hasExplaination) {

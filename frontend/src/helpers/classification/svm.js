@@ -8,8 +8,8 @@ export default class SupportVectorMachine extends ClassificationModel {
         this.options = {
             kernel: opt.kernel.value.toLowerCase(),
             coef: opt.bias.value,
-            gamma: opt.gamma.value,
             degree: opt.degree.value,
+            c: opt.c.value,
             quiet: true
         };
         this.helpSectionId = 'svm_help';
@@ -26,7 +26,7 @@ export default class SupportVectorMachine extends ClassificationModel {
             explain: this.hasExplaination,
             kernel: this.options.kernel,
             coef: this.options.coef,
-            gamma: this.options.gamma,
+            c: +this.options.c,
             degree: this.options.degree,
             seed: this.seed,
             features: [...Array(columns.length).keys()]
@@ -34,7 +34,7 @@ export default class SupportVectorMachine extends ClassificationModel {
         };
         const script = `
         from sklearn import svm
-        from js import X_train,y_train,X_test,y_test,kernel,coef,gamma,degree,features,seed
+        from js import X_train,y_train,X_test,y_test,kernel,coef,degree,features,seed,c
         import matplotlib
         matplotlib.use("AGG")
         from sklearn.inspection import PartialDependenceDisplay
@@ -43,7 +43,7 @@ export default class SupportVectorMachine extends ClassificationModel {
         partial_dependence_plot_grids = []
         partial_dependence_plot_avgs = []
 
-        model = svm.SVC(kernel=kernel,random_state = seed)
+        model = svm.SVC(kernel=kernel,random_state = seed,C=c,degree=degree)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
 

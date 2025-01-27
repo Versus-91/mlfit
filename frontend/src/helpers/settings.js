@@ -111,17 +111,17 @@ export const Settings = {
                     values: [{ label: "RBF", value: "rbf" }, { label: "Linear", value: "linear" }, { label: "Polynomial", value: "poly" }
                         , { label: "Sigmoid", value: "sigmoid" }]
                 },
-                "gamma": {
-                    "label": "gamma",
-                    type: "number",
-                    for: ["RBF", "Sigmoid", "Polynomial"],
-                    default: 1
-                },
+
                 "bias": {
                     "label": "bias",
                     type: "number",
                     for: ["Sigmoid", "Sigmoid"],
                     default: 0
+                },
+                "c": {
+                    "label": "Regularization parameter",
+                    type: "number",
+                    default: 1
                 },
                 "degree": {
                     label: 'degree',

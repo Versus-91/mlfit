@@ -25,7 +25,7 @@
                 </option>
             </b-select>
         </b-field>
-        <b-field label="Sample data" :label-position="'on-border'">
+        <b-field >
             <b-select :expanded="true" @input="handleFileSelect" size="is-small" v-model="sampleDataset">
                 <option v-for="option in samplDataOptions" :value="option.name" :key="option.id">
                     {{ option.label }}
