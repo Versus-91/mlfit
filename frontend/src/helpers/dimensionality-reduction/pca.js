@@ -12,9 +12,12 @@ export default class PCA {
         import numpy as np
         from sklearn.decomposition import PCA
         from js import x_train,n   
-        # Perform t-SNE dimensionality reduction
+        from sklearn.preprocessing import StandardScaler
+
+        scaler = StandardScaler()
+        x_train_scaled = scaler.fit_transform(x_train)
         pca_x = PCA(n_components=n)
-        pca = pca_x.fit_transform(np.array(x_train))
+        pca = pca_x.fit_transform(np.array(x_train_scaled))
         (pca,np.arange(1, len(pca_x.explained_variance_ratio_) + 1), pca_x.explained_variance_ratio_)
     `;
         try {
