@@ -92,7 +92,26 @@ export default class LinearRegression extends RegressionModel {
                                 linetype="dashed")+
                     theme_bw()
 
- 
+                    # Get lambda.min and lambda.1se
+                    lambda_min = cvfit$lambda.min
+                    lambda_1se = cvfit$lambda.1se
+
+                    # Get the coefficients at lambda.min and lambda.1se
+                    coef_lambda_min = coef(cvfit, s = "lambda.min")
+                    coef_lambda_1se = coef(cvfit, s = "lambda.1se")
+
+                    # Convert the sparse matrix to a regular matrix to make indexing easier
+                    coef_lambda_min_matrix = as.matrix(coef_lambda_min)
+                    coef_lambda_1se_matrix = as.matrix(coef_lambda_1se)
+                    coef_lambda_min_matrix = coef_lambda_min_matrix[-1, , drop = FALSE]
+                    coef_lambda_1se_matrix = coef_lambda_1se_matrix[-1, , drop = FALSE]
+                    # Find the non-zero features at lambda.min and lambda.1se
+                    non_zero_features_min = rownames(coef_lambda_min_matrix)[coef_lambda_min_matrix != 0]
+                    non_zero_features_1se = rownames(coef_lambda_1se_matrix)[coef_lambda_1se_matrix != 0]
+
+                    print(non_zero_features_min)
+                    print(non_zero_features_1se)
+
                     model <- lm(y ~ ., data = as.data.frame(x))
                     x <- as.matrix(x_test)  
                     colnames(x) <- names
@@ -107,18 +126,10 @@ export default class LinearRegression extends RegressionModel {
                     residuals_ols <- resid(model)
                     fitted_values_ols <- fitted(model)
 
-
-                    best_lambda <- cvfit$lambda.min
-                    x <- as.matrix(xx) 
+                    x <- as.matrix(xx)  
                     colnames(x) <- names
-                    # Get the coefficients for the best lambda
-                    best_model <- glmnet(x, y, alpha =is_lasso, lambda = best_lambda)
-                    coefficients <- as.matrix(coef(best_model))
-                    nonzero_coef <- coefficients[coefficients != 0]
-                    nonzero_features <- rownames(coefficients)[coefficients != 0 & rownames(coefficients) != "(Intercept)"]
-
-                    X_reduced <- x[, nonzero_features]
-                    linear_model_min_features <- nonzero_features
+                    X_reduced <- x[, non_zero_features_min]
+                    linear_model_min_features <- non_zero_features_min
 
                     # Fit a linear regression model using the non-zero features
                     linear_model_min <- lm(y ~ ., data = as.data.frame(X_reduced))
@@ -136,15 +147,16 @@ export default class LinearRegression extends RegressionModel {
 
                     x <- as.matrix(x_test)  
                     colnames(x) <- names
-                    x <- x[, nonzero_features]
+                    x <- x[, non_zero_features_min]
                     predictions_min <- predict(linear_model_min, newdata = as.data.frame(x))
+
+
+
                     x <- as.matrix(xx)  
                     colnames(x) <- names
-                    nonzero_coef <- coefficients[coefficients != 0]
-                    
-                    nonzero_features <- rownames(coefficients)[coefficients != 0 & rownames(coefficients) != "(Intercept)"]
-                    X_reduced <- x[, nonzero_features]
-                    linear_model_1se_features <- nonzero_features
+
+                    X_reduced <- x[, non_zero_features_1se]
+                    linear_model_1se_features <- non_zero_features_1se
                     linear_model_1se <- lm(y ~ ., data = as.data.frame(X_reduced))
                     coefs_1se <- coef(linear_model_1se)
                     print(coefs_1se)
@@ -154,9 +166,10 @@ export default class LinearRegression extends RegressionModel {
                     std_error_1se <- summary(linear_model_1se)$coefficients[,2]
                     residuals_1se <- resid(linear_model_1se)
                     fitted_values_1se <- fitted(linear_model_1se)
+                    
                     x <- as.matrix(x_test)  
                     colnames(x) <- names
-                    x <- x[, nonzero_features]
+                    x <- x[, non_zero_features_1se]
                     predictions_1se <- predict(linear_model_1se, newdata = as.data.frame(x))
 
 
@@ -414,9 +427,9 @@ export default class LinearRegression extends RegressionModel {
         await Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { autosize: true });
         await Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { autosize: true });
         await Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { autosize: true });
-        await Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { autosize: true });
-        await Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { autosize: true });
-        await Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { autosize: true });
+        await Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { autosize: true, staticPlot: true, });
+        await Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { autosize: true, staticPlot: true, });
+        await Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { autosize: true, staticPlot: true, });
         current.ui.yhat_plot(y_test, this.summary['predictions'], 'regression_y_yhat_' + current.id, 'OLS predictions')
         current.ui.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + current.id, 'lasso min predictions')
         current.ui.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + current.id, 'lasso 1se predictions')
