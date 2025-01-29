@@ -4,14 +4,14 @@
             <b-tabs v-model="settings.activeTab" :position="'is-centered'" :animated="false" type="success">
                 <b-tab-item label="Data Analysis">
                     <section v-if="this.settings.datasetShape?.count > 0">
-                        <div class="message is-info"  v-if="isActive" :closable="false">
+                        <div class="message is-info" v-if="isActive" :closable="false">
                             <div class="message-header">Data summary</div>
                             <div class="message-body">
                                 <div class="columns is-multiline">
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                        }})</p>
+                                            }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -39,7 +39,7 @@
                                 ref="splom"></scatterplot-matrix-component>
 
                         </section>
-                        <section> 
+                        <section>
                             <article class="message is-info">
                                 <div class="message-header">correlation matrix and Dendrogram</div>
                                 <div class="message-body">

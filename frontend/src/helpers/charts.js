@@ -632,7 +632,7 @@ export default class ChartController {
 
     async classificationPCA(dataset, labels, missclassifications, uniqueLabels, index, n) {
 
-        const pca = new PCA(dataset, { center: true, scale: true });
+        const pca = new PCA();
         var colorIndices = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label), uniqueLabels.length));
         const pca_data = await pca.predict(dataset, n)
         let x = []

@@ -25,7 +25,7 @@
                 </option>
             </b-select>
         </b-field>
-        <b-field >
+        <b-field>
             <b-select :expanded="true" @input="handleFileSelect" size="is-small" v-model="sampleDataset">
                 <option v-for="option in samplDataOptions" :value="option.name" :key="option.id">
                     {{ option.label }}
@@ -129,11 +129,12 @@ export default {
     },
 
     methods: {
-        initDataframe(dataset, name) {
+        async initDataframe(dataset, name) {
             this.settings.resetFeatures();
             this.settings.setDatasetName(name);
             this.settings.setDatasetShape({ count: dataset.$data.length, columns: dataset.columns.length });
-            this.settings.setDataframe(dataset)
+            let df = await dataset.sample(dataset.$data.length, { seed: this.settings.getSeed });
+            this.settings.setDataframe(df)
             this.$emit('uploaded', true)
         },
         async process_file(file, type) {
