@@ -1953,26 +1953,33 @@ export default class ChartController {
             }
         }
 
-        let portionOfNegativeValues = countNegatives / corrs.length
+        let portionOfNegativeValues = Math.round(((countNegatives - 1) / corrs.length) * 100) / 100
+
         let colorscale = [
             [0, 'rgb(0, 0, 100)'],
-            [portionOfNegativeValues / 2, 'rgb(0, 0, 200)'],
-
-            [portionOfNegativeValues, 'rgb(0, 0, 255)'],
-            [portionOfNegativeValues + 0.0001, 'rgb(100, 0, 0)'],
+            [portionOfNegativeValues, 'rgb(161, 161, 255)'],
+            [portionOfNegativeValues + 0.001, 'rgb(253, 237, 237)'],
             [1.0, 'rgb(255, 0, 0)']
         ]
         return colorscale
     }
-    async correlationHeatmap(id, correlations, names, colorscale) {
+    async correlationHeatmap(id, correlations, names) {
         var data = [
             {
                 z: correlations,
                 x: names,
                 y: names,
                 type: 'heatmap',
+                zmin: -1,
+                zmax: 1,
                 hoverongaps: false,
-                colorscale: colorscale,
+                colorscale: [
+                    [0, 'rgb(74,141,255)'],
+                    [0.25, 'rgb(121,170,255)'],
+                    [0.49, 'rgb(205,221,255)'],
+                    [0.5, 'rgb(253, 237, 237)'],
+                    [0.75, 'rgb(249,100,100)'],
+                    [1.0, 'rgb(222,15,15)']],
                 showscale: false,
             }
         ];
@@ -1991,16 +1998,18 @@ export default class ChartController {
                 tickangle: -45,
                 ticks: '',
                 ticksuffix: ' ',
-            }
+            },
+            autosize: true,
+
         };
         for (var i = 0; i < names.length; i++) {
             for (var j = names.length - 1; j >= 0; j--) {
                 var currentValue = correlations[i][j];
                 let textColor
                 if (currentValue <= 0.0) {
-                    textColor = 'white';
+                    textColor = 'black';
                 } else {
-                    textColor = 'white';
+                    textColor = 'black';
                 }
                 var result = {
                     xref: 'x1',
@@ -2010,7 +2019,7 @@ export default class ChartController {
                     text: currentValue.toFixed(2),
                     font: {
                         family: 'Arial',
-                        size: 7,
+                        size: 8,
                         color: textColor
                     },
                     showarrow: false,
@@ -2021,15 +2030,23 @@ export default class ChartController {
 
         await Plotly.newPlot(id, data, layout, plotlyImageExportConfig);
     }
-    async dendogramPlot(id, correlations, linkage, names, originalColumns, colorScales) {
+    async dendogramPlot(id, correlations, linkage, names, originalColumns) {
 
         var trace4 = {
             x: names,
             y: names,
             z: correlations,
             type: 'heatmap',
-            colorscale: colorScales,
-
+            zmin: -1,
+            zmax: 1,
+            hoverongaps: false,
+            colorscale: [
+                [0, 'rgb(74,141,255)'],
+                [0.25, 'rgb(121,170,255)'],
+                [0.49, 'rgb(205,221,255)'],
+                [0.5, 'rgb(253, 237, 237)'],
+                [0.75, 'rgb(249,100,100)'],
+                [1.0, 'rgb(222,15,15)']],
             xaxis: 'x',
             yaxis: 'y',
             colorbar: {
@@ -2179,9 +2196,12 @@ export default class ChartController {
         })
 
         var layout2 = {
+            annotations: [],
             font: {
                 size: 10
             },
+            autosize: true,
+
             yaxis: {
                 domain: [0, 0.75],
                 mirror: false,
@@ -2235,6 +2255,7 @@ export default class ChartController {
                 cmax: 1
             },
             margin: { l: 60, r: 30, b: 60, t: 30 },
+
         };
 
         let data = dendrogramUP['data']

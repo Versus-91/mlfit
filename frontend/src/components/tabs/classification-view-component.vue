@@ -38,7 +38,7 @@
             </b-message>
         </div>
         <div class="column is-12">
-            <article class="message">
+            <article class="message is-info">
                 <div class="message-header"> Confusion Matrix and PCA of predictions</div>
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
@@ -96,7 +96,7 @@
             </div>
         </div>
         <div class="column is-12" v-show="result.hasExplaination && result.name !== 'Logistic Regression'">
-            <article class="message">
+            <article class="message is-info">
                 <div class="message-header"> Partial Dependence Plot and Permutation Feature Importance</div>
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
@@ -111,7 +111,7 @@
             </article>
         </div>
         <div class="column is-12" v-show="result.showProbas">
-            <article class="message">
+            <article class="message is-info">
                 <div class="message-header"> Probabilities</div>
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">

@@ -11,7 +11,7 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                            }})</p>
+                                        }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -229,13 +229,14 @@ export default {
                 let matrix = new Matrix(values)
                 let correlations = correlation(matrix)
                 this.hasCorrelationMatrix = true;
-                let colorScales = chartController.correaltoinMatrixColorscale(correlations.data)
-                await chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns, colorScales);
+                await chartController.correlationHeatmap('correlation_matrix', correlations.data, numericColumns);
                 let mtx = new Clustermap();
                 let [dendogram, orderedMatrix, columns] = await mtx.train(values, numericColumns, this.metric, this.method);
-                await chartController.dendogramPlot('correlation_matrix_ordered', orderedMatrix, dendogram, columns, numericColumns, colorScales);
+                await chartController.dendogramPlot('correlation_matrix_ordered', orderedMatrix, dendogram, columns, numericColumns);
                 this.loading = false;
-
+                setTimeout(() => {
+                    window.dispatchEvent(new Event('resize'));
+                }, 500);
             } catch (error) {
                 this.loading = false;
                 throw error
