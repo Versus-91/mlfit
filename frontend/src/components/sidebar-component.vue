@@ -1,7 +1,10 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
-    <div class="column is-2  has-background-light" style="height: 100%;">
+    <div class="column is-2  has-background-info-light	" style="height: 100%;">
         <!-- <button @click="impute()">Impute</button> -->
+        <figure class="image is-96x96">
+            <img src="/logo.png" />
+        </figure>
         <section v-if="!configureFeatures">
             <upload-component @uploaded="generateTargetDropdown"></upload-component>
             <div class="column is-12">
@@ -65,9 +68,10 @@
                 <b-field>
                     <b-checkbox v-model="explainModel" size="is-small">Explain the model</b-checkbox>
                 </b-field>
+
                 <b-field>
                     <b-button @click="train" size="is-small" icon-pack="fas" icon-left="play" :loading="training"
-                        :disabled="!dataframe">
+                        :disabled="!dataframe || modelOption == null">
                         train</b-button>
                 </b-field>
                 <b-loading :is-full-page="false" v-model="training"></b-loading>
@@ -470,6 +474,8 @@ export default {
                 let targetFeature = this.featureSettings.find(feature => feature.name == target);
                 this.settings.setmodelTask(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
                 this.modelOptions = targetFeature.type === FeatureCategories.Numerical.id ? Settings.regression : Settings.classification;
+                this.modelOption = null
+                this.getDefaultModelConfiguration()
             }
         },
         modelOption: function () {
