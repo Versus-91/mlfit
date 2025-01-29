@@ -917,7 +917,7 @@ export default class UI {
                 pad: 0
             }
         }, {
-            responsive: true, staticPlot: false,
+            responsive: true, staticPlot: true,
         });
     }
     residual_plot(y, residuals, container, title = '') {
@@ -970,6 +970,6 @@ export default class UI {
                 t: 20,
                 pad: 0
             }
-        }, { responsive: true, });
+        }, { responsive: true, staticPlot: true, });
     }
 }

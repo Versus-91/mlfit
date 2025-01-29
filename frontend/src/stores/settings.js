@@ -19,7 +19,7 @@ export const settingStore = defineStore({
         },
         target: null,
         isClassification: true,
-        seed: 142,
+        seed: 123,
     }),
     getters: {
         items: (state) => {
