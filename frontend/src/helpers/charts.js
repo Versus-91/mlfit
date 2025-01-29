@@ -195,6 +195,10 @@ export default class ChartController {
     indexToColor(index, max) {
         return this.color_scheme_sequential((index + 1) / max);
     }
+    indexToColorSequential(value, min, max) {
+        let normalizer_value = (value - min) / (max - min)
+        return this.color_scheme_sequential(normalizer_value);
+    }
     reshape(array, shape) {
         if (shape.length === 0) return array[0];
 
@@ -274,7 +278,6 @@ export default class ChartController {
                     size: 4,
                     color: x,
                     colorbar: {
-                        title: 'Color Scale',
                         titleside: 'right',
                         thickness: 10,
                         len: 0.5
@@ -757,27 +760,24 @@ export default class ChartController {
                     })
                 })
             } else {
+                let x = pc1.map(m => m.x);
+                let y = pc1.map(m => m.y);
+                let max = Math.max(...x)
+                let min = Math.min(...x)
                 traces1.push({
-                    x: pc1.map(m => m.x),
-                    y: pc1.map(m => m.y),
+                    x: x,
+                    y: y,
                     mode: 'markers',
                     type: 'scatter',
                     marker: {
-                        color: this.indexToColor(x),
-                        colorscale: 'YlOrRd',
+                        color: x.map(item => this.indexToColorSequential(item, min, max)),
                         size: 4,
-                        colorbar: {
-                            title: 'Color Scale Legend',
-                            titleside: 'right',
-                            thickness: 10,
-                            len: 0.5
-                        }
                     },
 
                 })
             }
             Plotly.newPlot('pca_' + i, traces1, {
-                showlegend: true,
+                showlegend: uniqueLabels.length != 0 ? true : false,
                 margin: {
                     l: 40,
                     r: 40,

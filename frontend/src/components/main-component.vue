@@ -1,7 +1,7 @@
 <template>
     <div class="column is-10">
         <section>
-            <b-tabs v-model="settings.activeTab" :position="'is-centered'" :animated="false" type="success">
+            <b-tabs v-model="settings.activeTab" :position="'is-centered'" :animated="false" type="success" @input="window.dispatchEvent(new Event('resize'));">
                 <b-tab-item label="Data Analysis">
                     <section v-if="this.settings.datasetShape?.count > 0">
                         <div class="message is-info" v-if="isActive" :closable="false">
