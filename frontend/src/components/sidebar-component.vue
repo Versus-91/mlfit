@@ -150,7 +150,7 @@ export default {
             explainModel: true,
             training: false,
             tuneModel: false,
-            seed: 1,
+            seed: 123,
             dataframe: null,
             configureFeatures: false,
             modelOptions: Settings.classification,
