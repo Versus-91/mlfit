@@ -1,6 +1,6 @@
 <template>
     <section style="overflow-y: auto;overflow-x: auto;">
-        <article class="message">
+        <article class="message is-info">
             <div class="message-header">Scatterplot Matrix</div>
             <div class="message-body">
                 <div id="scatterplot_mtx"></div>
@@ -134,7 +134,7 @@ export default {
         },
         async initSPLOM() {
             this.df = new DataFrame(this.settings.rawData);
-            this.df = await this.df.sample(this.df.$data.length, { seed:this.settings.getSeed });
+            this.df = await this.df.sample(this.df.$data.length, { seed: this.settings.getSeed });
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(function (column) {
                 return { 'name': column.name, type: column.type }
             });

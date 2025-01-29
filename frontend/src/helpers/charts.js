@@ -976,7 +976,7 @@ export default class ChartController {
         for (let true_label in subsets) {
             traces.push({
                 type: 'box',
-                name:  true_label,
+                name: true_label,
                 marker: {
                     color: this.indexToColor(uniqueLabels.indexOf(true_label), uniqueLabels.length),
                     size: 2,
@@ -1045,7 +1045,7 @@ export default class ChartController {
                 legendgroup: true_label,
                 scalegroup: true_label,
                 type: 'violin',
-                name:  true_label,
+                name: true_label,
                 line: {
                     color: this.indexToColor(uniqueLabels.indexOf(true_label), uniqueLabels.length),
                 },
@@ -1768,7 +1768,7 @@ export default class ChartController {
         })
     }
 
-    KNNPerformancePlot(results, best_n, id) {
+    KNNPerformancePlot(results, best_n, id, label = "Accuracy") {
         let traces = []
         traces.push({
             x: results.map(m => m[1]),
@@ -1816,7 +1816,7 @@ export default class ChartController {
                 linewidth: 1,
                 mirror: true,
                 title: {
-                    text: 'Accuracy',
+                    text: label,
                 }
             },
             shapes: [

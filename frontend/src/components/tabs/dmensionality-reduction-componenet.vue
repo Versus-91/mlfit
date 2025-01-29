@@ -1,13 +1,13 @@
 <template>
     <section v-if="this.settings?.items.length > 2">
-        <b-message title="Principle Component Analysis" :closable="false">
+        <b-message title="Principle Component Analysis" :type="'is-info'" :closable="false">
             <b-field>
                 <b-input v-model="numberOfComponents" size="is-small" type="number" min="2"
                     placeholder="Number of Components"></b-input>
                 <p class="control">
                     <b-button
                         :disabled="numberOfComponents < 2 || numberOfComponents > this.settings.items.filter(column => column.selected && column.type === 1)?.length"
-                        size="is-small" @click="findPCA" type="is-info" :loading="loadingPCA" label="Find PCA" />
+                        size="is-small" @click="findPCA" type="is-info" :loading="loadingPCA" label="Fit PCA" />
                 </p>
             </b-field>
             <div class="columns is-multiline" id="pca_container">
@@ -19,20 +19,20 @@
                 <div id="scree_plot" style="height: 300px;"></div>
             </div>
         </b-message>
-        <b-message title="t-distributed stochastic neighbor embedding" :closable="false">
-            <b-button @click="findTSNE" size="is-small" type="is-info" :loading="loadingTSNE" label="find t-SNE" />
+        <b-message title="t-distributed stochastic neighbor embedding" :type="'is-info'" :closable="false">
+            <b-button @click="findTSNE" size="is-small" type="is-info" :loading="loadingTSNE" label="Fit t-SNE" />
             <div class="column is-6" id="dimensionality_reduction_panel_tsne">
                 <div id="tsne">
                 </div>
             </div>
         </b-message>
-        <b-message title="Auto Encoder"  :closable="false">
+        <b-message title="Auto Encoder" :closable="false" :type="'is-info'">
             <b-field>
                 <b-input v-model="hiddenLayerSize" size="is-small" type="number"
                     placeholder="Hidden layer size"></b-input>
                 <p class="control">
                     <b-button size="is-small" @click="autoEncoder" type="is-info" :loading="loadingAutoEncoder"
-                        label="Find Auto Encoder" />
+                        label="Fit Auto Encoder" />
                 </p>
             </b-field>
             <div class="column is-6" id="dimensionality_reduction_panel_tsne">

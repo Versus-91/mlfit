@@ -4,7 +4,7 @@
             <b-tabs v-model="settings.activeTab" :position="'is-centered'" :animated="false" type="success">
                 <b-tab-item label="Data Analysis">
                     <section v-if="this.settings.datasetShape?.count > 0">
-                        <div class="message" v-if="isActive" :closable="false">
+                        <div class="message is-info"  v-if="isActive" :closable="false">
                             <div class="message-header">Data summary</div>
                             <div class="message-body">
                                 <div class="columns is-multiline">
@@ -39,8 +39,8 @@
                                 ref="splom"></scatterplot-matrix-component>
 
                         </section>
-                        <section>
-                            <article class="message">
+                        <section> 
+                            <article class="message is-info">
                                 <div class="message-header">correlation matrix and Dendrogram</div>
                                 <div class="message-body">
                                     <b-field label="Linkage method, Distance Metric">
