@@ -1964,6 +1964,7 @@ export default class ChartController {
         return colorscale
     }
     async correlationHeatmap(id, correlations, names) {
+
         var data = [
             {
                 z: correlations,
@@ -1995,6 +1996,7 @@ export default class ChartController {
                 tickangle: -90,
             },
             yaxis: {
+                autorange: "reversed",
                 tickangle: -45,
                 ticks: '',
                 ticksuffix: ' ',
