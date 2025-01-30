@@ -135,6 +135,7 @@ export default {
         async initSPLOM() {
             this.df = new DataFrame(this.settings.rawData);
             this.df = await this.df.sample(this.df.$data.length, { seed: this.settings.getSeed });
+            this.df.dropNa({ axis: 1, inplace: true })
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(function (column) {
                 return { 'name': column.name, type: column.type }
             });

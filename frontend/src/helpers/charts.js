@@ -823,13 +823,13 @@ export default class ChartController {
                 text: '',
             },
             legend: {
-                verticalAlign: 'top',
+                verticalAlign: 'bottom',
                 align: 'left',
                 floating: true,
             },
             yAxis: {
                 linecolor: 'black',
-                linewidth: 1,
+                linewidth: 2,
                 mirror: true,
                 min: 0,
                 max: 1,
@@ -858,7 +858,9 @@ export default class ChartController {
 
             },
             xAxis: {
-
+                linecolor: 'black',
+                linewidth: 2,
+                mirror: true,
                 labels: {
                     enabled: true,
                     formatter: function () {
@@ -867,7 +869,7 @@ export default class ChartController {
                 },
 
                 title: {
-                    text: 'Number of components'
+                    text: 'Number of PCs'
                 },
             },
             series: [{

@@ -11,13 +11,14 @@
                 </p>
             </b-field>
             <div class="columns is-multiline" id="pca_container">
+                <div class="column is-6">
+                    <div id="scree_plot" style="height: 300px;"></div>
+                </div>
                 <div class="column is-4" v-for="(item, index) in this.pcaContainers" :key="index">
                     <div :id="'pca_' + index" style="height: 300px;"></div>
                 </div>
             </div>
-            <div class="column is-6">
-                <div id="scree_plot" style="height: 300px;"></div>
-            </div>
+
         </b-message>
         <b-message title="t-distributed stochastic neighbor embedding" :type="'is-info'" :closable="false">
             <b-button @click="findTSNE" size="is-small" type="is-info" :loading="loadingTSNE" label="Fit t-SNE" />
@@ -70,7 +71,7 @@ export default {
     },
     data() {
         return {
-            numberOfComponents: null,
+            numberOfComponents: 2,
             loadingPCA: false,
             loadingTSNE: false,
             loadingAutoEncoder: false,

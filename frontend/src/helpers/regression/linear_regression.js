@@ -402,6 +402,8 @@ export default class LinearRegression extends RegressionModel {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         if (rowData[3] <= 0.05) {
                             $(td).css('color', 'red')
+                            $(td).css('font-weight', '700')
+
                         }
                     }
                 },
@@ -410,6 +412,7 @@ export default class LinearRegression extends RegressionModel {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         if (rowData[6] <= 0.05) {
                             $(td).css('color', 'red')
+                            $(td).css('font-weight', '700')
                         }
                     }
                 },
@@ -418,6 +421,7 @@ export default class LinearRegression extends RegressionModel {
                     "createdCell": function (td, cellData, rowData, row, col) {
                         if (rowData[9] <= 0.05) {
                             $(td).css('color', 'red')
+                            $(td).css('font-weight', '700')
                         }
                     }
                 }

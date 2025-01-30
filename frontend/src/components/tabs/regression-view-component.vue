@@ -44,12 +44,12 @@
                             <thead>
                                 <tr>
                                     <th colspan="1"></th>
-                                    <th colspan="3">OLS</th>
-                                    <th colspan="3">lambda min</th>
-                                    <th colspan="3">lambda 1se</th>
+                                    <th colspan="3" class="has-text-centered">OLS</th>
+                                    <th colspan="3" class="has-text-centered">lasso min</th>
+                                    <th colspan="3" class="has-text-centered">lasso 1se</th>
                                 </tr>
                                 <tr>
-                                    <th>name</th>
+                                    <th>names</th>
                                     <th>coef</th>
                                     <th>st.d.</th>
                                     <th><i>p</i>-value</th>
@@ -61,12 +61,12 @@
                                     <th><i>p</i>-value</th>
                                 </tr>
                             </thead>
-                            <tfoot class="has-text-centered" style=" font-weight: normal">
+                            <tfoot>
                                 <tr>
                                     <th></th>
-                                    <th colspan="3"></th>
-                                    <th colspan="3"></th>
-                                    <th colspan="3"></th>
+                                    <th colspan="3" class="has-text-centered"></th>
+                                    <th colspan="3" class="has-text-centered"></th>
+                                    <th colspan="3" class="has-text-centered"></th>
 
                                 </tr>
                             </tfoot>
