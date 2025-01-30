@@ -213,7 +213,7 @@ export default class ChartController {
 
         return result;
     }
-    async plot_tsne(data, labels, regression_labels) {
+    async plot_tsne(data, labels, regression_labels, iterations) {
         document.getElementById("dimensionality_reduction_panel_tsne").style.display = "block"
         console.assert(Array.isArray(data));
         // Create some data
@@ -224,7 +224,7 @@ export default class ChartController {
 
         // Compute a T-SNE embedding, returns a promise.
         // Runs for 1000 iterations by default.
-        await tsneOpt.compute();
+        await tsneOpt.compute(iterations);
         // tsne.coordinate returns a *tensor* with x, y coordinates of
         // the embedded data.
         const coordinates = tsneOpt.coordinates();
@@ -267,28 +267,24 @@ export default class ChartController {
                     'y': item[1]
                 }
             })
+            let min = Math.min(...x);
+            let max = Math.max(...x);
+
             traces.push({
                 x: x,
                 y: points.map(m => m.y),
                 mode: 'markers+text',
                 type: 'scatter',
-                colorscale: 'viridis',
-
                 marker: {
                     size: 4,
-                    color: x,
-                    colorbar: {
-                        titleside: 'right',
-                        thickness: 10,
-                        len: 0.5
-                    }
+                    color: x.map(item => this.indexToColorSequential(item, min, max)),
                 },
             })
 
         }
 
         var layout = {
-            showlegend: true,
+            showlegend: labels.length > 0 ? true : false,
             margin: {
                 l: 50,
                 r: 40,
@@ -300,10 +296,13 @@ export default class ChartController {
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
+                zeroline: false,
+
             },
             yaxis: {
                 linecolor: 'black',
                 linewidth: 1,
+                zeroline: false,
                 mirror: true,
             },
             legend: {
@@ -2518,12 +2517,17 @@ export default class ChartController {
 
         Plotly.newPlot(chartIdCategorical, traces_categoricals, layout2);
     }
-    drawAutoencoder(points, xIndex = 1, yIndex = 0, labels) {
+    drawAutoencoder(points, xIndex = 1, yIndex = 0, labels, is_classification) {
         labels = labels.map(l => l[0])
-        var uniqueLabels = [...new Set(labels)];
-        const labelToIndex = Object.fromEntries(uniqueLabels.map((label, index) => [label, index]));
-        console.log(this.indexToColor(labelToIndex[labels[0]]));
-
+        let colors = [];
+        if (is_classification) {
+            var uniqueLabels = [...new Set(labels)];
+            colors = points.map((_, i) => this.indexToColor(uniqueLabels.indexOf(labels[i]), uniqueLabels.length))
+        } else {
+            let min = Math.min(...labels);
+            let max = Math.max(...labels);
+            colors = labels.map(label => this.indexToColorSequential(label, min, max))
+        }
         var trace1 = {
             x: points.map(point => point[xIndex]),
             y: points.map(point => point[yIndex]),
@@ -2531,8 +2535,8 @@ export default class ChartController {
             type: 'scatter',
             name: 'Team A',
             marker: {
-                size: 4,
-                color: points.map((_, i) => this.indexToColor(labelToIndex[labels[i]]))
+                size: 3,
+                color: colors
             }
         };
 
@@ -2547,6 +2551,26 @@ export default class ChartController {
                     size: 20,
                     color: 'grey',
                 }
+            },
+            xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                zeroline: false,
+
+            },
+            yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                zeroline: false,
+                mirror: true,
+            },
+            margin: {
+                l: 50,
+                r: 40,
+                b: 50,
+                t: 40,
+                pad: 20
             },
         };
 

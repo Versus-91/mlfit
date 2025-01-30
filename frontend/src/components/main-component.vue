@@ -2,7 +2,7 @@
     <div class="column is-10">
         <section>
             <b-tabs v-model="settings.activeTab" :position="'is-centered'" :animated="false" type="success"
-                @input="window.dispatchEvent(new Event('resize'));">
+                @input="resize()">
                 <b-tab-item label="Data Analysis">
                     <section v-if="this.settings.datasetShape?.count > 0">
                         <div class="message is-info" v-if="isActive" :closable="false">
@@ -12,7 +12,7 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                            }})</p>
+                                        }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -221,6 +221,9 @@ export default {
         }
     },
     methods: {
+        resize() {
+            window.dispatchEvent(new Event('resize'));
+        },
         async correlationMatrix() {
             this.loading = true;
             try {

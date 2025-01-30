@@ -21,23 +21,32 @@
 
         </b-message>
         <b-message title="t-distributed stochastic neighbor embedding" :type="'is-info'" :closable="false">
-            <b-button @click="findTSNE" size="is-small" type="is-info" :loading="loadingTSNE" label="Fit t-SNE" />
+            <b-field label="Iterations">
+                <b-input v-model="iterationsTSNE" size="is-small" type="number"
+                    placeholder="number of iterations"></b-input>
+                <p class="control">
+                    <b-button @click="findTSNE" size="is-small" type="is-info" :loading="loadingTSNE"
+                        label="Fit t-SNE" />
+                </p>
+            </b-field>
             <div class="column is-6" id="dimensionality_reduction_panel_tsne">
                 <div id="tsne">
                 </div>
             </div>
         </b-message>
-        <b-message title="Auto Encoder" :closable="false" :type="'is-info'">
-            <b-field>
+        <b-message title="Autoencoder" :closable="false" :type="'is-info'">
+            <b-field label="Hidden layers size, plot x axis, plot y axis">
                 <b-input v-model="hiddenLayerSize" size="is-small" type="number"
                     placeholder="Hidden layer size"></b-input>
+                <b-input v-model="autoEncoderX" size="is-small" type="number" placeholder="Hidden layer size"></b-input>
+                <b-input v-model="autoEncoderY" size="is-small" type="number" placeholder="Hidden layer size"></b-input>
                 <p class="control">
                     <b-button size="is-small" @click="autoEncoder" type="is-info" :loading="loadingAutoEncoder"
-                        label="Fit Auto Encoder" />
+                        label="Fit Autoencoder" />
                 </p>
             </b-field>
             <div class="column is-6" id="dimensionality_reduction_panel_tsne">
-                <div id="autoencoder">
+                <div id="autoencoder" style="height: 300px;">
                 </div>
             </div>
         </b-message>
@@ -75,7 +84,10 @@ export default {
             loadingPCA: false,
             loadingTSNE: false,
             loadingAutoEncoder: false,
-            hiddenLayerSize: null,
+            hiddenLayerSize: 2,
+            iterationsTSNE: 200,
+            autoEncoderX: 1,
+            autoEncoderY: 2,
             hasPCA: false,
             pcaContainers: []
         }
@@ -111,7 +123,8 @@ export default {
             this.loadingTSNE = true;
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
             await chartController.plot_tsne(this.dataframe.loc({ columns: numericColumns }).values,
-                this.settings.isClassification ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [], this.dataframe.loc({ columns: [this.settings.modelTarget] }).values);
+                this.settings.isClassification ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : []
+                , this.dataframe.loc({ columns: [this.settings.modelTarget] }).values, this.iterationsTSNE);
             this.loadingTSNE = false;
         },
         async autoEncoder() {
@@ -122,7 +135,7 @@ export default {
             let unitsLength = numericColumns.length;
             let values = this.settings.df.loc({ columns: numericColumns }).values
             const encoder = tensorflow.layers.dense({
-                units: 2,
+                units: this.hiddenLayerSize,
                 batchInputShape: [null, unitsLength],
                 activation: 'relu',
                 kernelInitializer: "randomNormal",
@@ -132,11 +145,9 @@ export default {
             model.add(encoder);
             model.add(decoder);
             await model.compile({ optimizer: 'sgd', loss: 'meanSquaredError' });
-            console.log('compliled');
-
             const xs = tensorflow.tensor2d(values);
             // eslint-disable-next-line no-unused-vars
-            let h = await model.fit(xs, xs, { epochs: 128, batchSize: 16, shuffle: true, validationSpit: 0.1 });
+            let h = await model.fit(xs, xs, { epochs: 128, batchSize: 16, shuffle: false, validationSplit: 0.1 });
             xs.dispose();
             const tidyWrapper = tensorflow.tidy(() => {
                 const predictor = tensorflow.sequential();
@@ -148,10 +159,10 @@ export default {
             });
             // eslint-disable-next-line no-unused-vars
             let data = await tidyWrapper;
-            console.log(data);
-            chartController.drawAutoencoder(data, 0, 1,
-                this.settings.isClassification
-                    ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [])
+            chartController.drawAutoencoder(data, this.autoEncoderX - 1, this.autoEncoderY - 1,
+                this.dataframe.loc({ columns: [this.settings.modelTarget] }).values
+                , this.settings.isClassification
+            )
             this.loadingAutoEncoder = false;
 
         }
