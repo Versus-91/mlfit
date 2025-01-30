@@ -16,7 +16,7 @@ export default class PCA {
 
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(x_train) 
-        pca_x = PCA(n_components=n,random_state = 42,svd_solver='full')
+        pca_x = PCA(n_components=n,random_state = 42)
         pca = pca_x.fit_transform(np.array(X_scaled))
         (pca,np.arange(1, len(pca_x.explained_variance_ratio_) + 1), pca_x.explained_variance_ratio_)
     `;
