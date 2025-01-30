@@ -261,7 +261,12 @@ export default {
                 let seed = this.seed;
                 this.settings.setSeed(seed)
                 let categoricalFeatures = []
-                let dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
+                let dataset = null;
+                if (this.seed != this.settings.getSeed) {
+                    dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
+                } else {
+                    dataset = await this.dataframe
+                }
                 let numericColumns = this.settings.items.filter(m => m.selected && m.type === FeatureCategories.Numerical.id).map(m => m.name);
                 const target = this.settings.modelTarget;
                 dataset = handle_missing_values(dataset)

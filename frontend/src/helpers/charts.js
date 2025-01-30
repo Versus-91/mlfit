@@ -643,6 +643,8 @@ export default class ChartController {
         let y_error = []
         let error_texts = []
         let real_labels = []
+        let missclassificationColors = []
+        let truePredsColors = []
         pca_data[0].forEach((element, i) => {
             if (missclassifications['indexes'].includes(i)) {
                 let index = missclassifications['indexes'].findIndex(index => index == i)
@@ -650,9 +652,11 @@ export default class ChartController {
                 real_labels.push([labels[i], missclassifications['mispredictions'][index]])
                 x_error.push(element[0])
                 y_error.push(element[1])
+                missclassificationColors.push(colorIndices[i])
             } else {
                 x.push(element[0])
                 y.push(element[1])
+                truePredsColors.push(colorIndices[i])
             }
 
         });
@@ -665,7 +669,7 @@ export default class ChartController {
             type: 'scatter',
             marker: {
                 size: 4,
-                color: colorIndices,
+                color: truePredsColors,
                 symbol: 'circle'
             },
         };
@@ -679,7 +683,7 @@ export default class ChartController {
             type: 'scatter',
             marker: {
                 size: 7,
-                color: colorIndices,
+                color: missclassificationColors,
                 symbol: 'cross'
             },
             hovertemplate:
@@ -2671,8 +2675,17 @@ export default class ChartController {
             })
 
         })
-
         var layout = {
+            xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+            },
+            yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+            },
         };
 
         Plotly.newPlot('parallel_coordinate_plot', data, layout, { ...plotlyImageExportConfig, responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
