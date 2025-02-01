@@ -127,9 +127,18 @@ export default {
             await this.dispalySPLOM(this.df)
             this.isLoading = false;
             this.selectedClasses = []
-            validTransformations.forEach(transformation => {
-                this.settings.addTransformation(transformation)
-            });
+
+            if (validTransformations.length > 0) {
+                validTransformations.forEach(transformation => {
+                    let transformationInfo = Object.keys(ScaleOptions).find(key => ScaleOptions[key].id == transformation.scaler);
+                    transformation.scalerLabel = transformationInfo
+                    this.settings.addTransformation(transformation)
+                });
+            } else {
+                this.settings.resetTransformations();
+            }
+            console.log(validTransformations);
+
             this.$emit('coordinate-plot', true)
         },
         async initSPLOM() {

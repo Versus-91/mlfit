@@ -20,7 +20,7 @@
                 <p class="ml-2 my-1 subtitle is-6 is-size-7" v-show="result.transformations?.length > 0">Transformations
                     :
                     <span v-for="transformation in result.transformations" :key="transformation.name">
-                        {{ transformation.name + ': ' + transformation.scaler + ',' }}
+                        {{ transformation.name + ': ' + transformation.scalerLabel + ',' }}
                     </span>
                 </p>
                 <p class="is-size-7" v-for="(value, key) in result.options" :key="key">
@@ -102,7 +102,7 @@
                     <div class="columns is-multiline">
                         <div class="column is-6 my-1" style="height: 400px;" :id="'pfi_boxplot_' + result.id">
                         </div>
-                        <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
+                        <div class="column is-6" style="height: 400px;" :id="'knn_table_' + result.id"
                             v-if="result.name.toString().includes('neighbour')">
                         </div>
                     </div>

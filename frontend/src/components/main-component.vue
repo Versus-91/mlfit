@@ -36,7 +36,7 @@
                             </div>
                         </div>
                         <section>
-                            <scatterplot-matrix-component @coordinate-plot="showCoordinatePlot()"
+                            <scatterplot-matrix-component
                                 ref="splom"></scatterplot-matrix-component>
 
                         </section>
