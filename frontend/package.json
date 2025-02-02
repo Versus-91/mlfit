@@ -25,6 +25,7 @@
     "ml-random-forest": "^2.1.0",
     "pinia": "^2.1.7",
     "scikitjs": "^1.24.0",
+    "seeded-rand": "^2.0.1",
     "shepherd.js": "^13.0.3",
     "simple-statistics": "^7.8.3",
     "vue": "^2.6.14",

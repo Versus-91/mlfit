@@ -10,8 +10,10 @@ export const settingStore = defineStore({
         transformations: [],
         classTransformations: [],
         results: [],
+        messages: [],
         datasetName: '',
         activeTab: 0,
+        dataSizeFlag: false,
         resultActiveTab: 0,
         datasetShape: {
             count: 0,
@@ -25,8 +27,14 @@ export const settingStore = defineStore({
         items: (state) => {
             return state.features
         },
+        getDatasizeFlag: (state) => {
+            return state.dataSizeFlag
+        },
         getCounter: (state) => {
             return state.counter
+        },
+        gerMessages: (state) => {
+            return state.messages
         },
         getDatasetName: (state) => {
             return state.datasetName
@@ -70,6 +78,9 @@ export const settingStore = defineStore({
         resetTransformations() {
             this.transformations = []
         },
+        setDatasizeFlag(flag) {
+            this.dataSizeFlag = flag;
+        },
         resetDataset() {
             this.datasetName = '';
             this.datasetShape = {
@@ -109,6 +120,9 @@ export const settingStore = defineStore({
         },
         addResult(result) {
             this.results.push(result)
+        },
+        addMessage(message) {
+            this.messages.push(message)
         },
         removeResult(id) {
             const i = this.results.findIndex(m => m.id === id)

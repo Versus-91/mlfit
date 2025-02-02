@@ -129,6 +129,25 @@ export default {
     },
 
     methods: {
+        shuffle(array, seed) {
+            var m = array.length, t, i;
+            // While there remain elements to shuffle…
+            while (m) {
+
+                // Pick a remaining element…
+                i = Math.floor(this.random(seed) * m--);
+
+                // And swap it with the current element.
+                t = array[m];
+                array[m] = array[i];
+                array[i] = t;
+                ++seed
+            }
+        },
+        random(seed) {
+            var x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
+        },
         async initDataframe(dataset, name) {
             this.settings.resetFeatures();
             this.settings.setDatasetName(name);
@@ -145,7 +164,11 @@ export default {
             }
             let processdDataset = await ParserFactory.createParser(type, options).parse(file)
             if (processdDataset.length > DATASET_SIZE) {
+                this.settings.setDatasizeFlag(true);
+                this.shuffle(processdDataset,this.settings.getSeed)
                 processdDataset = processdDataset.slice(0, DATASET_SIZE)
+            } else {
+                this.settings.setDatasizeFlag(false);
             }
             let dataFrame = new DataFrame(processdDataset);
             this.settings.setRawData(processdDataset);

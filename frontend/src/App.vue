@@ -1,13 +1,16 @@
 <template>
 
-    <div class="container">
-      <div class="columns is-multiline" id="app">
-
-        <SidebarComponent @updateFeatures="updateFeatureStats" @selected-features="setSelectedFeatures">
-        </SidebarComponent>
-        <MainComponent ref="main" :dataframe="this.settings.df" :selectedFeatures="selectedFeatures"></MainComponent>
-      </div>
+  <div class="container">
+    <b-notification v-show="this.settings.getDatasizeFlag" class="mt-2" type="is-warning" has-icon
+      aria-close-label="Close notification" role="alert">
+      Due to the large size of dataset only a 10,000 radom sample from dataset would be used .
+    </b-notification>
+    <div class="columns is-multiline" id="app">
+      <SidebarComponent @updateFeatures="updateFeatureStats" @selected-features="setSelectedFeatures">
+      </SidebarComponent>
+      <MainComponent ref="main" :dataframe="this.settings.df" :selectedFeatures="selectedFeatures"></MainComponent>
     </div>
+  </div>
 
 </template>
 
