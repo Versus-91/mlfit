@@ -343,13 +343,14 @@ print("got here")
             let y = []
             let x_low = []
             let x_high = []
-
+            let traces_params = []
             this.summary.confidence_intervals_row_names.forEach((row, i) => {
-                x.push(this.summary.confidence_intervals[i][1]);
-                y.push(row + this.summary.confidence_intervals[i][0]);
-                x_low.push(Math.abs(this.summary.confidence_intervals[i][2]));
-                x_high.push(Math.abs(this.summary.confidence_intervals[i][3]));
-
+                traces_params.push({
+                    x: [this.summary.confidence_intervals[i][2], this.summary.confidence_intervals[i][1], this.summary.confidence_intervals[i][3]],
+                    y: [row + this.summary.confidence_intervals[i][0], row + this.summary.confidence_intervals[i][0]
+                        , row + this.summary.confidence_intervals[i][0]],
+                    mode: 'lines'
+                })
             })
             var data = [
                 {
@@ -357,7 +358,7 @@ print("got here")
                     y: y,
                     error_x: {
                         type: 'data',
-                        symmetric: false,
+                        symmetric: true,
                         array: x_low,
                         arrayminus: x_high
                     },
@@ -365,9 +366,31 @@ print("got here")
                 }
             ];
             await Plotly.newPlot('parameters_plot_' + current.id, {
-                'data': data,
+                'data': traces_params,
                 'layout': {
-                    autosize: true
+                    margin: {
+                        l: 80,
+                        r: 40,
+                        b: 40,
+                        t: 40,
+                        pad: 10
+                    },
+                    showlegend: false,
+                    autosize: true,
+                    xaxis: {
+                        linecolor: 'black',
+                        linewidth: 1,
+                        zeroline: true,
+                        mirror: true,
+                        title: 'Confidence interval',
+                    },
+                    yaxis: {
+                        linecolor: 'black',
+                        linewidth: 1,
+                        zeroline: false,
+                        mirror: true,
+                        tickfont: { size: 10 }
+                    },
                 }
             });
 
