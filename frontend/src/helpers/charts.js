@@ -1243,12 +1243,16 @@ export default class ChartController {
             responsive: {
                 rules: [{
                     condition: {
-                        maxWidth: 500
+                        maxWidth: 200
                     },
                     chartOptions: {
                         yAxis: {
                             labels: {
-                                format: '{substr value 0 1}'
+                                format: '{substr value 0 1}',
+                                padding: 0,
+                                style: {
+                                    fontSize: '6px'
+                                }
                             }
                         }
                     }
