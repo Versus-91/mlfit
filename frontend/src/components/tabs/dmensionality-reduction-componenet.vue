@@ -129,8 +129,6 @@ export default {
         },
         async autoEncoder() {
             this.loadingAutoEncoder = true;
-            console.log('encode');
-
             const model = tensorflow.sequential();
             let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
             let unitsLength = numericColumns.length;

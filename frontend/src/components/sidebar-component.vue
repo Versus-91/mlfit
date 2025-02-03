@@ -202,12 +202,14 @@ export default {
         },
         toggleTraining() {
             this.training = !this.training;
+            let message = this.training ? 'started training ' + this.modelName : 'Successully fitted ' + this.modelName;
             this.$buefy.toast.open(
                 {
                     duration: 5000,
-                    message: this.training ? 'started training ' + this.modelName : 'Successully fited ' + this.modelName,
+                    message: this.training ? 'started training ' + this.modelName : 'Successully fitted ' + this.modelName,
                     type: this.training ? 'is-info' : 'is-success',
                 })
+            this.settings.addMessage({ message: message, type: 'info' });
         },
         getDefaultModelConfiguration() {
             for (const key in this.modelOptions) {
@@ -286,8 +288,6 @@ export default {
 
                 let filterd_dataset = dataset.loc({ columns: selected_columns })
                 // add class transformation
-                console.log('ss');
-
                 if (this.settings.isClassification) {
                     let selectedClasses = this.settings.mergedClasses
                     if (selectedClasses?.length > 0) {
@@ -335,7 +335,6 @@ export default {
                         this.training = false;
                         performances.push(metrics)
                     }
-                    console.log(performances);
                 } else {
                     [x_train, y_train, x_test, y_test] = this.splitData(cross_validation_setting, filterd_dataset, targets);
                 }
@@ -393,12 +392,14 @@ export default {
                 this.toggleTraining();
             } catch (error) {
                 this.training = false;
+                let message = 'Failed to fit the ' + this.modelName
                 this.$buefy.toast.open(
                     {
                         duration: 3000,
-                        message: 'Failed to fit the model',
+                        message: message,
                         type: 'is-warning',
                     })
+                this.settings.addMessage({ message: message, type: 'warning' });
                 throw error;
             }
         },

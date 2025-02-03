@@ -188,6 +188,10 @@ export default {
     props: {
         result: {}
     },
+    errorCaptured(err, vm, info) {
+        console.log(`cat EC: ${err.toString()}\ninfo: ${info}`);
+        return false;
+    }
 }
 </script>
 

@@ -110,8 +110,6 @@ export const settingStore = defineStore({
             this.features.push(feature)
         },
         setClassTransformation(transformations) {
-            console.log('set classes');
-
             this.classTransformations = transformations
         },
 

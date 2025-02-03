@@ -22,7 +22,9 @@ Vue.use(VueMathjax)
 Vue.use(Buefy)
 Vue.use(PiniaVuePlugin)
 const pinia = createPinia()
+
 new Vue({
   render: h => h(App),
   pinia
 }).$mount('#app')
+

@@ -24,7 +24,6 @@ export async function loadCsv(filename) {
     return new Promise(resolve => {
         const url = `${BASE_URL}${filename}.csv`;
 
-        console.log(`  * Downloading data from: ${url}`);
         Papa.parse(url, {
             download: true,
             header: true,

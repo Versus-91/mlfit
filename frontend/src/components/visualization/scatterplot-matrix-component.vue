@@ -107,12 +107,12 @@ export default {
                 this.isLoading = false;
 
             } catch (error) {
-                this.$buefy.toast.open("Something went wrong");
+                let message = 'Something went wrong drawing data analysis plots'
+                this.$buefy.toast.open(message);
+                this.settings.addMessage({ message: message, type: 'warning' })
             }
         },
         async scaleData() {
-            console.log('scale data');
-
             this.df = new DataFrame(this.settings.rawData);
             if (this.settings.isClassification) {
                 if (this.selectedClasses?.length > 0) {
@@ -141,7 +141,6 @@ export default {
             } else {
                 this.settings.resetTransformations();
             }
-            console.log(validTransformations);
 
             this.$emit('coordinate-plot', true)
         },

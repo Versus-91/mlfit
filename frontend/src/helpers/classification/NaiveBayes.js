@@ -94,7 +94,6 @@ export default class NaiveBayes extends ClassificationModel {
         try {
             const { results, error } = await asyncRun(script, this.context);
             if (results) {
-                console.log("pyodideWorker return results: ", results);
                 this.predictions = Array.from(results[0]);
                 this.pdp_averages = Array.from(results[1]);
                 this.pdp_grid = Array.from(results[2]);

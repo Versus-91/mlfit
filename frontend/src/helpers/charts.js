@@ -2135,7 +2135,7 @@ export default class ChartController {
                 })
 
             } else {
-                prevLimitY = l0 <= linksLength ? currentLimitY : history[link[0]].y_current;
+                prevLimitY = l0 <= linksLength ? currentLimitY : history[link[0]]?.y_current;
                 currentLimitY = (parseFloat(i + 1) / linksLength);
                 let x = [
                     (l0 <= linksLength ? l0 * 10. : history[link[0]]?.x),

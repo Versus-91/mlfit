@@ -249,7 +249,6 @@ print("got here")
             },
             fit: JSON.parse(await results[21].toArray())
         };
-        console.log(this.summary.fit);
 
         this.model_stats_matrix = [];
         let cols = [...labels]
@@ -339,12 +338,8 @@ print("got here")
                 bDestroy: true,
             });
             await Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { autosize: true });
-            let x = []
-            let y = []
-            let x_low = []
-            let x_high = []
             let traces_params = []
-            this.summary.confidence_intervals_row_names.forEach((row, i) => {
+            this.summary.confidence_intervals_row_names.reverse().forEach((row, i) => {
                 traces_params.push({
                     x: [this.summary.confidence_intervals[i][2], this.summary.confidence_intervals[i][1], this.summary.confidence_intervals[i][3]],
                     y: [row + this.summary.confidence_intervals[i][0], row + this.summary.confidence_intervals[i][0]
@@ -352,19 +347,6 @@ print("got here")
                     mode: 'lines'
                 })
             })
-            var data = [
-                {
-                    x: x,
-                    y: y,
-                    error_x: {
-                        type: 'data',
-                        symmetric: true,
-                        array: x_low,
-                        arrayminus: x_high
-                    },
-                    type: 'scatter'
-                }
-            ];
             await Plotly.newPlot('parameters_plot_' + current.id, {
                 'data': traces_params,
                 'layout': {
@@ -376,7 +358,6 @@ print("got here")
                         pad: 10
                     },
                     showlegend: false,
-                    autosize: true,
                     xaxis: {
                         linecolor: 'black',
                         linewidth: 1,
@@ -394,8 +375,6 @@ print("got here")
                 }
             });
 
-
-            console.log(this.summary.fit);
             this.summary.fit.sort((a, b) => a.step - b.step);
             let subset = this.summary.fit.filter(m => m.class == '1')
             let params = new Set(...[subset.filter(m => !!m.term).map(m => m.term)])

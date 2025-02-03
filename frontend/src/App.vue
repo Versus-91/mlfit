@@ -27,8 +27,20 @@ export default {
     MainComponent,
   },
   setup() {
+    // eslint-disable-next-line no-unused-vars
     const settings = settingStore()
     return { settings }
+  },
+  errorCaptured(err, vm, info) {
+    console.log(`cat EC: ${err.toString()}\ninfo: ${info}`);
+    this.$buefy.toast.open(
+      {
+        duration: 3000,
+        message: 'Something went wrong',
+        type: 'is-danger',
+      })
+    this.settings.addMessage({message: err.toString(), type: 'warning'})
+    return false;
   },
   data() {
     return {

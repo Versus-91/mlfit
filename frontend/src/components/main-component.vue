@@ -12,7 +12,7 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                        }})</p>
+                                            }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -36,8 +36,7 @@
                             </div>
                         </div>
                         <section>
-                            <scatterplot-matrix-component
-                                ref="splom"></scatterplot-matrix-component>
+                            <scatterplot-matrix-component ref="splom"></scatterplot-matrix-component>
 
                         </section>
                         <section>
@@ -155,8 +154,13 @@
                             allows you to adjust common settings and parameters specific to each model.
                         </p>
                     </div>
-
-
+                </b-tab-item>
+                <b-tab-item label="Messages Log">
+                    <b-notification aria-close-label="Close notification" icon-pack="fas"
+                        :type="message.type == 'warning' ? 'is-warning' : 'is-info'" has-icon :closable="false"
+                        v-for="(message, i) in this.settings.gerMessages" :key="i">
+                        {{ message.message }}
+                    </b-notification>
                 </b-tab-item>
             </b-tabs>
         </section>
@@ -196,6 +200,10 @@ export default {
     props: {
         msg: String,
         selectedFeatures: []
+    },
+    errorCaptured(err, vm, info) {
+        console.log(`cat EC: ${err.toString()}\ninfo: ${info}`);
+        return false;
     },
     data() {
         return {
