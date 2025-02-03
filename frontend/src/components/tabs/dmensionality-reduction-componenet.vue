@@ -129,25 +129,26 @@ export default {
         },
         async autoEncoder() {
             this.loadingAutoEncoder = true;
+            console.log('encode');
 
             const model = tensorflow.sequential();
             let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
             let unitsLength = numericColumns.length;
             let values = this.settings.df.loc({ columns: numericColumns }).values
             const encoder = tensorflow.layers.dense({
-                units: this.hiddenLayerSize,
+                units: +this.hiddenLayerSize,
                 batchInputShape: [null, unitsLength],
                 activation: 'relu',
-                kernelInitializer: "randomNormal",
-                biasInitializer: "ones"
+                kernelInitializer: "glorotNormal",
+                biasInitializer: "zeros"
             });
-            const decoder = tensorflow.layers.dense({ units: unitsLength, activation: 'relu' });
+            const decoder = tensorflow.layers.dense({ units: unitsLength, activation: 'sigmoid' });
             model.add(encoder);
             model.add(decoder);
-            await model.compile({ optimizer: 'sgd', loss: 'meanSquaredError' });
+            await model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
             const xs = tensorflow.tensor2d(values);
             // eslint-disable-next-line no-unused-vars
-            let h = await model.fit(xs, xs, { epochs: 128, batchSize: 16, shuffle: false, validationSplit: 0.1 });
+            let h = await model.fit(xs, xs, { epochs: 512, batchSize: 64, shuffle: false, validationSplit: 0.1 });
             xs.dispose();
             const tidyWrapper = tensorflow.tidy(() => {
                 const predictor = tensorflow.sequential();
@@ -169,4 +170,3 @@ export default {
     }
 }
 </script>
-

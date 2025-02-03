@@ -107,17 +107,21 @@ export default {
                 this.isLoading = false;
 
             } catch (error) {
-                this.$buefy.toast.open("Somthing went wrong");
+                this.$buefy.toast.open("Something went wrong");
             }
         },
         async scaleData() {
+            console.log('scale data');
+
             this.df = new DataFrame(this.settings.rawData);
             if (this.settings.isClassification) {
-                let newClass = this.selectedClasses.map(m => m.class).join('-');
-                this.selectedClasses.forEach(cls => {
-                    this.df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
-                });
-                this.settings.setClassTransformation(this.selectedClasses)
+                if (this.selectedClasses?.length > 0) {
+                    let newClass = this.selectedClasses.map(m => m.class).join('-');
+                    this.selectedClasses.forEach(cls => {
+                        this.df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
+                    });
+                    this.settings.setClassTransformation(this.selectedClasses)
+                }
             }
 
             let validTransformations = this.settings.items.filter(feature => feature.selected && feature.type === 1 && feature.scaler != 0)

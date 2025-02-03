@@ -51,7 +51,7 @@ export const settingStore = defineStore({
         currentTab: (state) => {
             return state.activeTab
         },
-        mergedClases: (state) => {
+        mergedClasses: (state) => {
             return state.classTransformations
         },
         getSeed: (state) => {
@@ -74,6 +74,8 @@ export const settingStore = defineStore({
         },
         resetFeatures() {
             this.features = []
+            this.transformations = []
+            this.classTransformations = []
         },
         resetTransformations() {
             this.transformations = []
@@ -108,8 +110,11 @@ export const settingStore = defineStore({
             this.features.push(feature)
         },
         setClassTransformation(transformations) {
+            console.log('set classes');
+
             this.classTransformations = transformations
         },
+
         addTransformation(transformation) {
             let index = this.transformations.findIndex(m => m.name === transformation.name);
             if (index !== -1) {

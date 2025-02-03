@@ -157,6 +157,7 @@ export default {
             this.$emit('uploaded', true)
         },
         async process_file(file, type) {
+
             let options = {
                 separator: this.separator,
                 delimiter: this.decimal,
@@ -165,7 +166,7 @@ export default {
             let processdDataset = await ParserFactory.createParser(type, options).parse(file)
             if (processdDataset.length > DATASET_SIZE) {
                 this.settings.setDatasizeFlag(true);
-                this.shuffle(processdDataset,this.settings.getSeed)
+                this.shuffle(processdDataset, this.settings.getSeed)
                 processdDataset = processdDataset.slice(0, DATASET_SIZE)
             } else {
                 this.settings.setDatasizeFlag(false);

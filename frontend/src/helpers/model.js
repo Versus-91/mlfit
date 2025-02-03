@@ -104,7 +104,7 @@ plt.show()
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
         const evaluation_result = evaluate_classification(predictions, y_test, encoder);
-        const classes = encoder.inverseTransform(Object.values(encoder.$labels));
+        const classes = Object.keys(encoder.$labels);
 
         await this.chartController.plotConfusionMatrix(tensorflow.tensor(predictions), tensorflow.tensor(y_test), classes, Object.values(encoder.$labels), this.id);
         await this.chartController.classificationPCA(x_test.values, encoder.inverseTransform(y_test), evaluation_result, uniqueLabels, this.id, 2);

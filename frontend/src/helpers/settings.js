@@ -54,7 +54,7 @@ export const Settings = {
                     "type": "select",
                     default: "no",
                     value: "no",
-                    "values": [{ label: "No", value: "no" }, { label: "adaptive lasso", value: "lasso" }, { label: "ridge", value: "ridge" }]
+                    "values": [{ label: "No", value: "no" }, { label: "adaptive lasso", value: "Lasso" }, { label: "ridge", value: "ridge" }]
                 }
             }
         },
