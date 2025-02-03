@@ -6,7 +6,7 @@
 import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import { ClassificationModel } from '../model';
 
-export default class LinearRegression extends ClassificationModel {
+export default class LogisticRegression extends ClassificationModel {
     constructor(options) {
         super();
         this.options = options;
@@ -28,7 +28,7 @@ export default class LinearRegression extends ClassificationModel {
 
         const webR = window.webr;
         await webR.init();
-        await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'nnet', 'tidyr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary'], { quiet: true });
+        await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'nnet', 'tidyr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary', 'broom'], { quiet: true });
         await webR.objs.globalEnv.bind('xx', x_train);
         await webR.objs.globalEnv.bind('x_test', x_test);
 
@@ -48,6 +48,8 @@ export default class LinearRegression extends ClassificationModel {
                     library(modelsummary)
                     library(jsonlite)
                     library(glmnet)
+                    library(broom)
+print("got here")
                     set.seed(123)
                     # Select all columns except the first as predictors. 
                     x <- as.matrix(xx)  
@@ -55,11 +57,13 @@ export default class LinearRegression extends ClassificationModel {
                     scale_df <- as.data.frame(x)
                     cols_to_scale <- setdiff(names, categorical_columns)
                     scale_df[cols_to_scale] <- scale(scale_df[cols_to_scale])
+                    print("got here")
                     if(is_lasso){
                         cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 1, family = "multinomial", type.measure = "class")
                     }else{
                        cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 0, family = "multinomial", type.measure = "class")
                     }
+                    print("got here")
                     betas = as.matrix(cvfit$glmnet.fit$beta)
                     lambdas = cvfit$lambda
                     names(lambdas) = colnames(betas)
@@ -85,7 +89,6 @@ export default class LinearRegression extends ClassificationModel {
                     theme_bw()
 
 
-                    
                     colnames(x_test) <- names
                     model <- nnet::multinom(y ~ . , data = as.data.frame(x))
                     s <- summary(model)
@@ -108,10 +111,9 @@ export default class LinearRegression extends ClassificationModel {
                     )
                     }
                     conf_int_df <- do.call(rbind, conf_int)
-
                     best_model <- glmnet(x, y, alpha =is_lasso,family = "multinomial", type.measure = "class", lambda = cvfit$lambda.min)
                     coefficients <- coef(best_model)
-                    print(coefficients)
+
                     non_zero_features <- list()
                     for (class_name in names(coefficients)) {
                     class_coefficients <- coefficients[[class_name]]
@@ -121,17 +123,18 @@ export default class LinearRegression extends ClassificationModel {
                     }
                     non_zero_features <- unique(non_zero_features)
                     non_zero_features <- unlist(Filter(function(x) x != "", non_zero_features))
-                    print(non_zero_features)
                     x_filterd <- x[,unlist(non_zero_features)]
                     x_test_filterd <- x_test[,unlist(non_zero_features)]
+
+
                     model_lambda_min <- nnet::multinom(y ~ . , data = as.data.frame(x_filterd))
                     s <- summary(model_lambda_min)
                     coefs_lambda_min <- s$coefficients
                     stds_lambda_min <- s$standard.errors
                     z_scores_lambda_min <- coefs_lambda_min / stds_lambda_min
                     p_values_lambda_min <- 2 * (1 - pnorm(abs(z_scores_lambda_min)))
-                    preds_lambda_min <- predict(model,newdata=as.data.frame(x_test_filterd))
-                    preds_probs_lambda_min <- predict(model,type = 'probs',newdata=as.data.frame(x_test_filterd))
+                    preds_lambda_min <- predict(model_lambda_min,newdata=as.data.frame(x_test_filterd))
+                    preds_probs_lambda_min <- predict(model_lambda_min,type = 'probs',newdata=as.data.frame(x_test_filterd))
                     # confidence interval
                     z <- 1.96  
                     conf_int <- list()
@@ -146,13 +149,12 @@ export default class LinearRegression extends ClassificationModel {
                     }
 
 
-
                     
                     conf_int_lambda_min_df <- do.call(rbind, conf_int)
 
                     best_model <- glmnet(x, y, alpha =is_lasso,family = "multinomial", type.measure = "class", lambda = cvfit$lambda.1se)
                     coefficients <- coef(best_model)
-                    print(coefficients)
+                    print("got here")
                     non_zero_features <- list()
                     for (class_name in names(coefficients)) {
                     class_coefficients <- coefficients[[class_name]]
@@ -162,7 +164,7 @@ export default class LinearRegression extends ClassificationModel {
                     }
                     non_zero_features <- unique(non_zero_features)
                     non_zero_features <- unlist(Filter(function(x) x != "", non_zero_features))
-                    print(non_zero_features)
+
                     x_filterd <- x[,unlist(non_zero_features)]
                     x_test_filterd <- x_test[,unlist(non_zero_features)]
                     model_lambda_1se <- nnet::multinom(y ~ . , data = as.data.frame(x_filterd))
@@ -171,8 +173,8 @@ export default class LinearRegression extends ClassificationModel {
                     stds_lambda_1se <- s$standard.errors
                     z_scores_lambda_1se <- coefs_lambda_1se / stds_lambda_1se
                     p_values_lambda_1se <- 2 * (1 - pnorm(abs(z_scores_lambda_1se)))
-                    preds_lambda_1se <- predict(model,newdata=as.data.frame(x_test_filterd))
-                    preds_probs_lambda_1se <- predict(model,type = 'probs',newdata=as.data.frame(x_test_filterd))
+                    preds_lambda_1se <- predict(model_lambda_1se,newdata=as.data.frame(x_test_filterd))
+                    preds_probs_lambda_1se <- predict(model_lambda_1se,type = 'probs',newdata=as.data.frame(x_test_filterd))
                     # confidence interval
                     z <- 1.96  
                     conf_int <- list()
@@ -186,7 +188,7 @@ export default class LinearRegression extends ClassificationModel {
                     )
                     }
                     conf_int_lambda_1se_df <- do.call(rbind, conf_int)
-
+                    cv_summary <- tidy(cvfit$glmnet.fit)
 
                     list(
                     plotly_json(p, pretty = FALSE)
@@ -212,6 +214,7 @@ export default class LinearRegression extends ClassificationModel {
                     ,model[["AIC"]]
                     ,model_lambda_min[["AIC"]]
                     ,model_lambda_1se[["AIC"]]
+                    ,toJSON(cv_summary)
                     )
 
                     `);
@@ -243,8 +246,11 @@ export default class LinearRegression extends ClassificationModel {
                 stds: JSON.parse(await results[16].toArray()),
                 p_values: JSON.parse(await results[17].toArray()),
                 aic: await results[20].toNumber(),
-            }
+            },
+            fit: JSON.parse(await results[21].toArray())
         };
+        console.log(this.summary.fit);
+
         this.model_stats_matrix = [];
         let cols = [...labels]
         cols.unshift("intercept")
@@ -365,6 +371,68 @@ export default class LinearRegression extends ClassificationModel {
                 }
             });
 
+
+            console.log(this.summary.fit);
+            this.summary.fit.sort((a, b) => a.step - b.step);
+            let subset = this.summary.fit.filter(m => m.class == '1')
+            let params = new Set(...[subset.filter(m => !!m.term).map(m => m.term)])
+            let traces = []
+            let annotations = []
+            params.forEach(param => {
+                let coefs = subset.filter(m => m.term == param).map(m => m.estimate).reverse()
+                let lambdas = subset.filter(m => m.term == param).map(m => Math.log(m.lambda)).reverse()
+                traces.push({
+                    name: param,
+                    y: coefs,
+                    x: lambdas,
+                    mode: 'lines',
+                });
+                annotations.push({
+                    xref: 'paper',
+                    x: .01,
+                    y: coefs[0],
+                    xanchor: 'left',
+                    yanchor: 'middle',
+                    text: param,
+                    font: {
+                        family: 'Arial',
+                        size: 8,
+                        color: 'black'
+                    },
+                    showarrow: false
+                });
+            });
+
+            await Plotly.newPlot('errors_' + current.id, {
+
+                'data': traces,
+                'layout': {
+                    annotations: annotations,
+                    showlegend: false,
+                    margin: {
+                        l: 40,
+                        r: 40,
+                        b: 40,
+                        t: 40,
+                        pad: 10
+                    },
+                    autosize: true,
+                    xaxis: {
+                        linecolor: 'black',
+                        linewidth: 1,
+                        zeroline: false,
+                        mirror: true,
+                        title: 'log lambda'
+                    },
+                    yaxis: {
+                        linecolor: 'black',
+                        linewidth: 1,
+                        zeroline: false,
+                        mirror: true,
+                        title: 'coefficient'
+                    }
+                }
+            });
             window.dispatchEvent(new Event('resize'));
         }, 500);
 

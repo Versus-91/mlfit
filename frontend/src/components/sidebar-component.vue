@@ -286,16 +286,16 @@ export default {
 
                 let filterd_dataset = dataset.loc({ columns: selected_columns })
                 // add class transformation
+                console.log('ss');
+
                 if (this.settings.isClassification) {
-                    let selectedClasses = this.settings.mergedClases
+                    let selectedClasses = this.settings.mergedClasses
                     if (selectedClasses?.length > 0) {
-                        let newClass = selectedClasses.map(m => m.class).join('-');
+                        let newClass = selectedClasses.map(m => m.class).join('');
                         selectedClasses.forEach(cls => {
                             filterd_dataset.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
                         });
-                        this.settings.setClassTransformation(this.selectedClasses)
                     }
-
                 }
                 const targets = filterd_dataset.column(target)
                 filterd_dataset.drop({ columns: target, inplace: true })
