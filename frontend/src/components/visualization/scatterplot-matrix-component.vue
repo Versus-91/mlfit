@@ -114,14 +114,17 @@ export default {
         },
         async scaleData() {
             this.df = new DataFrame(this.settings.rawData);
-            if (this.settings.isClassification) {
-                if (this.selectedClasses?.length > 0) {
-                    let newClass = this.selectedClasses.map(m => m.class).join('-');
-                    this.selectedClasses.forEach(cls => {
-                        this.df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
-                    });
-                    this.settings.setClassTransformation(this.selectedClasses)
-                }
+            if (this.settings.isClassification && this.selectedClasses?.length > 0) {
+                let newClass = this.selectedClasses.map(m => m.class).join('-');
+                this.selectedClasses.forEach(cls => {
+                    this.df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
+                });
+                this.settings.setClassTransformation(this.selectedClasses)
+                let message = { message: 'merged classes: ' + newClass, type: 'info' }
+                this.$buefy.toast.open('merged classes: ' + newClass)
+                this.settings.addMessage(message)
+            } else {
+                this.settings.setClassTransformation([])
             }
 
             let validTransformations = this.settings.items.filter(feature => feature.selected && feature.type === 1 && feature.scaler != 0)
@@ -133,11 +136,17 @@ export default {
             this.selectedClasses = []
 
             if (validTransformations.length > 0) {
+                let transformations = []
                 validTransformations.forEach(transformation => {
                     let transformationInfo = Object.keys(ScaleOptions).find(key => ScaleOptions[key].id == transformation.scaler);
                     transformation.scalerLabel = transformationInfo
                     this.settings.addTransformation(transformation)
+                    transformations.push(`feature: ${transformation['name']} ,scaler: ${transformation['scalerLabel']} `)
                 });
+
+                let message = { message: 'scaled fetures:<br> ' + transformations.join('-'), type: 'info' }
+                this.$buefy.toast.open('scaled fetures: ' + transformations)
+                this.settings.addMessage(message)
             } else {
                 this.settings.resetTransformations();
             }

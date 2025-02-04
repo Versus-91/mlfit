@@ -12,7 +12,7 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                            }})</p>
+                                        }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -160,6 +160,9 @@
                         :type="message.type == 'warning' ? 'is-warning' : 'is-info'" has-icon :closable="false"
                         v-for="(message, i) in this.settings.gerMessages" :key="i">
                         {{ message.message }}
+                        <br>
+                        {{ message.date }}
+
                     </b-notification>
                 </b-tab-item>
             </b-tabs>

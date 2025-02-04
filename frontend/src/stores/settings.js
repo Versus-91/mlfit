@@ -34,7 +34,7 @@ export const settingStore = defineStore({
             return state.counter
         },
         gerMessages: (state) => {
-            return state.messages
+            return state.messages.reverse()
         },
         getDatasetName: (state) => {
             return state.datasetName
@@ -125,6 +125,8 @@ export const settingStore = defineStore({
             this.results.push(result)
         },
         addMessage(message) {
+            var date = new Date();
+            message['date'] = date.toLocaleString()
             this.messages.push(message)
         },
         removeResult(id) {
