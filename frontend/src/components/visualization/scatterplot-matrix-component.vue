@@ -26,9 +26,14 @@
                 <div class="column is-12" v-if="this.settings.isClassification && classesInfo?.length > 2">
                     <h5 class="title is-7 has-text-left">Merge classes
                     </h5>
+                    {{ selectedClasses.map(m => m.class) }}
                     <b-table class="is-size-7" :data="classesInfo" :columns="classesInfoColumns" checkable
                         :narrowed="true" :checked-rows.sync="selectedClasses"></b-table>
-                    <button @click="scaleData()" class="button mt-2 is-info is-small">Merge Classes</button>
+                    <button @click="scaleData()" class="button mt-2 is-info is-small"
+                        :disabled="selectedClasses?.length >= classesInfo?.length">Merge
+                        Classes</button>
+                    <button @click="scaleData(true)" class="button mt-2 is-info is-small">reset</button>
+
                 </div>
 
                 <b-loading :is-full-page="false" v-model="isLoading"></b-loading>
@@ -112,7 +117,7 @@ export default {
                 this.settings.addMessage({ message: message, type: 'warning' })
             }
         },
-        async scaleData() {
+        async scaleData(reset = false) {
             this.df = new DataFrame(this.settings.rawData);
             if (this.settings.isClassification && this.selectedClasses?.length > 0) {
                 let newClass = this.selectedClasses.map(m => m.class).join('-');
@@ -123,7 +128,8 @@ export default {
                 let message = { message: 'merged classes: ' + newClass, type: 'info' }
                 this.$buefy.toast.open('merged classes: ' + newClass)
                 this.settings.addMessage(message)
-            } else {
+            }
+            if (reset) {
                 this.settings.setClassTransformation([])
             }
 
