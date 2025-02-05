@@ -150,7 +150,7 @@ export default {
                     transformations.push(`feature: ${transformation['name']} ,scaler: ${transformation['scalerLabel']} `)
                 });
 
-                let message = { message: 'scaled fetures:<br> ' + transformations.join('-'), type: 'info' }
+                let message = { message: 'scaled fetures: <br> ' + transformations.join('-'), type: 'info' }
                 this.$buefy.toast.open('scaled fetures: ' + transformations)
                 this.settings.addMessage(message)
             } else {

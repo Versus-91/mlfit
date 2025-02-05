@@ -215,6 +215,8 @@ print("got here")
                     ,model_lambda_min[["AIC"]]
                     ,model_lambda_1se[["AIC"]]
                     ,toJSON(cv_summary)
+                    ,toJSON(conf_int_lambda_min_df)
+                    ,toJSON(conf_int_lambda_1se_df)
                     )
 
                     `);
@@ -234,6 +236,7 @@ print("got here")
             aic: await results[18].toNumber(),
             best_fit_min: {
                 names: await results[10].toArray(),
+                confidence_intervals: JSON.parse(await results[22].toString()),
                 coefs: JSON.parse(await results[11].toArray()),
                 stds: JSON.parse(await results[12].toArray()),
                 p_values: JSON.parse(await results[13].toArray()),
@@ -242,6 +245,7 @@ print("got here")
             },
             best_fit_1se: {
                 names: await results[14].toArray(),
+                confidence_intervals: JSON.parse(await results[23].toString()),
                 coefs: JSON.parse(await results[15].toArray()),
                 stds: JSON.parse(await results[16].toArray()),
                 p_values: JSON.parse(await results[17].toArray()),
@@ -252,9 +256,9 @@ print("got here")
 
         this.model_stats_matrix = [];
         let cols = [...labels]
-        cols.unshift("intercept")
-        let min_ols_columns = this.summary['best_fit_min'].names;
-        let se_ols_columns = this.summary['best_fit_1se'].names;
+        cols.unshift("(Intercept)")
+        let min_ols_columns = [...new Set(this.summary['best_fit_min'].names)];
+        let se_ols_columns = [...new Set(this.summary['best_fit_1se'].names)];
 
 
 
@@ -282,8 +286,8 @@ print("got here")
                     let std = this.summary['best_fit_min']['stds'][j][index]
                     let pval = this.summary['best_fit_min']['p_values'][j][index]
                     row.push(isNaN(coef) ? 0 : coef.toFixed(2))
-                    row.push(isNaN(std) ? 0 : coef.toFixed(2))
-                    row.push(isNaN(pval) ? 0 : coef.toFixed(2))
+                    row.push(isNaN(std) ? 0 : std.toFixed(2))
+                    row.push(isNaN(pval) ? 0 : pval.toFixed(2))
                 } else {
                     row.push(' ')
                     row.push(' ')
@@ -295,8 +299,8 @@ print("got here")
                     let std = this.summary['best_fit_1se']['stds'][j][index]
                     let pval = this.summary['best_fit_1se']['p_values'][j][index]
                     row.push(isNaN(coef) ? 0 : coef.toFixed(2))
-                    row.push(isNaN(std) ? 0 : coef.toFixed(2))
-                    row.push(isNaN(pval) ? 0 : coef.toFixed(2))
+                    row.push(isNaN(std) ? 0 : std.toFixed(2))
+                    row.push(isNaN(pval) ? 0 : pval.toFixed(2))
                 } else {
                     row.push(' ')
                     row.push(' ')
@@ -338,14 +342,36 @@ print("got here")
                 bDestroy: true,
             });
             await Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { autosize: true });
+            let y_classes = this.summary.confidence_intervals_row_names
+                .map((item, i) => item + '_' + this.summary.confidence_intervals[i][0]).reverse()
+            let conf_intervals = this.summary.confidence_intervals.reverse()
             let traces_params = []
-            this.summary.confidence_intervals_row_names.reverse().forEach((row, i) => {
-                traces_params.push({
-                    x: [this.summary.confidence_intervals[i][2], this.summary.confidence_intervals[i][1], this.summary.confidence_intervals[i][3]],
-                    y: [row + this.summary.confidence_intervals[i][0], row + this.summary.confidence_intervals[i][0]
-                        , row + this.summary.confidence_intervals[i][0]],
-                    mode: 'lines'
-                })
+            traces_params.push({
+                name: 'OLS',
+                x: conf_intervals.map(item => item[1]),
+                y: y_classes,
+                error_x: {
+                    type: 'data',
+                    array: conf_intervals.map(item => Math.abs(item[3] - item[1])),
+                },
+                type: 'scatter', mode: 'markers',
+                showlegend: true,  // Make sure the trace appears in the legend
+                legendgroup: 'group_2',
+            })
+            let y_classes_min = this.summary.best_fit_min.names
+                .map((item, i) => item + '_' + this.summary.best_fit_min.confidence_intervals[i][0]).reverse()
+            conf_intervals = this.summary.best_fit_min.confidence_intervals.reverse()
+            traces_params.push({
+                name: 'lasso min',
+                x: conf_intervals.map(item => item[1]),
+                y: y_classes_min,
+                error_x: {
+                    type: 'data',
+                    array: conf_intervals.map(item => Math.abs(item[3] - item[1])),
+                },
+                type: 'scatter', mode: 'markers',
+                showlegend: true,  // Make sure the trace appears in the legend
+                legendgroup: 'group_1',
             })
             await Plotly.newPlot('parameters_plot_' + current.id, {
                 'data': traces_params,
@@ -357,7 +383,7 @@ print("got here")
                         t: 40,
                         pad: 10
                     },
-                    showlegend: false,
+                    showlegend: true,
                     xaxis: {
                         linecolor: 'black',
                         linewidth: 1,

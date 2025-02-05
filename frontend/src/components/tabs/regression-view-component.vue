@@ -49,7 +49,7 @@
                                     <th colspan="3" class="has-text-centered">lasso 1se</th>
                                 </tr>
                                 <tr>
-                                    <th>names</th>
+                                    <th class="has-text-centered">names</th>
                                     <th>coef</th>
                                     <th>st.d.</th>
                                     <th><i>p</i>-value</th>
@@ -61,7 +61,7 @@
                                     <th><i>p</i>-value</th>
                                 </tr>
                             </thead>
-                            <tfoot>
+                            <tfoot style=" font-weight: normal">
                                 <tr>
                                     <th></th>
                                     <th colspan="3" class="has-text-centered"></th>
