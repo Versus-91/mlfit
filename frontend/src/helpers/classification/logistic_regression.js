@@ -49,7 +49,6 @@ export default class LogisticRegression extends ClassificationModel {
                     library(jsonlite)
                     library(glmnet)
                     library(broom)
-print("got here")
                     set.seed(123)
                     # Select all columns except the first as predictors. 
                     x <- as.matrix(xx)  
@@ -57,13 +56,11 @@ print("got here")
                     scale_df <- as.data.frame(x)
                     cols_to_scale <- setdiff(names, categorical_columns)
                     scale_df[cols_to_scale] <- scale(scale_df[cols_to_scale])
-                    print("got here")
                     if(is_lasso){
                         cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 1, family = "multinomial", type.measure = "class")
                     }else{
                        cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 0, family = "multinomial", type.measure = "class")
                     }
-                    print("got here")
                     betas = as.matrix(cvfit$glmnet.fit$beta)
                     lambdas = cvfit$lambda
                     names(lambdas) = colnames(betas)

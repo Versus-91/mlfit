@@ -11,7 +11,7 @@ export default class PolynomialRegression extends RegressionModel {
         super();
         this.options = options;
         this.model = null;
-        this.hasExplaination = false    
+        this.hasExplaination = false
         this.summary = null;
         this.model_stats_matrix = null;
 
@@ -73,7 +73,7 @@ export default class PolynomialRegression extends RegressionModel {
                     df_test <- add_powers(as.data.frame(x), degree,cols_numerical)
                     base_model = cv.glmnet(as.matrix(scale_df), y)
                     weights <- 1 / abs(coef(base_model)[-1])
-                    x <- as.matrix(df_main)
+
                     if(is_lasso){
                         cvfit = cv.glmnet(as.matrix(scale_df), y, alpha = 1)
                     }else{
@@ -82,7 +82,6 @@ export default class PolynomialRegression extends RegressionModel {
                     betas = as.matrix(cvfit$glmnet.fit$beta)
                     lambdas = cvfit$lambda
                     names(lambdas) = colnames(betas)
-                    
                     
                     p <- as.data.frame(betas) %>% 
                       tibble::rownames_to_column("variable") %>% 
@@ -111,9 +110,32 @@ export default class PolynomialRegression extends RegressionModel {
                                 linetype="dashed")+
                     theme_bw()
 
- 
+                     # Get lambda.min and lambda.1se
+                    lambda_min = cvfit$lambda.min
+                    lambda_1se = cvfit$lambda.1se
+
+                    # Get the coefficients at lambda.min and lambda.1se
+                    coef_lambda_min = coef(cvfit, s = "lambda.min")
+                    coef_lambda_1se = coef(cvfit, s = "lambda.1se")
+
+                    # Convert the sparse matrix to a regular matrix to make indexing easier
+                    coef_lambda_min_matrix = as.matrix(coef_lambda_min)
+                    coef_lambda_1se_matrix = as.matrix(coef_lambda_1se)
+                    coef_lambda_min_matrix = coef_lambda_min_matrix[-1, , drop = FALSE]
+                    coef_lambda_1se_matrix = coef_lambda_1se_matrix[-1, , drop = FALSE]
+                    # Find the non-zero features at lambda.min and lambda.1se
+                    non_zero_features_min = rownames(coef_lambda_min_matrix)[coef_lambda_min_matrix != 0]
+                    non_zero_features_1se = rownames(coef_lambda_1se_matrix)[coef_lambda_1se_matrix != 0]
+                    print(non_zero_features_min)
+                    print(non_zero_features_1se)
+                    x <- as.matrix(df_main)
+                    colnames(x) <- all_column_names
+
                     model <- lm(y ~ ., data = as.data.frame(x))
+
                     x <- as.matrix(df_test)  
+                    colnames(x) <- all_column_names
+
                     predictions <- predict(model, newdata = as.data.frame(x))
                     # Get coefficients, p-values, and standard errors
                     coefs <- coef(model)
@@ -125,19 +147,12 @@ export default class PolynomialRegression extends RegressionModel {
                     residuals_ols <- resid(model)
                     fitted_values_ols <- fitted(model)
 
-
-                    best_lambda <- cvfit$lambda.min
-                    x <- as.matrix(df_main) 
-                    # Get the coefficients for the best lambda
-                    best_model <- glmnet(x, y, alpha =is_lasso, lambda = best_lambda)
-                    coefficients <- as.matrix(coef(best_model))
-                    
-                    nonzero_coef <- coefficients[coefficients != 0]
-                    
-                    nonzero_features <- rownames(coefficients)[coefficients != 0 & rownames(coefficients) != "(Intercept)"]
-                    X_reduced <- x[, nonzero_features]
-                    linear_model_min_features <- nonzero_features
+                    x <- as.matrix(df_main)  
+                    colnames(x) <- all_column_names
+                    X_reduced <- x[, non_zero_features_min]
+                    linear_model_min_features <- non_zero_features_min
                     # Fit a linear regression model using the non-zero features
+                    print(colnames(X_reduced))
                     linear_model_min <- lm(y ~ ., data = as.data.frame(X_reduced))
                     coefs_min <- coef(linear_model_min)
                     pvals_min <- summary(linear_model_min)$coefficients[,4]
@@ -150,14 +165,19 @@ export default class PolynomialRegression extends RegressionModel {
                     residuals_min <- resid(linear_model_min)
                     fitted_values_min <- fitted(linear_model_min)
                     x <- as.matrix(df_test)  
-                    x <- x[, nonzero_features]
+                    colnames(x) <- all_column_names
                     predictions_min <- predict(linear_model_min, newdata = as.data.frame(x))
+
+
+
+
+
                     x <- as.matrix(df_main)  
-                    nonzero_coef <- coefficients[coefficients != 0]
+                    colnames(x) <- all_column_names
                     
-                    nonzero_features <- rownames(coefficients)[coefficients != 0 & rownames(coefficients) != "(Intercept)"]
-                    X_reduced <- x[, nonzero_features]
-                    linear_model_1se_features <- nonzero_features
+                    X_reduced <- x[, non_zero_features_1se]
+                    linear_model_1se_features <- non_zero_features_1se
+                    print(colnames(X_reduced))
                     linear_model_1se <- lm(y ~ ., data = as.data.frame(X_reduced))
                     coefs_1se <- coef(linear_model_1se)
                     print(coefs_1se)
@@ -167,8 +187,9 @@ export default class PolynomialRegression extends RegressionModel {
                     std_error_1se <- summary(linear_model_1se)$coefficients[,2]
                     residuals_1se <- resid(linear_model_1se)
                     fitted_values_1se <- fitted(linear_model_1se)
-                    x <- as.matrix(df_test)  
-                    x <- x[, nonzero_features]
+                    x <- as.matrix(df_test) 
+                    colnames(x) <- all_column_names 
+                    x <- x[, linear_model_1se_features]
                     predictions_1se <- predict(linear_model_1se, newdata = as.data.frame(x))
                     models <- list(
                         "OLS" = model,
@@ -254,14 +275,6 @@ export default class PolynomialRegression extends RegressionModel {
             return /^-?\d+$/.test(value);
         }
 
-        cols = cols.map(column => {
-            let parts = column.split('_');
-            if (isNumeric(parts[parts.length - 1])) {
-                parts[parts.length - 1] = `<sup>${parts[parts.length - 1]}</sup>`
-                return parts.join('.')
-            }
-            return column;
-        })
         for (let i = 0; i < cols.length; i++) {
             let row = [];
             row.push(cols[i])
