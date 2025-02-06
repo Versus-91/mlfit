@@ -12,7 +12,7 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                        }})</p>
+                                            }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -40,7 +40,7 @@
 
                         </section>
                         <section>
-                            <article class="message is-info">
+                            <article class="message is-info mt-2">
                                 <div class="message-header">correlation matrix and Dendrogram <b-tooltip append-to-body
                                         label="Ward method requires euclidean distance" multilined>
                                         <b-button icon-left="info" icon-pack="fas" size="is-small" type="is-dark" />

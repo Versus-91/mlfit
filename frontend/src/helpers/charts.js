@@ -2075,7 +2075,8 @@ export default class ChartController {
                 [0.6, 'rgb(255,169,169)'],
                 [0.75, 'rgb(249,100,100)'],
                 [0.95, 'rgb(225,0,0)'],
-                [1.0, 'rgb(165,0,0)']],
+                [1.0, 'rgb(165,0,0)']
+            ],
             xaxis: 'x',
             yaxis: 'y',
             colorbar: {
