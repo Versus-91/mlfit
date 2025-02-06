@@ -2607,7 +2607,15 @@ export default class ChartController {
                 xref: 'paper',
                 x: 0.05,
             },
-            legend: { "orientation": "h" },
+            legend: {
+                x: 0.1,
+                y: 1,
+                orientation: "h",
+                font: {
+                    size: 8
+                },
+                bgcolor: 'rgba(0,0,0,0)',
+            },
 
             font: {
                 size: 10
@@ -2618,7 +2626,9 @@ export default class ChartController {
                 linewidth: 1,
                 mirror: true,
                 zeroline: false,
-
+                title: {
+                    text: 'Feature',
+                }
             },
             yaxis: {
                 linecolor: 'black',
@@ -2626,7 +2636,7 @@ export default class ChartController {
                 mirror: true,
                 zeroline: false,
                 title: {
-                    text: 'Feature',
+                    text: 'Prediction',
                 }
             },
         };
@@ -2640,8 +2650,9 @@ export default class ChartController {
                 xref: 'paper',
                 x: 0.05,
             },
-            legend: { "orientation": "h" },
-            barmode: 'group', font: {
+
+            barmode: 'group', 
+            font: {
                 size: 10
             },
             autosize: true,
@@ -2649,6 +2660,9 @@ export default class ChartController {
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
+                title: {
+                    text: 'Feature',
+                }
             },
             bargap: 0.05,
             yaxis: {
@@ -2656,7 +2670,7 @@ export default class ChartController {
                 linewidth: 1,
                 mirror: true,
                 title: {
-                    text: 'Feature',
+                    text: 'Prediction',
                 }
             },
         };
