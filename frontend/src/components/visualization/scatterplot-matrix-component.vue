@@ -29,8 +29,6 @@
                 <div class="column is-12" v-if="this.settings.isClassification && classesInfo?.length > 2">
                     <h5 class="title is-7 has-text-left">Merge classes
                     </h5>
-                    {{ selectedClasses.map(m => m.class) }}
-                    {{ classesInfo }}
                     <b-table class="is-size-7" :data="classesInfo" :columns="classesInfoColumns" checkable
                         :row-class="(row, index) => row.mode <= 0.10 && 'has-text-danger'" :narrowed="true"
                         :checked-rows.sync="selectedClasses"></b-table>
