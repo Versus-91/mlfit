@@ -786,8 +786,11 @@ export default class UI {
     // }
     predictions_table_regression(x, y, predictions, tab_index) {
         let table_columns = [];
-        x.addColumn("y", y, { inplace: true });
+        x.addColumn("residuals: ", y.map((item, i) => item - predictions[i]), { inplace: true });
         x.addColumn("predictions: ", predictions, { inplace: true });
+        x.addColumn("y", y, { inplace: true });
+
+
         x.columns.forEach(element => {
             table_columns.push({ title: element });
         });
