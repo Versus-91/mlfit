@@ -14,6 +14,9 @@
                 <div class="column is-6">
                     <div id="scree_plot" style="height: 300px;"></div>
                 </div>
+                <div class="column is-6">
+                    <div id="correlation_circle" style="height: 300px;"></div>
+                </div>
                 <div class="column is-4" v-for="(item, index) in this.pcaContainers" :key="index">
                     <div :id="'pca_' + index" style="height: 300px;"></div>
                 </div>
@@ -113,7 +116,9 @@ export default {
                 this.settings.isClassification ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : [],
                 this.dataframe.loc({ columns: [this.settings.modelTarget] }).values,
                 this.numberOfComponents,
-                this.pcaContainers)
+                this.pcaContainers,
+                numericColumns
+            )
 
             this.loadingPCA = false;
 

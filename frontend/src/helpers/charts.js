@@ -725,21 +725,20 @@ export default class ChartController {
     purge_charts(id) {
         Plotly.purge(id)
     }
-    async draw_pca(dataset, labels, regression_labels, numberOfComponents, axes) {
+    async draw_pca(dataset, labels, regression_labels, numberOfComponents, axes, columns) {
         const pca = new PCA(dataset, { center: true, scale: true });
 
         labels = labels.flat()
         var uniqueLabels = [...new Set(labels)];
 
-        const pca_x = await pca.predict(dataset, numberOfComponents)
-        const pca_data = pca_x[0]
+        const [pca_data, _, explained_variances, circels, distances] = await pca.predict(dataset, numberOfComponents)
 
         let x = []
-        let pc1 = []
+        let principle_components = []
         for (let i = 0; i < axes.length; i++) {
             let axis = axes[i]
             pca_data.forEach((element, i) => {
-                pc1.push({
+                principle_components.push({
                     x: element[axis[0] - 1],
                     y: element[axis[1] - 1],
                     label: labels[i]
@@ -749,7 +748,7 @@ export default class ChartController {
             let traces1 = []
             if (uniqueLabels.length !== 0) {
                 uniqueLabels.forEach((label, i) => {
-                    var items_for_label = pc1.filter(m => m.label === label)
+                    var items_for_label = principle_components.filter(m => m.label === label)
                     traces1.push({
                         x: items_for_label.map(m => m.x),
                         y: items_for_label.map(m => m.y),
@@ -763,8 +762,8 @@ export default class ChartController {
                     })
                 })
             } else {
-                let x = pc1.map(m => m.x);
-                let y = pc1.map(m => m.y);
+                let x = principle_components.map(m => m.x);
+                let y = principle_components.map(m => m.y);
                 let max = Math.max(...x)
                 let min = Math.min(...x)
                 traces1.push({
@@ -779,6 +778,75 @@ export default class ChartController {
 
                 })
             }
+            let arrows = [];
+            let shapes = []
+
+            if (axis[0] == 1 && axis[1] == 2) {
+                distances.forEach((distance, i) => {
+                    arrows.push({
+                        axref: 'x',
+                        x: 0,
+                        ayref: 'y',
+                        y: 0,
+                        arrowside: 'start',
+                        arrowwidth :1.2,
+                        arrowhead:3,
+                        // text: columns[i],
+                        hovertext: columns[i] + `(${circels[i][0].toFixed(2)},${circels[i][1].toFixed(2)})`,
+                        ax: circels[i][0],
+                        ay: circels[i][1],
+                    });
+                })
+                shapes = [
+                    {
+                        type: 'circle',
+                        xref: 'x',
+                        yref: 'y',
+                        x0: -1,
+                        y0: -1,
+                        x1: 1,
+                        y1: 1,
+                        line: {
+                            color: 'rgba(50, 171, 96, 1)'
+                        }
+                    },
+
+                ]
+                Plotly.newPlot('correlation_circle', [], {
+                    annotations: arrows,
+                    shapes: shapes,
+                    showlegend: uniqueLabels.length != 0 ? true : false,
+                    height: 300,
+                    width: 300,
+                    margin: {
+                        l: 40,
+                        r: 40,
+                        b: 40,
+                        t: 40,
+                        pad: 10
+                    },
+                    legend: {
+                        x: 1,
+                        xanchor: 'right',
+                        y: 1
+                    },
+                    xaxis: {
+                        range: [-1.2, 1.2],
+                        linecolor: 'black',
+                        linewidth: 1,
+                        mirror: true,
+                        title: 'PC' + axis[0]
+                    },
+                    yaxis: {
+                        range: [-1.2, 1.2],
+                        linecolor: 'black',
+                        linewidth: 1,
+                        mirror: true,
+                        title: 'PC' + axis[1]
+                    }
+                }, { ...plotlyImageExportConfig, responsive: true });
+            }
+
             Plotly.newPlot('pca_' + i, traces1, {
                 showlegend: uniqueLabels.length != 0 ? true : false,
                 margin: {
@@ -814,7 +882,7 @@ export default class ChartController {
 
         let cumulatedExplainedVaraince = []
         let sum = 0
-        pca_x[2].forEach(element => {
+        explained_variances.forEach(element => {
             sum = sum + element
             cumulatedExplainedVaraince.push(sum)
         });
@@ -878,7 +946,7 @@ export default class ChartController {
             series: [{
                 name: 'Propotional',
                 color: "blue",
-                data: pca_x[2]
+                data: explained_variances
             },
             {
                 name: 'Cumulative',
@@ -1997,14 +2065,17 @@ export default class ChartController {
                 hoverongaps: false,
                 colorscale: [
                     [0, 'rgb(74,141,255)'],
-                    [0.1, 'rgb(121,170,255)'],
-                    [0.25, 'rgb(137,187,255)'],
-                    [0.49, 'rgb(205,221,255)'],
-                    [0.5, 'rgb(253, 237, 237)'],
+                    [0.10, 'rgb(102,151,255)'],
+                    [0.20, 'rgb(121,170,255)'],
+                    [0.30, 'rgb(137,187,255)'],
+                    [0.40, 'rgb(205,221,255)'],
+                    [0.50, 'rgb(255,255,255)'],
+                    [0.51, 'rgb(253, 237, 237)'],
                     [0.6, 'rgb(255,169,169)'],
                     [0.75, 'rgb(249,100,100)'],
                     [0.95, 'rgb(225,0,0)'],
-                    [1.0, 'rgb(165,0,0)']],
+                    [1.0, 'rgb(165,0,0)']
+                ],
                 showscale: false,
             }
         ];
@@ -2068,10 +2139,12 @@ export default class ChartController {
             hoverongaps: false,
             colorscale: [
                 [0, 'rgb(74,141,255)'],
-                [0.1, 'rgb(121,170,255)'],
-                [0.25, 'rgb(137,187,255)'],
-                [0.49, 'rgb(205,221,255)'],
-                [0.5, 'rgb(253, 237, 237)'],
+                [0.10, 'rgb(102,151,255)'],
+                [0.20, 'rgb(121,170,255)'],
+                [0.30, 'rgb(137,187,255)'],
+                [0.40, 'rgb(205,221,255)'],
+                [0.50, 'rgb(255,255,255)'],
+                [0.51, 'rgb(253, 237, 237)'],
                 [0.6, 'rgb(255,169,169)'],
                 [0.75, 'rgb(249,100,100)'],
                 [0.95, 'rgb(225,0,0)'],
