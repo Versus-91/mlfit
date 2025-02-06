@@ -301,15 +301,27 @@ export default class LinearRegression extends RegressionModel {
             y: 1,
             traceorder: 'normal',
             font: {
-
                 size: 8,
                 color: '#000'
             },
+            bgcolor: 'rgba(0,0,0,0)',
         };
-        this.summary.coefs_plot = coefs_plot;
-        this.summary.coefs_plot.layout.xaxis.title.font = {
+        coefs_plot.layout.xaxis.title.font = {
             size: 10
         };
+
+        coefs_plot.layout.xaxis.linecolor = 'rgba(235, 235, 235, 1)';
+        coefs_plot.layout.xaxis.linewidth = 2;
+        coefs_plot.layout.xaxis.mirror = true;
+        coefs_plot.layout.xaxis.zeroline = true;
+
+        coefs_plot.layout.yaxis.linecolor = 'rgba(235, 235, 235, 1)';
+        coefs_plot.layout.yaxis.linewidth = 2;
+        coefs_plot.layout.yaxis.mirror = true;
+        coefs_plot.layout.yaxis.zeroline = true;
+
+        this.summary.coefs_plot = coefs_plot;
+
         this.summary.regularization_plot = reg_plot;
         this.summary.errors_plot = JSON.parse(await results[1].toString());
         this.summary.qqplot_ols_plot = JSON.parse(await results[27].toString());

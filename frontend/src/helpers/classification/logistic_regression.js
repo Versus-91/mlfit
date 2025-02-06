@@ -83,6 +83,8 @@ export default class LogisticRegression extends ClassificationModel {
                             label = "Min", color = "black", hjust = -0.1) +
                     annotate("text", x = lambda_1se, y = max(df$mean_cv_error) - 0.02, 
                             label = "1-SE", color = "black", hjust = -0.1) +
+                    xlab("log lambda") +
+                    ylab("Error")+
                     theme_bw()
 
 
@@ -381,6 +383,10 @@ export default class LogisticRegression extends ClassificationModel {
                         pad: 10
                     },
                     showlegend: true,
+                    legend: {
+                        bgcolor: 'rgba(0,0,0,0)',
+
+                    },
                     xaxis: {
                         linecolor: 'black',
                         linewidth: 1,
