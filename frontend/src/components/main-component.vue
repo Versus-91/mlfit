@@ -3,7 +3,7 @@
         <section>
             <b-tabs v-model="settings.activeTab" :position="'is-centered'" :animated="false" type="success"
                 @input="resize()">
-                <b-tab-item label="Data Analysis">
+                <b-tab-item label="Data Analysis" icon="search" icon-pack="fas">
                     <section v-if="this.settings.datasetShape?.count > 0">
                         <div class="message is-info" v-if="isActive" :closable="false">
                             <div class="message-header">Data summary</div>
@@ -12,7 +12,7 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                            }})</p>
+                                        }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Continuous Features :</h5>
@@ -87,17 +87,17 @@
 
                 </b-tab-item>
 
-                <b-tab-item label="Dimensionality Reduction">
+                <b-tab-item label="Dimensionality Reduction" icon="compress-arrows-alt" icon-pack="fas">
                     <dmensionality-reduction-component :dataframe="this.settings.df"
                         :columns="selectedFeatures"></dmensionality-reduction-component>
                 </b-tab-item>
-                <b-tab-item label="Results Analysis">
+                <b-tab-item label="Results Analysis" icon="chart-pie" icon-pack="fas">
                     <results-component></results-component>
                 </b-tab-item>
-                <b-tab-item label="Methods Details">
+                <b-tab-item label="Methods Details" icon="list" icon-pack="fas">
                     <methods-tab-component></methods-tab-component>
                 </b-tab-item>
-                <b-tab-item label="Help">
+                <b-tab-item label="Help" icon="question" icon-pack="fas">
                     <div class="content has-text-left	">
                         <h4>1. Dataset Selection</h4>
                         <p>
@@ -158,7 +158,7 @@
                         </p>
                     </div>
                 </b-tab-item>
-                <b-tab-item label="Messages Log">
+                <b-tab-item label="Messages Log" icon="history" icon-pack="fas">
                     <b-notification aria-close-label="Close notification" icon-pack="fas"
                         :type="message.type == 'warning' ? 'is-warning' : 'is-info'" has-icon :closable="false"
                         v-for="(message, i) in this.settings.gerMessages" :key="i">
