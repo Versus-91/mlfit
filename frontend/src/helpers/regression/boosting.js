@@ -72,9 +72,8 @@ export default class BoostingRegression extends RegressionModel {
                 console.log("pyodideWorker error: ", error);
             }
         } catch (e) {
-            console.log(
-                `Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`,
-            );
+            throw Error(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`,)
+
         }
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {

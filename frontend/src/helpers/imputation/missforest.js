@@ -37,9 +37,8 @@ export default class MissForest {
                 console.log("pyodideWorker error: ", error);
             }
         } catch (e) {
-            console.log(
-                `Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`,
-            );
+            throw Error(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`,)
+
         }
     }
 

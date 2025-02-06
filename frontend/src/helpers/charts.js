@@ -789,8 +789,8 @@ export default class ChartController {
                         ayref: 'y',
                         y: 0,
                         arrowside: 'start',
-                        arrowwidth :1.2,
-                        arrowhead:3,
+                        arrowwidth: 1.2,
+                        arrowhead: 3,
                         // text: columns[i],
                         hovertext: columns[i] + `(${circels[i][0].toFixed(2)},${circels[i][1].toFixed(2)})`,
                         ax: circels[i][0],
@@ -1022,8 +1022,7 @@ export default class ChartController {
             return currentValue > array[maxIndex] ? currentIndex : maxIndex;
         }, 0);
     }
-    probabilities_boxplot(probs, labels, uniqueLabels, encoder, index) {
-        labels = encoder.inverseTransform(labels)
+    probabilities_boxplot(probs, labels, uniqueLabels, index) {
         let traces = [];
         let probablitiesFormatted = []
         let subsets = {};
@@ -1065,8 +1064,32 @@ export default class ChartController {
             });
             i++;
         }
-
-        // Plot the box plots using Plotly
+        // traces.forEach(trace => {
+        //     trace['type'] = 'violin'
+        // })
+        // Plotly.newPlot("proba_violin_plot_" + index, traces, {
+        //     xaxis: {
+        //         linecolor: 'black',
+        //         linewidth: 1,
+        //         mirror: true,
+        //     },
+        //     yaxis: {
+        //         title: 'Predicted Probability',
+        //         linecolor: 'black',
+        //         zeroline: false,
+        //         linewidth: 1,
+        //         mirror: true,
+        //     },
+        //     legend: {
+        //         x: 1,
+        //         xanchor: 'right',
+        //         y: 1
+        //     },
+        //     violinmode: 'group'
+        // }, { responsive: true });
+        // traces.forEach(trace => {
+        //     trace['type'] = 'box'
+        // })
         Plotly.newPlot("proba_plot_" + index, traces, {
             xaxis: {
                 linecolor: 'black',
@@ -1088,69 +1111,7 @@ export default class ChartController {
             boxmode: 'group'
         }, { responsive: true });
     }
-    probabilities_violin(probs, labels, uniqueLabels, encoder, index) {
-        labels = encoder.inverseTransform(labels)
 
-        let traces = [];
-        let probablitiesFormatted = []
-        let subsets = {};
-        labels.forEach((true_label, i) => {
-            if (!(true_label in subsets)) {
-                subsets[true_label] = [];
-            }
-            subsets[true_label].push(probs[i]);
-        });
-        for (const trueClass in subsets) {
-            const classProbas = subsets[trueClass];
-            classProbas.forEach((proba) => {
-                const max = Math.max(...proba)
-                probablitiesFormatted.push({
-                    trueClass: trueClass,
-                    predicted: proba.findIndex(prob => prob == max),
-                    probablity: proba
-                })
-            })
-        }
-        let i = 0;
-        let x = probablitiesFormatted.map(prob => prob.predicted);
-        for (let true_label in subsets) {
-            traces.push({
-                legendgroup: true_label,
-                scalegroup: true_label,
-                type: 'violin',
-                name: true_label,
-                line: {
-                    color: this.indexToColor(uniqueLabels.indexOf(true_label), uniqueLabels.length),
-                },
-                y: probablitiesFormatted.map(m => m.probablity[i]),
-                x: x
-            });
-            i++;
-        }
-
-
-        // Plot the box plots using Plotly
-        Plotly.newPlot("proba_violin_plot_" + index, traces, {
-            xaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
-            },
-            yaxis: {
-                title: 'Predicted Probability',
-                linecolor: 'black',
-                zeroline: false,
-                linewidth: 1,
-                mirror: true,
-            },
-            legend: {
-                x: 1,
-                xanchor: 'right',
-                y: 1
-            },
-            violinmode: 'group'
-        }, { responsive: true });
-    }
     async plotConfusionMatrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
 
         const confusionMatrix = await metrics.confusionMatrix(y, predictedLabels, uniqueClasses.length);

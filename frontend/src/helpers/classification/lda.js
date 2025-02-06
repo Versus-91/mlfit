@@ -98,9 +98,8 @@ export default class DiscriminantAnalysis extends ClassificationModel {
                 console.log("pyodideWorker error: ", error);
             }
         } catch (e) {
-            console.log(
-                `Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`,
-            );
+            throw Error(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`,)
+
         }
     }
 
@@ -111,8 +110,7 @@ export default class DiscriminantAnalysis extends ClassificationModel {
             this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
         }
         this.chartController.plotROC(this.id, this.fpr, this.tpr, uniqueLabels, this.auc);
-        this.chartController.probabilities_boxplot(this.probas, predictions, uniqueLabels, encoder, this.id);
-        this.chartController.probabilities_violin(this.probas, predictions, uniqueLabels, encoder, this.id);
+        this.chartController.probabilities_boxplot(this.probas,  encoder.inverseTransform(predictions), uniqueLabels, this.id);
     }
 
 }

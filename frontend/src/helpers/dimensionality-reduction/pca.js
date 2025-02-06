@@ -30,13 +30,12 @@ export default class PCA {
         try {
             const { results, error } = await asyncRun(script, this.context);
             if (results) {
-                console.log("pyodideWorker return results: ", results);
                 return results;
             } else if (error) {
-                console.log("pyodideWorker error: ", error);
+                throw Error("Faced errot fitting PCA")
             }
         } catch (e) {
-            throw Error("Failed to find PCA")
+            throw Error("Failed to fit PCA")
         }
     }
 

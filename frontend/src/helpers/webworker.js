@@ -9,7 +9,7 @@ importScripts("https://cdn.jsdelivr.net/pyodide/v0.27.1/full/pyodide.js");
 async function loadPyodideAndPackages() {
   // eslint-disable-next-line no-undef
   self.pyodide = await loadPyodide();
-  await self.pyodide.loadPackage(["numpy", "matplotlib", "pandas"]);
+  await self.pyodide.loadPackage(["numpy", "matplotlib", "pandas"], { messageCallback: () => { }, errorCallback: () => { } });
 }
 let pyodideReadyPromise = loadPyodideAndPackages();
 
@@ -24,7 +24,7 @@ self.onmessage = async (event) => {
   }
   // Now is the easy part, the one that is similar to working in the main thread:
   try {
-    await self.pyodide.loadPackagesFromImports(python);
+    await self.pyodide.loadPackagesFromImports(python, { messageCallback: () => { }, errorCallback: () => { } });
     let results = await self.pyodide.runPythonAsync(python);
     const result = results.toJs()
     results.destroy()

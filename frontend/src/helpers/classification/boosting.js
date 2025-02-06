@@ -66,15 +66,14 @@ export default class Boosting extends ClassificationModel {
                 console.log("pyodideWorker error: ", error);
             }
         } catch (e) {
-            console.log(
-                `Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`,
-            );
+            throw Error(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`,)
+
         }
     }
     generatePythonCode() {
         let model_import = "from sklearn.ensemble import GradientBoostingClassifier"
-        let model_fit = 
-`model = GradientBoostingClassifier(learning_rate = ${this.options.eta} ,n_estimators = ${this.options.estimators} ,max_depth =${this.options.max_depth} ,random_state = ${this.seed} )`;
+        let model_fit =
+            `model = GradientBoostingClassifier(learning_rate = ${this.options.eta} ,n_estimators = ${this.options.estimators} ,max_depth =${this.options.max_depth} ,random_state = ${this.seed} )`;
         return super.generatePythonCode(model_import, model_fit)
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder, columns, categorical_columns) {

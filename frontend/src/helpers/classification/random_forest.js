@@ -95,12 +95,10 @@ export default class RandomForest extends ClassificationModel {
                 this.probas = Array.from(results[7]);
 
             } else if (error) {
-                console.log("pyodideWorker error: ", error);
+                throw Error("Faced errot fitting Random Forest")
             }
         } catch (e) {
-            console.log(
-                `Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`,
-            );
+            throw Error(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`,)
         }
         return this.predictions
     }
@@ -117,8 +115,7 @@ model = RandomForestClassifier(criterion="${this.options.criteria.value}",max_fe
             this.chartController.plotPDP(this.id, this.pdp_averages, this.pdp_grid, uniqueLabels, columns, categorical_columns);
         }
         this.chartController.plotROC(this.id, this.fpr, this.tpr, uniqueLabels, this.auc);
-        this.chartController.probabilities_boxplot(this.probas, predictions, uniqueLabels, encoder, this.id);
-        this.chartController.probabilities_violin(this.probas, predictions, uniqueLabels, encoder, this.id);
+        this.chartController.probabilities_boxplot(this.probas, encoder.inverseTransform(predictions), uniqueLabels, this.id);
     }
     predict() {
         return this.predictions;
