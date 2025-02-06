@@ -2530,7 +2530,7 @@ export default class ChartController {
                     linewidth: 1,
                     mirror: true,
                     title: {
-                        text: 'Feature',
+                        text: 'Prediction',
                     }
                 },
             };
