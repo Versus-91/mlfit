@@ -35,7 +35,7 @@
                     <button @click="scaleData()" class="button mt-2 is-info is-small"
                         :disabled="selectedClasses?.length >= classesInfo?.length">Merge
                         Classes</button>
-                    <button @click="scaleData(true)" class="button mt-2 is-info is-small">reset</button>
+                    <button @click="scaleData(true)" class="button mt-2 mx-1 is-success is-small">reset</button>
 
                 </div>
 
