@@ -41,7 +41,10 @@
                         </section>
                         <section>
                             <article class="message is-info">
-                                <div class="message-header">correlation matrix and Dendrogram</div>
+                                <div class="message-header">correlation matrix and Dendrogram <b-tooltip append-to-body
+                                        label="Ward method requires euclidean distance" multilined>
+                                        <b-button icon-left="info" icon-pack="fas" size="is-small" type="is-dark" />
+                                    </b-tooltip></div>
                                 <div class="message-body">
                                     <b-field label="Linkage method, Distance Metric">
                                         <b-select placeholder="Method" v-model="method">
@@ -55,9 +58,9 @@
                                         </b-select>
                                         <b-select placeholder="Metric" v-model="metric">
                                             <option value="euclidean">euclidean</option>
-                                            <option value="hamming">hamming</option>
+                                            <option value="correlation">correlation</option>
                                             <option value="mahalanobis">mahalanobis</option>
-                                            <option value="matching">matching</option>
+                                            <option value="cosine">cosine</option>
                                         </b-select>
                                         <p class="control">
                                             <b-button class="is-success" @click="correlationMatrix" :disabled="loading"
@@ -206,6 +209,9 @@ export default {
     },
     errorCaptured(err, vm, info) {
         console.log(`cat EC: ${err.toString()}\ninfo: ${info}`);
+        let message = { message: 'Encountered unexpected error', type: 'warning' }
+        this.$buefy.toast.open({ message: 'Encountered unexpected error', type: 'is-warning' })
+        this.settings.addMessage(message)
         return false;
     },
     data() {

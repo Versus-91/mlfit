@@ -1,7 +1,10 @@
 <template>
     <section style="overflow-y: auto;overflow-x: auto;">
         <article class="message is-info">
-            <div class="message-header">Scatterplot Matrix</div>
+            <div class="message-header">Scatterplot Matrix <b-tooltip append-to-body
+                    label="nrd method and guassian kernel is used for kernel density estimation." multilined>
+                    <b-button icon-left="info" icon-pack="fas" size="is-small" type="is-dark" />
+                </b-tooltip></div>
             <div class="message-body">
                 <div id="scatterplot_mtx"></div>
                 <div class="columns my-1 ml-5 mt-5 is-multiline" :style="{ width: features.length * 100 + 'px' }">
