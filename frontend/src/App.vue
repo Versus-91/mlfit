@@ -39,7 +39,7 @@ export default {
         message: 'Something went wrong',
         type: 'is-danger',
       })
-    this.settings.addMessage({message: err.toString(), type: 'warning'})
+    this.settings.addMessage({ message: err.toString(), type: 'warning' })
     return false;
   },
   data() {
@@ -69,5 +69,13 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
   margin-top: 30px;
+}
+
+.notification.is-danger {
+  background-color: hsl(348, 86%, 61%);
+  color: #fff !important;
+}
+.toast.is-danger {
+  color: #fff !important;
 }
 </style>
