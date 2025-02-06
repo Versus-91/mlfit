@@ -39,7 +39,7 @@ export default {
         message: 'Something went wrong',
         type: 'is-danger',
       })
-    this.settings.addMessage({ message: err.toString(), type: 'warning' })
+    this.settings.addMessage({ message: err.toString(), type: 'danger' })
     return false;
   },
   data() {
@@ -75,6 +75,7 @@ export default {
   background-color: hsl(348, 86%, 61%);
   color: #fff !important;
 }
+
 .toast.is-danger {
   color: #fff !important;
 }
