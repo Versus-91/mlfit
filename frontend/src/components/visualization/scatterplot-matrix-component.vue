@@ -30,8 +30,10 @@
                     <h5 class="title is-7 has-text-left">Merge classes
                     </h5>
                     {{ selectedClasses.map(m => m.class) }}
+                    {{ classesInfo }}
                     <b-table class="is-size-7" :data="classesInfo" :columns="classesInfoColumns" checkable
-                        :narrowed="true" :checked-rows.sync="selectedClasses"></b-table>
+                        :row-class="(row, index) => row.mode <= 0.10 && 'has-text-danger'" :narrowed="true"
+                        :checked-rows.sync="selectedClasses"></b-table>
                     <button @click="scaleData()" class="button mt-2 is-info is-small"
                         :disabled="selectedClasses?.length >= classesInfo?.length">Merge
                         Classes</button>
@@ -99,7 +101,7 @@ export default {
                     classes.forEach(cls => {
                         result.push({
                             class: cls,
-                            mode: (targetValues.filter(val => val === cls).length / samplesLength).toFixed(2)
+                            mode: +(targetValues.filter(val => val === cls).length / samplesLength).toFixed(2)
                         })
                     });
                     this.classesInfo = result;

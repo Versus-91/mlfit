@@ -1726,6 +1726,9 @@ export default class ChartController {
                         var yAxisKey = 'yaxis' + ((i * features.length) + j + 1);
                         let fontSize = 10;
                         layout[xAxisKey] = {
+                            linecolor: 'black',
+                            linewidth: 1,
+                            mirror: true,
                             showgrid: false,
                             showticklabels: false,
                             tickfont: {
@@ -1733,6 +1736,9 @@ export default class ChartController {
                             },
                         };
                         layout[yAxisKey] = {
+                            linecolor: 'black',
+                            linewidth: 1,
+                            mirror: true,
                             showgrid: false,
                             showticklabels: false,
                             tickfont: {
@@ -1741,6 +1747,9 @@ export default class ChartController {
                         };
                         if (i === features.length - 1) {
                             layout[xAxisKey] = {
+                                linecolor: 'black',
+                                linewidth: 1,
+                                mirror: true,
                                 tickfont: {
                                     size: fontSize
                                 },
@@ -1754,6 +1763,9 @@ export default class ChartController {
                         }
                         if (j === 0) {
                             layout[yAxisKey] = {
+                                linecolor: 'black',
+                                linewidth: 1,
+                                mirror: true,
                                 tickfont: {
                                     size: fontSize
                                 },
@@ -1769,7 +1781,7 @@ export default class ChartController {
 
                 Plotly.react('scatterplot_mtx', traces, layout, {
                     ...plotlyImageExportConfig,
-                    staticPlot: false,
+                    staticPlot: true,
                     modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath ']
                 })
                 resolve()
