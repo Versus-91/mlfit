@@ -705,7 +705,9 @@ export default class ChartController {
             legend: {
                 x: 1,
                 xanchor: 'right',
-                y: 1
+                y: 1,
+                bgcolor: 'rgba(0,0,0,0)',
+
             },
             xaxis: {
                 linecolor: 'black',
@@ -828,7 +830,8 @@ export default class ChartController {
                     legend: {
                         x: 1,
                         xanchor: 'right',
-                        y: 1
+                        y: 1, bgcolor: 'rgba(0,0,0,0)',
+
                     },
                     xaxis: {
                         range: [-1.2, 1.2],
@@ -859,7 +862,9 @@ export default class ChartController {
                 legend: {
                     x: 1,
                     xanchor: 'right',
-                    y: 1
+                    y: 1,
+                    bgcolor: 'rgba(0,0,0,0)',
+
                 },
                 xaxis: {
                     linecolor: 'black',
@@ -886,75 +891,154 @@ export default class ChartController {
             sum = sum + element
             cumulatedExplainedVaraince.push(sum)
         });
-        Highcharts.chart('scree_plot', {
-            credits: {
-                enabled: false
-            },
-            title: {
-                text: '',
-            },
+        var trace1 = {
+            name: 'Propotional',
+            y: explained_variances,
+            type: 'scatter'
+        };
+
+        var trace2 = {
+            name: 'Cumulative',
+            y: cumulatedExplainedVaraince,
+            type: 'scatter'
+        };
+        var trace3 = {
+            showlegend: false,
+            x: [0.1, 0.1],
+            y: [0.92, 0.82],
+            text: ['0.9', '0.8'],
+            mode: 'text'
+        };
+        var data = [trace1, trace2, trace3];
+
+        Plotly.newPlot('scree_plot', data, {
             legend: {
-                verticalAlign: 'bottom',
-                align: 'left',
-                floating: true,
-            },
-            yAxis: {
-                linecolor: 'black',
-                linewidth: 2,
-                mirror: true,
-                min: 0,
-                max: 1,
-                title: {
-                    text: 'Explained variance'
+                x: 0.1,
+                y: 0.2,
+                traceorder: 'normal',
+                orientation: "h",
+                font: {
+                    size: 8,
                 },
-                plotLines: [{
-                    value: 0.9,
-                    dashStyle: 'shortdash',
-                    color: 'grey',
-                    width: 1,
-                    zIndex: 4,
-                    label: {
-                        text: '0.9', align: "right",
+                bgcolor: 'rgba(0,0,0,0)',
+            },
+            shapes: [
+                {
+                    type: 'line',
+                    x0: 0,
+                    y0: 0.9,
+                    x1: cumulatedExplainedVaraince.length - 1,
+                    y1: 0.9,
+                    line: {
+                        color: 'rgb(250, 0, 0)',
+                        width: 1.5,
+                        dash: 'dashdot'
                     }
                 }, {
-                    value: 0.8,
-                    dashStyle: 'shortdash',
-                    color: 'darkgrey',
-                    width: 1,
-                    zIndex: 4,
-                    label: {
-                        text: '0.8', align: "right",
+                    type: 'line',
+                    x0: 0,
+                    y0: 0.8,
+                    x1: cumulatedExplainedVaraince.length - 1,
+                    y1: 0.8,
+                    line: {
+                        color: 'rgb(50, 171, 96)',
+                        width: 1.5,
+                        dash: 'dashdot'
                     }
-                }]
-
+                }],
+            margin: {
+                l: 60,
+                r: 60,
+                b: 40,
+                t: 40,
+                pad: 10
             },
-            xAxis: {
+            xaxis: {
                 linecolor: 'black',
-                linewidth: 2,
+                linewidth: 1,
                 mirror: true,
-                labels: {
-                    enabled: true,
-                    formatter: function () {
-                        return this.value + 1;
-                    }
-                },
-
-                title: {
-                    text: 'Number of PCs'
-                },
+                zeroline: false,
+                title: 'Number of PCs'
             },
-            series: [{
-                name: 'Propotional',
-                color: "blue",
-                data: explained_variances
-            },
-            {
-                name: 'Cumulative',
-                color: "red",
-                data: cumulatedExplainedVaraince
-            }],
+            yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                rang: [0, 1],
+                zeroline: false,
+                mirror: true,
+                title: 'Explained variance'
+            }
+        }, { ...plotlyImageExportConfig, responsive: true });
+        // Highcharts.chart('scree_plot', {
+        //     credits: {
+        //         enabled: false
+        //     },
 
-        });
+        //     title: {
+        //         text: 'Explained Variance',
+        //     },
+        //     legend: {
+        //         verticalAlign: 'bottom',
+        //         align: 'left',
+        //         floating: true,
+        //     },
+        //     yAxis: {
+        //         linecolor: 'black',
+        //         linewidth: 2,
+        //         mirror: true,
+        //         min: 0,
+        //         max: 1,
+        //         title: {
+        //             text: 'Explained variance'
+        //         },
+        //         plotLines: [{
+        //             value: 0.9,
+        //             dashStyle: 'shortdash',
+        //             color: 'grey',
+        //             width: 1,
+        //             zIndex: 4,
+        //             label: {
+        //                 text: '0.9', align: "right",
+        //             }
+        //         }, {
+        //             value: 0.8,
+        //             dashStyle: 'shortdash',
+        //             color: 'darkgrey',
+        //             width: 1,
+        //             zIndex: 4,
+        //             label: {
+        //                 text: '0.8', align: "right",
+        //             }
+        //         }]
+
+        //     },
+        //     xAxis: {
+        //         linecolor: 'black',
+        //         linewidth: 2,
+        //         mirror: true,
+        //         labels: {
+        //             enabled: true,
+        //             formatter: function () {
+        //                 return this.value + 1;
+        //             }
+        //         },
+
+        //         title: {
+        //             text: 'Number of PCs'
+        //         },
+        //     },
+        //     series: [{
+        //         name: 'Propotional',
+        //         color: "blue",
+        //         data: explained_variances
+        //     },
+        //     {
+        //         name: 'Cumulative',
+        //         color: "red",
+        //         data: cumulatedExplainedVaraince
+        //     }],
+
+        // });
 
     }
     // eslint-disable-next-line no-unused-vars
