@@ -2570,7 +2570,8 @@ export default class ChartController {
                 averages[i].forEach((average, index) => {
                     let scaler = new MinMaxScaler();
                     scaler.fit(grid)
-                    let xs = scaler.transform(grid)
+                    // let xs = scaler.transform(grid)
+                    let xs = grid
 
                     traces.push(
                         {
@@ -2578,7 +2579,7 @@ export default class ChartController {
                             y: Array.from(average),
                             mode: 'line',
                             name: columns[i],
-                            marker: { color: this.indexToColor(i, averages[i].length) }
+                            marker: { color: this.indexToColor(i, averages.length) }
                         }
                     )
                 });
@@ -2590,7 +2591,7 @@ export default class ChartController {
                             y: Array.from(average),
                             type: 'bar',
                             name: columns[i],
-                            marker: { color: this.indexToColor(i, averages[i].length), opacity: 0.7 }
+                            marker: { color: this.indexToColor(i, averages.length), opacity: 0.7 }
                         }
                     )
                 });
