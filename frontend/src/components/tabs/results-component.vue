@@ -24,7 +24,6 @@
 import { settingStore } from '@/stores/settings'
 import ClassificationViewComponent from './classification-view-component.vue'
 import RegressionViewComponent from './regression-view-component.vue'
-import { jsPDF } from "jspdf";
 import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import UI from '@/helpers/ui';
 let ui = new UI(null, null)
@@ -69,23 +68,11 @@ export default {
         },
         resize(id) {
             let isVisited = this.visitedTabs.findIndex(item => item === id);
-            console.log('cccccc', isVisited);
             if (isVisited === -1) {
                 this.visitedTabs.push(id);
                 window.dispatchEvent(new Event('resize'));
             }
         },
-        exportToPDF() {
-            var pdf = new jsPDF('p', 'pt', 'letter');
-            pdf.html(this.$el.innerHTML, {
-                callback: function (pdf) {
-                    var iframe = document.createElement('iframe');
-                    iframe.setAttribute('style', 'position:absolute;right:0; top:0; bottom:0; height:100%; width:500px');
-                    document.body.appendChild(iframe);
-                    iframe.src = pdf.output('datauristring');
-                }
-            });
-        }
     },
 }
 </script>

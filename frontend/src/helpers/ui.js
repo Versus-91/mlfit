@@ -791,6 +791,7 @@ export default class UI {
         x.columns.forEach(element => {
             table_columns.push({ title: element });
         });
+        let columns = x.columns.slice().reverse();
         new DataTable('#predictions_table_' + tab_index, {
             pageLength: 5,
             responsive: false,
@@ -804,8 +805,8 @@ export default class UI {
                 }
             ],
             bPaginate: true,
-            columns: table_columns,
-            data: x.values,
+            columns: table_columns.reverse(),
+            data: x.loc({ columns: columns }).values,
             bDestroy: true,
         });
     }
@@ -819,17 +820,18 @@ export default class UI {
             x.addColumn("probs", probs, { inplace: true });
         }
         x.addColumn("y", y, { inplace: true });
-        x.addColumn("predictions: ", predictions, { inplace: true });
+        x.addColumn("predictions", predictions, { inplace: true });
         x.columns.forEach(element => {
             table_columns.push({ title: element });
         });
+        let columns = x.columns.slice().reverse();
         new DataTable('#predictions_table_' + tab_index, {
             pageLength: 10,
             responsive: false,
             paging: true,
             "bPaginate": true,
-            columns: table_columns,
-            data: x.values,
+            columns: table_columns.reverse(),
+            data: x.loc({ columns: columns }).values,
             bDestroy: true,
             columnDefs: [
                 {
@@ -845,12 +847,12 @@ export default class UI {
                     render: function (data, type, row) {
                         return data.toFixed(2);
                     },
-                    targets: [...Array(table_columns.length - 3).keys()]
+                    targets: [...Array(table_columns.length).keys()].filter(m => m >= 2)
                 }
             ],
             rowCallback: function (row, data, index) {
-                var prediction = data[table_columns.length - 1];
-                var y = data[table_columns.length - 2];
+                var prediction = data[0];
+                var y = data[1];
                 if (prediction !== y) {
                     $(row).addClass('is-danger');
                 }
