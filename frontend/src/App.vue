@@ -76,6 +76,10 @@ export default {
   color: #fff !important;
 }
 
+.button.is-danger {
+  color: #fff !important;
+}
+
 .toast.is-danger {
   color: #fff !important;
 }
