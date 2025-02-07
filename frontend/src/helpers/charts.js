@@ -887,29 +887,34 @@ export default class ChartController {
 
         let cumulatedExplainedVaraince = []
         let sum = 0
-        explained_variances.forEach(element => {
+        let compnentsaxis = []
+        explained_variances.forEach((element, i) => {
             sum = sum + element
+            compnentsaxis.push(i + 1)
             cumulatedExplainedVaraince.push(sum)
         });
         var trace1 = {
             name: 'Propotional',
+            x: compnentsaxis,
             y: explained_variances,
             type: 'scatter'
         };
 
         var trace2 = {
             name: 'Cumulative',
+            x: compnentsaxis,
             y: cumulatedExplainedVaraince,
             type: 'scatter'
         };
         var trace3 = {
             showlegend: false,
-            x: [0.1, 0.1],
+            x: [1.1, 1.1],
             y: [0.92, 0.82],
             text: ['0.9', '0.8'],
             mode: 'text'
         };
         var data = [trace1, trace2, trace3];
+        console.log('ss');
 
         Plotly.newPlot('scree_plot', data, {
             legend: {
@@ -925,9 +930,9 @@ export default class ChartController {
             shapes: [
                 {
                     type: 'line',
-                    x0: 0,
+                    x0: 1,
                     y0: 0.9,
-                    x1: cumulatedExplainedVaraince.length - 1,
+                    x1: Math.max(...compnentsaxis),
                     y1: 0.9,
                     line: {
                         color: 'rgb(250, 0, 0)',
@@ -936,9 +941,9 @@ export default class ChartController {
                     }
                 }, {
                     type: 'line',
-                    x0: 0,
+                    x0: 1,
                     y0: 0.8,
-                    x1: cumulatedExplainedVaraince.length - 1,
+                    x1: Math.max(...compnentsaxis),
                     y1: 0.8,
                     line: {
                         color: 'rgb(50, 171, 96)',
@@ -956,6 +961,8 @@ export default class ChartController {
             xaxis: {
                 linecolor: 'black',
                 linewidth: 1,
+                tickmode: 'linear',
+                dtick: 1,
                 mirror: true,
                 zeroline: false,
                 title: 'Number of PCs'
@@ -2651,7 +2658,7 @@ export default class ChartController {
                 x: 0.05,
             },
 
-            barmode: 'group', 
+            barmode: 'group',
             font: {
                 size: 10
             },
