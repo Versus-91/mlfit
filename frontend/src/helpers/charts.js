@@ -1836,8 +1836,8 @@ export default class ChartController {
                     spacing: 0,
                     showlegend: false,
                     boxmode: 'overlay',
-                    grid: { rows: features.length,xgap:0.1,ygap:0.1, columns: features.length, pattern: 'independent' },
-                    margin: { r: 10, t: 10, pad: 5 },
+                    grid: { rows: features.length, xgap: 0.05, ygap: 0.05, columns: features.length, pattern: 'independent' },
+                    margin: { t: 20, r: 20 },
 
                 };
                 for (var i = 0; i < features.length; i++) {
