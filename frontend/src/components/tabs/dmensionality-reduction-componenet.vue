@@ -145,13 +145,19 @@ export default {
 
         },
         async findTSNE() {
-            this.prepareData()
-            this.loadingTSNE = true;
-            let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
-            await chartController.plot_tsne(this.df.loc({ columns: numericColumns }).values,
-                this.settings.isClassification ? this.df.loc({ columns: [this.settings.modelTarget] }).values : []
-                , this.df.loc({ columns: [this.settings.modelTarget] }).values, this.iterationsTSNE);
-            this.loadingTSNE = false;
+            try {
+                this.prepareData()
+                this.loadingTSNE = true;
+                let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
+                await chartController.plot_tsne(this.df.loc({ columns: numericColumns }).values,
+                    this.settings.isClassification ? this.df.loc({ columns: [this.settings.modelTarget] }).values : []
+                    , this.df.loc({ columns: [this.settings.modelTarget] }).values, this.iterationsTSNE);
+                this.loadingTSNE = false;
+            } catch (error) {
+                this.loadingTSNE = false;
+                throw error;
+            }
+
         },
         async autoEncoder() {
             this.prepareData()
