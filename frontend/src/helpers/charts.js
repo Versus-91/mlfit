@@ -755,7 +755,7 @@ export default class ChartController {
                         x: items_for_label.map(m => m.x),
                         y: items_for_label.map(m => m.y),
                         mode: 'markers',
-                        type: 'scatter',
+                        type: 'scattergl',
                         name: label,
                         marker: {
                             size: 4,
@@ -772,7 +772,7 @@ export default class ChartController {
                     x: x,
                     y: y,
                     mode: 'markers',
-                    type: 'scatter',
+                    type: 'scattergl',
                     marker: {
                         color: x.map(item => this.indexToColorSequential(item, min, max)),
                         size: 4,
@@ -780,75 +780,7 @@ export default class ChartController {
 
                 })
             }
-            let arrows = [];
-            let shapes = []
 
-            if (axis[0] == 1 && axis[1] == 2) {
-                distances.forEach((distance, i) => {
-                    arrows.push({
-                        axref: 'x',
-                        x: 0,
-                        ayref: 'y',
-                        y: 0,
-                        arrowside: 'start',
-                        arrowwidth: 1.2,
-                        arrowhead: 3,
-                        // text: columns[i],
-                        hovertext: columns[i] + `(${circels[i][0].toFixed(2)},${circels[i][1].toFixed(2)})`,
-                        ax: circels[i][0],
-                        ay: circels[i][1],
-                    });
-                })
-                shapes = [
-                    {
-                        type: 'circle',
-                        xref: 'x',
-                        yref: 'y',
-                        x0: -1,
-                        y0: -1,
-                        x1: 1,
-                        y1: 1,
-                        line: {
-                            color: 'rgba(50, 171, 96, 1)'
-                        }
-                    },
-
-                ]
-                Plotly.newPlot('correlation_circle', [], {
-                    annotations: arrows,
-                    shapes: shapes,
-                    showlegend: uniqueLabels.length != 0 ? true : false,
-                    height: 300,
-                    width: 300,
-                    margin: {
-                        l: 40,
-                        r: 40,
-                        b: 40,
-                        t: 40,
-                        pad: 10
-                    },
-                    legend: {
-                        x: 1,
-                        xanchor: 'right',
-                        y: 1, bgcolor: 'rgba(0,0,0,0)',
-
-                    },
-                    xaxis: {
-                        range: [-1.2, 1.2],
-                        linecolor: 'black',
-                        linewidth: 1,
-                        mirror: true,
-                        title: 'PC' + axis[0]
-                    },
-                    yaxis: {
-                        range: [-1.2, 1.2],
-                        linecolor: 'black',
-                        linewidth: 1,
-                        mirror: true,
-                        title: 'PC' + axis[1]
-                    }
-                }, { ...plotlyImageExportConfig, responsive: true });
-            }
 
             Plotly.newPlot('pca_' + i, traces1, {
                 showlegend: uniqueLabels.length != 0 ? true : false,
@@ -881,9 +813,74 @@ export default class ChartController {
             }, { ...plotlyImageExportConfig, responsive: true });
 
         }
+        let arrows = [];
+        let shapes = []
 
+        distances.forEach((distance, i) => {
+            arrows.push({
+                axref: 'x',
+                x: 0,
+                ayref: 'y',
+                y: 0,
+                arrowside: 'start',
+                arrowwidth: 1.2,
+                arrowhead: 3,
+                // text: columns[i],
+                hovertext: columns[i] + `(${circels[i][0].toFixed(2)},${circels[i][1].toFixed(2)})`,
+                ax: circels[i][0],
+                ay: circels[i][1],
+            });
+        })
+        shapes = [
+            {
+                type: 'circle',
+                xref: 'x',
+                yref: 'y',
+                x0: -1,
+                y0: -1,
+                x1: 1,
+                y1: 1,
+                line: {
+                    color: 'rgba(50, 171, 96, 1)'
+                }
+            },
 
+        ]
 
+        Plotly.newPlot('correlation_circle', [], {
+            annotations: arrows,
+            shapes: shapes,
+            showlegend: uniqueLabels.length != 0 ? true : false,
+            height: 300,
+            width: 300,
+            margin: {
+                l: 40,
+                r: 40,
+                b: 40,
+                t: 40,
+                pad: 10
+            },
+            legend: {
+                x: 1,
+                xanchor: 'right',
+                y: 1, bgcolor: 'rgba(0,0,0,0)',
+
+            },
+            xaxis: {
+                range: [-1.2, 1.2],
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: 'PC1'
+            },
+            yaxis: {
+                range: [-1.2, 1.2],
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: 'PC2'
+            }
+        }, { ...plotlyImageExportConfig, responsive: true });
 
         let cumulatedExplainedVaraince = []
         let sum = 0
@@ -2423,7 +2420,7 @@ export default class ChartController {
 
         data = data.concat(trace4)
 
-        Plotly.newPlot(id, data, layout2, {...plotlyImageExportConfig,responsive:true});
+        Plotly.newPlot(id, data, layout2, { ...plotlyImageExportConfig, responsive: true });
     }
     PFIBoxplot(id, importances, columns) {
         let traces = []

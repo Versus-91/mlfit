@@ -110,22 +110,23 @@ export default {
         },
         async findPCA() {
             try {
-                console.log('test');
-                
                 this.prepareData()
                 this.loadingPCA = true;
                 this.hasPCA = true;
+
                 for (let i = 0; i < this.pcaContainers.length; i++) {
                     chartController.purge_charts('pca_' + i)
                 }
-                for (let i = 0; i < this.numberOfComponents; i++) {
-                    for (let j = i + 1; j < this.numberOfComponents; j++) {
-                        let index = this.pcaContainers.findIndex(m => m[0] == i + 1 && m[1] == j + 1)
-                        if (index === -1) {
-                            this.pcaContainers.push([i + 1, j + 1]);
-                        }
-                    }
-                }
+
+                // for (let i = 0; i < this.numberOfComponents; i++) {
+                //     for (let j = i + 1; j < this.numberOfComponents; j++) {
+                //         let index = this.pcaContainers.findIndex(m => m[0] == i + 1 && m[1] == j + 1)
+                //         if (index === -1) {
+                //             this.pcaContainers.push([i + 1, j + 1]);
+                //         }
+                //     }
+                // }
+                this.pcaContainers = []
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
                 await chartController.draw_pca(
                     this.df.loc({ columns: numericColumns }).values,
@@ -135,8 +136,8 @@ export default {
                     this.pcaContainers,
                     numericColumns
                 )
-
                 this.loadingPCA = false;
+
             } catch (error) {
                 this.loadingPCA = false;
                 throw error;
@@ -144,18 +145,16 @@ export default {
 
         },
         async findTSNE() {
-            this.df = new DataFrame(this.settings.rawData);
-            this.df.dropNa({ axis: 1, inplace: true })
+            this.prepareData()
             this.loadingTSNE = true;
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
-            await chartController.plot_tsne(this.dataframe.loc({ columns: numericColumns }).values,
-                this.settings.isClassification ? this.dataframe.loc({ columns: [this.settings.modelTarget] }).values : []
-                , this.dataframe.loc({ columns: [this.settings.modelTarget] }).values, this.iterationsTSNE);
+            await chartController.plot_tsne(this.df.loc({ columns: numericColumns }).values,
+                this.settings.isClassification ? this.df.loc({ columns: [this.settings.modelTarget] }).values : []
+                , this.df.loc({ columns: [this.settings.modelTarget] }).values, this.iterationsTSNE);
             this.loadingTSNE = false;
         },
         async autoEncoder() {
-            this.df = new DataFrame(this.settings.rawData);
-            this.df.dropNa({ axis: 1, inplace: true })
+            this.prepareData()
             this.loadingAutoEncoder = true;
             const model = tensorflow.sequential();
             let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
@@ -187,7 +186,7 @@ export default {
             // eslint-disable-next-line no-unused-vars
             let data = await tidyWrapper;
             chartController.drawAutoencoder(data, this.autoEncoderX - 1, this.autoEncoderY - 1,
-                this.dataframe.loc({ columns: [this.settings.modelTarget] }).values
+                this.df.loc({ columns: [this.settings.modelTarget] }).values
                 , this.settings.isClassification
             )
             this.loadingAutoEncoder = false;
