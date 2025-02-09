@@ -414,8 +414,16 @@ export function encode_dataset(data_frame, columns_types) {
 
         }
     })
-
     return [df, categoriclaFeaturesAfterEncoding]
 }
 
+export function merge_classes(classes, dataframe) {
+    let newClass = classes.map(m => m.class).join('-');
+    classes.forEach(cls => {
+        dataframe.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
+    });
+    let message = { message: 'merged classes: ' + newClass, type: 'info' }
+    this.$buefy.toast.open('merged classes: ' + newClass)
+    this.settings.addMessage(message)
+}
 

@@ -98,10 +98,21 @@ export default {
         }
     },
     methods: {
+        prepareData() {
+            this.df = new DataFrame(this.settings.rawData);
+            this.df.dropNa({ axis: 1, inplace: true })
+            if (this.settings.isClassification && this.settings.mergedClasses?.length > 0) {
+                let newClass = this.settings.mergedClasses.map(m => m.class).join('-');
+                this.settings.mergedClasses.forEach(cls => {
+                    this.df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
+                });
+            }
+        },
         async findPCA() {
             try {
-                this.df = new DataFrame(this.settings.rawData);
-                this.df.dropNa({ axis: 1, inplace: true })
+                console.log('test');
+                
+                this.prepareData()
                 this.loadingPCA = true;
                 this.hasPCA = true;
                 for (let i = 0; i < this.pcaContainers.length; i++) {
