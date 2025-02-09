@@ -160,11 +160,11 @@
                 </b-tab-item>
                 <b-tab-item label="Messages Log" icon="history" icon-pack="fas">
                     <b-notification aria-close-label="Close notification" icon-pack="fas"
-                        :type="message.type == 'warning' ? 'is-warning' : message.type == 'danger' ? 'is-danger' : 'is-info'"
-                        has-icon :closable="false" v-for="(message, i) in this.settings.gerMessages" :key="i">
-                        {{ message.message }}
+                        :type="m.type == 'warning' ? 'is-warning' : m.type == 'danger' ? 'is-danger' : 'is-info'"
+                        has-icon :closable="false" v-for="(m, i) in this.settings.getMessages" :key="i">
+                        {{ m.message?.toLowerCase() }}
                         <br>
-                        {{ message.date }}
+                        {{ m.date }}
 
                     </b-notification>
                 </b-tab-item>

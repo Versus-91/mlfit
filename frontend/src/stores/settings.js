@@ -33,7 +33,7 @@ export const settingStore = defineStore({
         getCounter: (state) => {
             return state.counter
         },
-        gerMessages: (state) => {
+        getMessages: (state) => {
             return state.messages.reverse()
         },
         getDatasetName: (state) => {

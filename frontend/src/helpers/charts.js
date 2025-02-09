@@ -1197,7 +1197,9 @@ export default class ChartController {
             legend: {
                 x: 1,
                 xanchor: 'right',
-                y: 1
+                y: 1,
+                bgcolor: 'rgba(0,0,0,0)',
+
             },
             boxmode: 'group'
         }, { responsive: true });
@@ -2421,7 +2423,7 @@ export default class ChartController {
 
         data = data.concat(trace4)
 
-        Plotly.newPlot(id, data, layout2, plotlyImageExportConfig);
+        Plotly.newPlot(id, data, layout2, {...plotlyImageExportConfig,responsive:true});
     }
     PFIBoxplot(id, importances, columns) {
         let traces = []
@@ -2753,7 +2755,7 @@ export default class ChartController {
                     y: tprs[index],
                     mode: 'line',
                     name: labels[index],
-                    marker: { color: this.indexToColor(index) }
+                    marker: { color: this.indexToColor(index, labels.length) }
                 }
             )
         });
@@ -2780,7 +2782,14 @@ export default class ChartController {
             margin: {
                 b: 40,
             },
-            showlegend: false,
+            legend: {
+                x: 1,
+                xanchor: 'right',
+                y: 0.1,
+                bgcolor: 'rgba(0,0,0,0)',
+
+            },
+            showlegend: true,
             xaxis: {
                 linecolor: 'black',
                 linewidth: 1,
