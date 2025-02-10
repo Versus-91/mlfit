@@ -440,9 +440,9 @@ export default class LinearRegression extends RegressionModel {
             ],
         });
 
-        await Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { autosize: true });
-        await Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { autosize: true });
-        await Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { autosize: true });
+        await Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { autosize: true, responsive: true });
+        await Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { autosize: true, responsive: true });
+        await Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { autosize: true, responsive: true });
         await Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { autosize: true, staticPlot: true, });
         await Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { autosize: true, staticPlot: true, });
         await Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { autosize: true, staticPlot: true, });

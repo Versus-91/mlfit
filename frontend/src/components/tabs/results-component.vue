@@ -1,5 +1,7 @@
 <template>
-    <b-tabs v-model="settings.resultActiveTab" v-if="this.settings.results?.length > 0">
+    <b-tabs v-model="settings.resultActiveTab" v-if="this.settings.results?.length > 0" @input="resize()">
+        {{ settings.resultActiveTab }}
+
         <b-tab-item v-for="result in this.settings.results" :label="(result.id + 1) + '.' + result.name.toString()"
             :key="result.id" ref="resultContents">
             <classification-view-component @delete-result="deleteResult" :result="result"
@@ -49,7 +51,11 @@ export default {
         }
     },
     methods: {
+        resize() {
+            console.log('resize');
 
+            window.dispatchEvent(new Event('resize'));
+        },
         deleteResult(id) {
             // eslint-disable-next-line no-unused-vars
             let [tables, plots] = this.settings.getResultVisualizations(id);
@@ -65,13 +71,6 @@ export default {
         showMethodDetails(id) {
             alert(id)
 
-        },
-        resize(id) {
-            let isVisited = this.visitedTabs.findIndex(item => item === id);
-            if (isVisited === -1) {
-                this.visitedTabs.push(id);
-                window.dispatchEvent(new Event('resize'));
-            }
         },
     },
 }

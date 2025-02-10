@@ -384,9 +384,11 @@ export default {
                 });
                 this.settings.setActiveTab(2);
                 setTimeout(async () => {
+                    4
                     this.settings.setResultActiveTab(model.id);
                     window.dispatchEvent(new Event('resize'));
-                }, 500);
+                }, 100);
+
                 await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, x_train.columns, categoricalFeatures)
                 this.settings.increaseCounter();
                 this.toggleTraining();

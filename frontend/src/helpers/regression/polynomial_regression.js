@@ -452,9 +452,9 @@ export default class PolynomialRegression extends RegressionModel {
             ],
         });
 
-        Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot);
-        Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot);
-        Plotly.newPlot('errors_' + current.id, current.summary.errors_plot);
+        Plotly.newPlot('regularization_' + current.id, current.summary.regularization_plot, { autosize: true, responsive: true });
+        Plotly.newPlot('parameters_plot_' + current.id, current.summary.coefs_plot, { autosize: true, responsive: true });
+        Plotly.newPlot('errors_' + current.id, current.summary.errors_plot, { autosize: true, responsive: true });
         Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot);
         Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot);
         Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot);

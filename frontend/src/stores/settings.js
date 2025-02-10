@@ -166,6 +166,7 @@ export const settingStore = defineStore({
             this.activeTab = index
         },
         setResultActiveTab(index) {
+            console.log('id', index);
             this.resultActiveTab = index
         }
     },
