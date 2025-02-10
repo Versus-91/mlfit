@@ -2430,6 +2430,8 @@ export default class ChartController {
             avgs.push((importancesMean / importance.length))
         });
         let max = Math.max(...avgs)
+        let min = Math.min(...avgs)
+
         importances.forEach((importance, index) => {
 
             traces.push(
@@ -2437,7 +2439,7 @@ export default class ChartController {
                     x: Array.from(importance),
                     type: 'box',
                     name: columns[index],
-                    marker: { color: this.color_scheme_sequential((avgs[index] / max) + 0.3) },
+                    marker: { color: this.indexToColorSequential(avgs[index] + 0.1, min, max) },
                 }
             )
         });

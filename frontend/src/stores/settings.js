@@ -14,7 +14,7 @@ export const settingStore = defineStore({
         datasetName: '',
         activeTab: 0,
         dataSizeFlag: false,
-        resultActiveTab: 0,
+        resultActiveTab: '',
         datasetShape: {
             count: 0,
             columns: 0
@@ -56,6 +56,9 @@ export const settingStore = defineStore({
         },
         getSeed: (state) => {
             return state.seed
+        },
+        getResultTab: (state) => {
+            return state.resultActiveTab
         },
         outputs: (state) => state.results,
         transformationsList: (state) => state.transformations,
@@ -166,7 +169,6 @@ export const settingStore = defineStore({
             this.activeTab = index
         },
         setResultActiveTab(index) {
-            console.log('id', index);
             this.resultActiveTab = index
         }
     },
