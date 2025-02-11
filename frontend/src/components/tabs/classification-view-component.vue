@@ -43,7 +43,7 @@
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
                         <div class="column is-6" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
-                        <div class="column is-6" style="height: 400px;" :id="'pca_results_' + result.id"></div>
+                        
                     </div>
                 </div>
             </article>
@@ -115,11 +115,7 @@
                 <div class="message-header"> Probabilities</div>
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
-                        <div class="column is-6" style="height: 400px;" :id="'roc_plot_' + result.id">
-                        </div>
                         <div class="column is-6" style="height: 400px;" :id="'proba_plot_' + result.id">
-                        </div>
-                        <div class="column is-6" style="height: 400px;" :id="'proba_violin_plot_' + result.id">
                         </div>
                     </div>
                     <br>

@@ -1,6 +1,25 @@
 <template>
     <div>
-        <button class="button is-info"> Compare</button>
+        <button class="button is-info my-2" @click="compareResults"> Compare models</button>
+        <div class="columns is-12 mt-2 is-multiline" v-show="compare">
+            <div class="column is-12">
+                <div class="select">
+                    <select>
+                        <option>Select dropdown</option>
+                        <option>With options</option>
+                    </select>
+                </div>
+
+                <div class="select">
+                    <select>
+                        <option>Select dropdown</option>
+                        <option>With options</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="column is-6" id="myDiv"></div>
+        </div>
         <b-tabs v-model="activeResult" v-if="this.settings.results?.length > 0" @input="resize()">
             <template v-for="result in this.settings.results">
                 <b-tab-item :label="(result.id + 1) + '.' + result.name.toString()" :key="result.id">
@@ -56,11 +75,34 @@ export default {
     },
     data() {
         return {
+            compare: false,
             activeTab: null,
             visitedTabs: [],
         }
     },
     methods: {
+        compareResults() {
+            this.compare = true;
+
+            var trace2 = {
+                x: [2, 3, 4, 5],
+                y: [16, 5, 11, 9],
+                mode: 'lines'
+            };
+
+            var trace3 = {
+                x: [1, 2, 3, 4],
+                y: [12, 9, 15, 12],
+                mode: 'lines+markers'
+            };
+
+            var data = [trace2, trace3];
+
+            var layout = {
+            };
+
+            Plotly.newPlot('myDiv', data, layout, { responsive: true });
+        },
         resize() {
             console.log('resize');
 

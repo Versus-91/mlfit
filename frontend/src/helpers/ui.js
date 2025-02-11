@@ -838,13 +838,13 @@ export default class UI {
             bDestroy: true,
             columnDefs: [
                 {
-                    render: function (data, type, row) {
-                        for (let i = 0; i < data.length; i++) {
-                            data[i] = data[i].toFixed(2);
-                        }
-                        return data
-                    },
-                    targets: [-3]
+                    // render: function (data, type, row) {
+                    //     for (let i = 0; i < data.length; i++) {
+                    //         data[i] = data[i].toFixed(2);
+                    //     }
+                    //     return data
+                    // },
+                    // targets: [-3]
                 },
                 {
                     render: function (data, type, row) {

@@ -728,7 +728,7 @@ export default class ChartController {
         Plotly.purge(id)
     }
     async draw_pca(dataset, labels, regression_labels, numberOfComponents, axes, columns) {
-        const pca = new PCA(dataset, { center: true, scale: true });
+        const pca = new PCA();
 
         labels = labels.flat()
         var uniqueLabels = [...new Set(labels)];
@@ -2176,7 +2176,7 @@ export default class ChartController {
             }
         }
 
-        await Plotly.newPlot(id, data, layout, plotlyImageExportConfig);
+        await Plotly.newPlot(id, data, layout, { ...plotlyImageExportConfig, responsive: true });
     }
     async dendogramPlot(id, correlations, linkage, names, originalColumns) {
 

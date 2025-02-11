@@ -68,7 +68,12 @@
                 <b-field>
                     <b-checkbox v-model="explainModel" size="is-small">Explain the model</b-checkbox>
                 </b-field>
-
+                <b-field>
+                    <b-checkbox v-model="usePCAs" size="is-small">Use PC components</b-checkbox>
+                </b-field>
+                <b-field v-if="usePCAs" label="Number of Components" :label-position="'on-border'">
+                    <b-input size="is-small" v-model="numberOfComponents" type="number"></b-input>
+                </b-field>
                 <b-field>
                     <b-button @click="train" size="is-small" icon-pack="fas" icon-left="play" :loading="training"
                         :disabled="!dataframe || modelOption == null">
@@ -127,6 +132,8 @@
 
 import UploadComponent from "./upload-component.vue";
 import { Settings, FeatureCategories, CV_OPTIONS } from '../helpers/settings'
+import PCA from '@/helpers/dimensionality-reduction/pca';
+
 import { ModelFactory } from "@/helpers/model_factory";
 import { settingStore } from '@/stores/settings'
 import { applyDataTransformation, handle_missing_values, encode_dataset, evaluate_classification } from '@/helpers/utils';
@@ -154,6 +161,8 @@ export default {
             explainModel: true,
             training: false,
             tuneModel: false,
+            numberOfComponents: 0,
+            usePCAs: false,
             seed: 123,
             dataframe: null,
             configureFeatures: false,
@@ -297,8 +306,13 @@ export default {
                         });
                     }
                 }
+
+
                 const targets = filterd_dataset.column(target)
                 filterd_dataset.drop({ columns: target, inplace: true })
+
+
+
                 const cross_validation_setting = this.crossValidationOption;
 
                 [filterd_dataset, categoricalFeatures] = encode_dataset(filterd_dataset, this.settings.items.filter(m => m.selected).filter(m => m.name !== this.settings.modelTarget).map(m => {
@@ -338,6 +352,8 @@ export default {
                 } else {
                     [x_train, y_train, x_test, y_test] = this.splitData(cross_validation_setting, filterd_dataset, targets);
                 }
+
+
                 let uniqueLabels = [...new Set(y_train.values)];
                 let labelEncoder, encoded_y, encoded_y_test;
                 if (this.settings.classificationTask) {
@@ -351,6 +367,18 @@ export default {
                 model.id = this.settings.getCounter
                 this.toggleTraining()
                 model.hasExplaination = this.explainModel;
+                if (this.usePCAs) {
+                    const pca = new PCA();
+                    let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
+                    let [pca_train, _, __, ___, ____, pca_test] = await pca.predict(x_train.loc({ columns: numericColumns }).values,
+                        this.numberOfComponents, x_test.loc({ columns: numericColumns }).values)
+                    pca_train = pca_train.map(m => [].slice.call(m))
+                    pca_test = pca_test.map(m => [].slice.call(m))
+                    let cols = pca_train[0].map((_, i) => 'PC_' + (i + 1))
+                    x_train = new DataFrame(pca_train, { columns: cols })
+                    x_test = new DataFrame(pca_test, { columns: cols })
+                }
+
                 let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
                 let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
 
