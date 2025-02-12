@@ -50,11 +50,35 @@
             </div>
         </b-message>
         <b-message title="Autoencoder" :closable="false" :type="'is-info'">
-            <b-field label="Hidden layers size, plot x axis, plot y axis">
+            <b-field
+                label="Hidden layers size, plot x axis, plot y axis, iterations, encoder activation function and decoder activation function">
                 <b-input v-model="hiddenLayerSize" size="is-small" type="number"
                     placeholder="Hidden layer size"></b-input>
-                <b-input v-model="autoEncoderX" size="is-small" type="number" placeholder="Hidden layer size"></b-input>
-                <b-input v-model="autoEncoderY" size="is-small" type="number" placeholder="Hidden layer size"></b-input>
+                <b-input v-model="autoEncoderX" size="is-small" type="number" placeholder="x axis"></b-input>
+                <b-input v-model="autoEncoderY" size="is-small" type="number" placeholder="y axis"></b-input>
+                <b-input v-model="iterations" size="is-small" type="number" placeholder="iterations"></b-input>
+                <b-select v-model="encoderActivationFunction" size="is-small" placeholder="Encoder Activation Function">
+                    <option value="linear" id="linear">
+                        linear
+                    </option>
+                    <option value="sigmoid" id="sigmoid">
+                        sigmoid
+                    </option>
+                    <option value="relu" id="relu">
+                        RELU
+                    </option>
+                </b-select>
+                <b-select size="is-small" v-model="decoderActivationFunction" placeholder="Decoder Activation Function">
+                    <option value="linear" id="linear">
+                        linear
+                    </option>
+                    <option value="sigmoid" id="sigmoid">
+                        sigmoid
+                    </option>
+                    <option value="relu" id="relu">
+                        RELU
+                    </option>
+                </b-select>
                 <p class="control">
                     <b-button size="is-small" @click="autoEncoder" type="is-info" :loading="loadingAutoEncoder"
                         label="Fit Autoencoder" />
@@ -103,6 +127,9 @@ export default {
             loadingAutoEncoder: false,
             hiddenLayerSize: 2,
             iterationsTSNE: 200,
+            iterations: 200,
+            encoderActivationFunction: 'linear',
+            decoderActivationFunction: 'linear',
             autoEncoderX: 1,
             autoEncoderY: 2,
             hasPCA: false,
@@ -186,17 +213,17 @@ export default {
             const encoder = tensorflow.layers.dense({
                 units: +this.hiddenLayerSize,
                 batchInputShape: [null, unitsLength],
-                activation: 'relu',
+                activation: this.encoderActivationFunction,
                 kernelInitializer: "glorotNormal",
                 biasInitializer: "zeros"
             });
-            const decoder = tensorflow.layers.dense({ units: unitsLength, activation: 'sigmoid' });
+            const decoder = tensorflow.layers.dense({ units: unitsLength, activation: this.decoderActivationFunction });
             model.add(encoder);
             model.add(decoder);
             await model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
             const xs = tensorflow.tensor2d(values);
             // eslint-disable-next-line no-unused-vars
-            let h = await model.fit(xs, xs, { epochs: 512, batchSize: 64, shuffle: false, validationSplit: 0.1 });
+            let h = await model.fit(xs, xs, { epochs: +this.iterations, batchSize: 64, shuffle: false, validationSplit: 0.1 });
             xs.dispose();
             const tidyWrapper = tensorflow.tidy(() => {
                 const predictor = tensorflow.sequential();
