@@ -43,7 +43,8 @@
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
                         <div class="column is-6" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
-                        
+                        <div v-show="result.showProbas" class="column is-6" style="height: 400px;" :id="'roc_plot_' + result.id">
+                        </div>
                     </div>
                 </div>
             </article>

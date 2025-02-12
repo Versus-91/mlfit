@@ -17,6 +17,18 @@
                 <div class="column is-6">
                     <div id="correlation_circle" style="height: 300px;"></div>
                 </div>
+                <div class="column is-12" v-if="hasPCA">
+                    <b-field label="x and y axis">
+                        <b-input v-model="x" size="is-small" type="number" min="1" placeholder="x axis"></b-input>
+                        <b-input v-model="y" size="is-small" type="number" min="1" placeholder="y axis"></b-input>
+                        <p class="control">
+                            <b-button
+                                :disabled="numberOfComponents < 2 || x == y || numberOfComponents > this.settings.items.filter(column => column.selected && column.type === 1)?.length"
+                                size="is-small" @click="drawPCA()" type="is-info" :loading="loadingPCA"
+                                label="Draw PCA" />
+                        </p>
+                    </b-field>
+                </div>
                 <div class="column is-4" v-for="(item, index) in this.pcaContainers" :key="index">
                     <div :id="'pca_' + index" style="height: 300px;"></div>
                 </div>
@@ -87,6 +99,7 @@ export default {
             numberOfComponents: 2,
             loadingPCA: false,
             loadingTSNE: false,
+            x: 1, y: 2,
             loadingAutoEncoder: false,
             hiddenLayerSize: 2,
             iterationsTSNE: 200,
@@ -108,12 +121,15 @@ export default {
                 });
             }
         },
-        async findPCA() {
+        async drawPCA(x = 1, y = 2) {
+            console.log('gggg');
+
+            await this.findPCA([[x, y]]);
+        },
+        async findPCA(containers = []) {
             try {
                 this.prepareData()
                 this.loadingPCA = true;
-                this.hasPCA = true;
-
                 for (let i = 0; i < this.pcaContainers.length; i++) {
                     chartController.purge_charts('pca_' + i)
                 }
@@ -126,7 +142,7 @@ export default {
                 //         }
                 //     }
                 // }
-                this.pcaContainers = []
+                this.pcaContainers = containers
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
                 await chartController.draw_pca(
                     this.df.loc({ columns: numericColumns }).values,
@@ -136,6 +152,7 @@ export default {
                     this.pcaContainers,
                     numericColumns
                 )
+                this.hasPCA = true;
                 this.loadingPCA = false;
 
             } catch (error) {
