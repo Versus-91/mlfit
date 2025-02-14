@@ -42,8 +42,17 @@
                 <div class="message-header"> Confusion Matrix and PCA of predictions</div>
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
-                        <div class="column is-6" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
-                        <div v-show="result.showProbas" class="column is-6" style="height: 400px;" :id="'roc_plot_' + result.id">
+                        <div class="column is-6 my-1" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
+                        <div v-show="result.showProbas" class="column is-6 my-1" style="height: 400px;"
+                            :id="'proba_plot_' + result.id">
+                        </div>
+                        <br>
+                        <div v-show="result.showProbas" class="column is-6 my-1" style="height: 400px;"
+                            :id="'roc_plot_' + result.id">
+                        </div>
+
+                        <div v-show="result.hasExplaination && result.name !== 'Logistic Regression'"
+                            class="column is-6 my-1" style="height: 400px;" :id="'pfi_boxplot_' + result.id">
                         </div>
                     </div>
                 </div>
@@ -98,29 +107,15 @@
         </div>
         <div class="column is-12" v-show="result.hasExplaination && result.name !== 'Logistic Regression'">
             <article class="message is-info">
-                <div class="message-header"> Partial Dependence Plot and Permutation Feature Importance</div>
+                <div class="message-header"> Partial Dependence Plot</div>
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
-                        <div class="column is-6 my-1" style="height: 400px;" :id="'pfi_boxplot_' + result.id">
-                        </div>
                         <div class="column is-6" style="height: 400px;" :id="'knn_table_' + result.id"
                             v-if="result.name.toString().includes('neighbour')">
                         </div>
+                        <div :id="'pdp_containers_' + result.id"></div>
                     </div>
                     <br>
-                </div>
-            </article>
-        </div>
-        <div class="column is-12" v-show="result.showProbas">
-            <article class="message is-info">
-                <div class="message-header"> Probabilities</div>
-                <div class="message-body mx-1">
-                    <div class="columns is-multiline">
-                        <div class="column is-6" style="height: 400px;" :id="'proba_plot_' + result.id">
-                        </div>
-                    </div>
-                    <br>
-
                 </div>
             </article>
         </div>

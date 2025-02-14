@@ -1184,6 +1184,7 @@ export default class ChartController {
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
+                title: 'class'
             },
             yaxis: {
                 title: 'Predicted Probability',
@@ -2474,7 +2475,7 @@ export default class ChartController {
         Plotly.newPlot('pfi_boxplot_' + id, traces, layout, { responsive: true });
     }
     plotPDP(id, averages, grids, labels, columns, categorical_columns) {
-        let pfiChartId = 'pfi_boxplot_' + id;
+        let pfiChartId = 'pdp_containers_' + id;
         id = 'pdp_plot_' + id
 
         grids.forEach((grid, i) => {
