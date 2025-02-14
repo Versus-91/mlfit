@@ -2,12 +2,11 @@
     <section v-if="this.settings?.items.length > 2">
         <b-message title="Principle Component Analysis" :type="'is-info'" :closable="false">
             <b-field>
-                <b-input v-model="numberOfComponents" size="is-small" type="number" min="2"
-                    placeholder="Number of Components"></b-input>
                 <p class="control">
                     <b-button
                         :disabled="numberOfComponents < 2 || numberOfComponents > this.settings.items.filter(column => column.selected && column.type === 1)?.length"
-                        size="is-small" @click="findPCA" type="is-info" :loading="loadingPCA" label="Fit PCA" />
+                        size="is-small" @click="findPCA([], null)" type="is-info" :loading="loadingPCA"
+                        label="Fit PCA" />
                 </p>
             </b-field>
             <div class="columns is-multiline" id="pca_container">
@@ -18,9 +17,9 @@
                     <div id="correlation_circle" style="height: 300px;"></div>
                 </div>
                 <div class="column is-12" v-if="hasPCA">
-                    <b-field label="x and y axis">
-                        <b-input v-model="x" size="is-small" type="number" min="1" placeholder="x axis"></b-input>
-                        <b-input v-model="y" size="is-small" type="number" min="1" placeholder="y axis"></b-input>
+                    <b-field label="Number of Components">
+                        <b-input v-model="numberOfComponents" size="is-small" type="number" min="2"
+                            placeholder="Number of Components"></b-input>
                         <p class="control">
                             <b-button
                                 :disabled="numberOfComponents < 2 || x == y || numberOfComponents > this.settings.items.filter(column => column.selected && column.type === 1)?.length"
@@ -36,6 +35,7 @@
 
         </b-message>
         <b-message title="t-distributed stochastic neighbor embedding" :type="'is-info'" :closable="false">
+
             <b-field label="Iterations">
                 <b-input v-model="iterationsTSNE" size="is-small" type="number"
                     placeholder="number of iterations"></b-input>
@@ -50,44 +50,66 @@
             </div>
         </b-message>
         <b-message title="Autoencoder" :closable="false" :type="'is-info'">
-            <b-field
-                label="Hidden layers size, plot x axis, plot y axis, iterations, encoder activation function and decoder activation function">
-                <b-input v-model="hiddenLayerSize" size="is-small" type="number"
-                    placeholder="Hidden layer size"></b-input>
-                <b-input v-model="autoEncoderX" size="is-small" type="number" placeholder="x axis"></b-input>
-                <b-input v-model="autoEncoderY" size="is-small" type="number" placeholder="y axis"></b-input>
-                <b-input v-model="iterations" size="is-small" type="number" placeholder="iterations"></b-input>
-                <b-select v-model="encoderActivationFunction" size="is-small" placeholder="Encoder Activation Function">
-                    <option value="linear" id="linear">
-                        linear
-                    </option>
-                    <option value="sigmoid" id="sigmoid">
-                        sigmoid
-                    </option>
-                    <option value="relu" id="relu">
-                        RELU
-                    </option>
-                </b-select>
-                <b-select size="is-small" v-model="decoderActivationFunction" placeholder="Decoder Activation Function">
-                    <option value="linear" id="linear">
-                        linear
-                    </option>
-                    <option value="sigmoid" id="sigmoid">
-                        sigmoid
-                    </option>
-                    <option value="relu" id="relu">
-                        RELU
-                    </option>
-                </b-select>
-                <p class="control">
-                    <b-button size="is-small" @click="autoEncoder" type="is-info" :loading="loadingAutoEncoder"
-                        label="Fit Autoencoder" />
-                </p>
+            <b-field grouped>
+                <b-field expanded>
+
+                    <b-field label="Hidden layers size" custom-class="is-small">
+                        <b-input v-model="hiddenLayerSize" size="is-small" type="number"
+                            placeholder="Hidden layer size"></b-input>
+                    </b-field>
+                    <b-field label="x axis" custom-class="is-small">
+                        <b-input v-model="autoEncoderX" size="is-small" type="number" placeholder="x axis"></b-input>
+                    </b-field>
+                    <b-field label="y axis" custom-class="is-small">
+                        <b-input v-model="autoEncoderY" size="is-small" type="number" placeholder="y axis"></b-input>
+                    </b-field>
+                    <b-field label="iterations" custom-class="is-small">
+                        <b-input v-model="iterations" size="is-small" type="number" placeholder="iterations"></b-input>
+                    </b-field>
+                    <b-field label="encoder" custom-class="is-small">
+                        <b-select v-model="encoderActivationFunction" size="is-small"
+                            placeholder="Encoder Activation Function">
+                            <option value="linear" id="linear">
+                                linear
+                            </option>
+                            <option value="sigmoid" id="sigmoid">
+                                sigmoid
+                            </option>
+                            <option value="relu" id="relu">
+                                RELU
+                            </option>
+                        </b-select>
+                    </b-field>
+                    <b-field label="decoder" custom-class="is-small">
+                        <b-select size="is-small" v-model="decoderActivationFunction"
+                            placeholder="Decoder Activation Function">
+                            <option value="linear" id="linear">
+                                linear
+                            </option>
+                            <option value="sigmoid" id="sigmoid">
+                                sigmoid
+                            </option>
+                            <option value="relu" id="relu">
+                                RELU
+                            </option>
+                        </b-select>
+                    </b-field>
+
+                    <b-field custom-class="is-small">
+                        <p class="control">
+                            <b-button size="is-small" @click="autoEncoder" type="is-info" :loading="loadingAutoEncoder"
+                                label="Fit Autoencoder" />
+                        </p>
+                    </b-field>
+                </b-field>
             </b-field>
+
+
             <div class="column is-6" id="dimensionality_reduction_panel_tsne">
                 <div id="autoencoder" style="height: 300px;">
                 </div>
             </div>
+
         </b-message>
     </section>
     <section v-else>
@@ -149,8 +171,6 @@ export default {
             }
         },
         async drawPCA(x = 1, y = 2) {
-            console.log('gggg');
-
             await this.findPCA([[x, y]]);
         },
         async findPCA(containers = [], n = null) {
@@ -160,15 +180,14 @@ export default {
                 for (let i = 0; i < this.pcaContainers.length; i++) {
                     chartController.purge_charts('pca_' + i)
                 }
-
-                // for (let i = 0; i < this.numberOfComponents; i++) {
-                //     for (let j = i + 1; j < this.numberOfComponents; j++) {
-                //         let index = this.pcaContainers.findIndex(m => m[0] == i + 1 && m[1] == j + 1)
-                //         if (index === -1) {
-                //             this.pcaContainers.push([i + 1, j + 1]);
-                //         }
-                //     }
-                // }
+                for (let i = 0; i < this.numberOfComponents; i++) {
+                    for (let j = i + 1; j < this.numberOfComponents; j++) {
+                        let index = this.pcaContainers?.findIndex(m => m[0] == i + 1 && m[1] == j + 1)
+                        if (index != -1) {
+                            this.pcaContainers.push([i + 1, j + 1]);
+                        }
+                    }
+                }
                 this.pcaContainers = containers
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
                 let x = this.df.loc({ columns: numericColumns }).values;
