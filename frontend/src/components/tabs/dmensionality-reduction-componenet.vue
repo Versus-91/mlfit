@@ -153,7 +153,7 @@ export default {
 
             await this.findPCA([[x, y]]);
         },
-        async findPCA(containers = []) {
+        async findPCA(containers = [], n = null) {
             try {
                 this.prepareData()
                 this.loadingPCA = true;
@@ -171,11 +171,12 @@ export default {
                 // }
                 this.pcaContainers = containers
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
+                let x = this.df.loc({ columns: numericColumns }).values;
                 await chartController.draw_pca(
-                    this.df.loc({ columns: numericColumns }).values,
+                    x,
                     this.settings.isClassification ? this.df.loc({ columns: [this.settings.modelTarget] }).values : [],
                     this.df.loc({ columns: [this.settings.modelTarget] }).values,
-                    this.numberOfComponents,
+                    n == null ? x[0]?.length : this.numberOfComponents,
                     this.pcaContainers,
                     numericColumns
                 )
