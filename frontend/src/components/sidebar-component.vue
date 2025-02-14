@@ -322,7 +322,8 @@ export default {
                     }
                 }))
                 let x_train, y_train, x_test, y_test;
-                if (cross_validation_setting === CV_OPTIONS.KFOLD) {
+                if (cross_validation_setting === CV_OPTIONS.KFOLD &&
+                    (this.modelName != Settings.classification.logistic_regression.name || this.modelName != Settings.regression.linear_regression.name)) {
                     let performances = [];
                     for (let i = 1; i < 6; i++) {
                         [x_train, y_train, x_test, y_test] = this.kfoldSplit(filterd_dataset, targets, i);
