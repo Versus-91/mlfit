@@ -1134,11 +1134,12 @@ export default class ChartController {
         let i = 0;
         let x = probablitiesFormatted.map(prob => prob.predicted);
         for (let true_label in subsets) {
+            let classIndex = uniqueLabels.findIndex(m => m == true_label)
             traces.push({
                 type: 'box',
                 name: true_label,
                 marker: {
-                    color: this.indexToColor(uniqueLabels.indexOf(true_label), uniqueLabels.length),
+                    color: this.indexToColor(classIndex, uniqueLabels.length),
                     size: 2,
                     line: {
                         outlierwidth: 0.3
