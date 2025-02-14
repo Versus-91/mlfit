@@ -382,45 +382,47 @@ export default {
 
                 let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
                 let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
+                if (predictions?.length > 0) {
 
-                this.settings.addResult({
-                    id: model.id,
-                    showProbas: model.hasProbability,
-                    helpSectionId: model.helpSectionId,
-                    hasExplaination: model.hasExplaination,
-                    snapshot: {
-                        x: x_train.values,
-                        y: encoded_y,
-                        xt: x_test.values,
-                        yt: encoded_y_test,
-                        xFeatures: x_train.columns,
-                        categoricals: categoricalFeatures,
-                        id: this.modelOption,
-                        labels: uniqueLabels
-                    },
-                    name: this.modelName,
-                    datasetName: this.settings.getDatasetName,
-                    modelTask: this.settings.classificationTask,
-                    metrics: metrics,
-                    options: this.modelConfigurations,
-                    target: target,
-                    categoricalFeatures: this.settings.items.filter(m => m.selected && m.type !== FeatureCategories.Numerical.id).map(m => m.name),
-                    numericColumns: numericColumns,
-                    transformations: [...this.settings.transformationsList.filter(feature => feature.type != 0)],
-                    tables: model.tables,
-                    plots: model.plots,
+                    this.settings.addResult({
+                        id: model.id,
+                        showProbas: model.hasProbability,
+                        helpSectionId: model.helpSectionId,
+                        hasExplaination: model.hasExplaination,
+                        snapshot: {
+                            x: x_train.values,
+                            y: encoded_y,
+                            xt: x_test.values,
+                            yt: encoded_y_test,
+                            xFeatures: x_train.columns,
+                            categoricals: categoricalFeatures,
+                            id: this.modelOption,
+                            labels: uniqueLabels
+                        },
+                        name: this.modelName,
+                        datasetName: this.settings.getDatasetName,
+                        modelTask: this.settings.classificationTask,
+                        metrics: metrics,
+                        options: this.modelConfigurations,
+                        target: target,
+                        categoricalFeatures: this.settings.items.filter(m => m.selected && m.type !== FeatureCategories.Numerical.id).map(m => m.name),
+                        numericColumns: numericColumns,
+                        transformations: [...this.settings.transformationsList.filter(feature => feature.type != 0)],
+                        tables: model.tables,
+                        plots: model.plots,
 
-                });
-                this.settings.setActiveTab(2);
-                setTimeout(async () => {
-                    4
-                    this.settings.setResultActiveTab(model.id);
-                    window.dispatchEvent(new Event('resize'));
-                }, 100);
+                    });
+                    this.settings.setActiveTab(2);
+                    setTimeout(async () => {
+                        4
+                        this.settings.setResultActiveTab(model.id);
+                        window.dispatchEvent(new Event('resize'));
+                    }, 100);
 
-                await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, x_train.columns, categoricalFeatures)
-                this.settings.increaseCounter();
-                this.toggleTraining();
+                    await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, x_train.columns, categoricalFeatures)
+                    this.settings.increaseCounter();
+                    this.toggleTraining();
+                }
             } catch (error) {
                 this.training = false;
                 let message = 'Failed to fit the ' + this.modelName
