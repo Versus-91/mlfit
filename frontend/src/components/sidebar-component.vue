@@ -10,8 +10,8 @@
             <div class="column is-12">
                 <b-field>
                     <b-button @click="configureFeatures = true" size="is-small" type="is-primary is-light"
-                        icon-pack="fas" icon-left="cog">Select Features {{ featureSettings.filter(feature =>
-                            feature.selected).length }}</b-button>
+                        icon-pack="fas" icon-left="cog">Select Features {{featureSettings.filter(feature =>
+                            feature.selected).length}}</b-button>
                 </b-field>
                 <b-field label="Seed" :label-position="'on-border'">
                     <b-input v-model="seed" size="is-small" placeholder="Seed" type="number" min="0">
@@ -403,7 +403,7 @@ export default {
                         datasetName: this.settings.getDatasetName,
                         modelTask: this.settings.classificationTask,
                         metrics: metrics,
-                        options: this.modelConfigurations,
+                        options: JSON.parse(JSON.stringify(this.modelConfigurations)),
                         target: target,
                         categoricalFeatures: this.settings.items.filter(m => m.selected && m.type !== FeatureCategories.Numerical.id).map(m => m.name),
                         numericColumns: numericColumns,
