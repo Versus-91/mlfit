@@ -28,7 +28,7 @@ export default class LogisticRegression extends ClassificationModel {
 
         const webR = window.webr;
         await webR.init();
-        await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'nnet', 'tidyr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary', 'broom'], { quiet: true });
+        await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'nnet', 'purrr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary', 'broom'], { quiet: true });
         await webR.objs.globalEnv.bind('xx', x_train);
         await webR.objs.globalEnv.bind('x_test', x_test);
 
@@ -42,7 +42,7 @@ export default class LogisticRegression extends ClassificationModel {
         const plotlyData = await webR.evalR(`
                     library(plotly)
                     library(ggplot2)
-                    library(tidyr)
+                    library(purrr)
                     library(dplyr)
                     library(ggrepel)
                     library(modelsummary)
@@ -187,7 +187,20 @@ export default class LogisticRegression extends ClassificationModel {
                     )
                     }
                     conf_int_lambda_1se_df <- do.call(rbind, conf_int)
-                    cv_summary <- tidy(cvfit$glmnet.fit)
+
+                    lambda_values <- cvfit$glmnet.fit$lambda
+
+                    coef_list <- coef(cvfit$glmnet.fit)
+
+                    cv_summary <- map_df(names(coef_list), function(class) {
+                    coef_matrix <- as.matrix(coef_list[[class]])[-1, ]  # Remove intercept
+                    data.frame(
+                        lambda = rep(lambda_values, each = nrow(coef_matrix)),
+                        predictor = rep(rownames(coef_matrix), length(lambda_values)),
+                        coefficient = as.vector(coef_matrix),
+                        class = class
+                    )
+                    })
 
                     list(
                     plotly_json(p, pretty = FALSE)
@@ -404,14 +417,14 @@ export default class LogisticRegression extends ClassificationModel {
                 }
             });
 
-            this.summary.fit.sort((a, b) => a.step - b.step);
+            this.summary.fit.sort((a, b) => a.lambda - b.lambda);
             let subset = this.summary.fit.filter(m => m.class == '1')
-            let params = new Set(...[subset.filter(m => !!m.term).map(m => m.term)])
+            let params = new Set(...[subset.filter(m => !!m.predictor).map(m => m.predictor)])
             let traces = []
             let annotations = []
             params.forEach(param => {
-                let coefs = subset.filter(m => m.term == param).map(m => m.estimate).reverse()
-                let lambdas = subset.filter(m => m.term == param).map(m => Math.log(m.lambda)).reverse()
+                let coefs = subset.filter(m => m.predictor == param).map(m => m.coefficient)
+                let lambdas = subset.filter(m => m.predictor == param).map(m => Math.log(m.lambda))
                 traces.push({
                     name: param,
                     y: coefs,
