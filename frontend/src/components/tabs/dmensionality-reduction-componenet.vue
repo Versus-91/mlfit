@@ -5,7 +5,7 @@
                 <p class="control">
                     <b-button
                         :disabled="numberOfComponents < 2 || numberOfComponents > this.settings.items.filter(column => column.selected && column.type === 1)?.length"
-                        size="is-small" @click="findPCA()" type="is-info" :loading="loadingPCA" label="Fit PCA" />
+                        size="is-small" @click="drawPCA()" type="is-info" :loading="loadingPCA" label="Fit PCA" />
                 </p>
             </b-field>
             <div class="columns is-multiline" id="pca_container">
@@ -22,7 +22,7 @@
                         <p class="control">
                             <b-button
                                 :disabled="numberOfComponents < 2 || x == y || numberOfComponents > this.settings.items.filter(column => column.selected && column.type === 1)?.length"
-                                size="is-small" @click="drawPCA()" type="is-info" :loading="loadingPCA"
+                                size="is-small" @click="findPCA()" type="is-info" :loading="loadingPCA"
                                 label="Draw PCA" />
                         </p>
                     </b-field>
@@ -169,10 +169,17 @@ export default {
                 });
             }
         },
-        async drawPCA(x = 1, y = 2) {
-            await this.findPCA([[x, y]]);
+        async drawPCA() {
+            try {
+                this.numberOfComponents = null
+                await this.findPCA(true);
+            } catch (error) {
+                this.loadingPCA = false;
+                throw error;
+            }
+
         },
-        async findPCA() {
+        async findPCA(drawExplainedVariance = false) {
             try {
                 this.prepareData()
                 this.loadingPCA = true;
@@ -189,23 +196,28 @@ export default {
                 //         }
                 //     }
                 // }
-                if (this.numberOfComponents == 2) {
-                    this.pcaContainers.push([1, 2])
-                } else {
-                    if (this.numberOfComponents == 3) {
-                        this.pcaContainers.push([1, 2], [1, 3], [2, 3])
-                    } else if (this.numberOfComponents > 3) {
-                        this.pcaContainers.push([1, 2], [1, 3], [2, 3])
-                        for (let i = 4; i <= this.numberOfComponents; i++) {
-                            let j = 1;
-                            while (j <= i - 1) {
-                                this.pcaContainers.push([j, i])
-                                j++
+                let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
+                if (drawExplainedVariance == false) {
+                    if (this.numberOfComponents == 2) {
+                        this.pcaContainers.push([1, 2])
+                    } else {
+                        if (this.numberOfComponents == 3) {
+                            this.pcaContainers.push([1, 2], [1, 3], [2, 3])
+                        } else if (this.numberOfComponents > 3) {
+                            this.pcaContainers.push([1, 2], [1, 3], [2, 3])
+                            for (let i = 4; i <= this.numberOfComponents; i++) {
+                                let j = 1;
+                                while (j <= i - 1) {
+                                    this.pcaContainers.push([j, i])
+                                    j++
+                                }
                             }
                         }
                     }
+                } else {
+                    this.numberOfComponents = numericColumns.length
                 }
-                let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
+
                 let x = this.df.loc({ columns: numericColumns }).values;
                 await chartController.draw_pca(
                     x,
@@ -213,8 +225,10 @@ export default {
                     this.df.loc({ columns: [this.settings.modelTarget] }).values,
                     this.numberOfComponents,
                     this.pcaContainers,
-                    numericColumns
+                    numericColumns,
+                    drawExplainedVariance
                 )
+
                 this.hasPCA = true;
                 this.loadingPCA = false;
 

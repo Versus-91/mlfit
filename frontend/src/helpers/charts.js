@@ -727,7 +727,7 @@ export default class ChartController {
     purge_charts(id) {
         Plotly.purge(id)
     }
-    async draw_pca(dataset, labels, regression_labels, numberOfComponents, axes, columns) {
+    async draw_pca(dataset, labels, regression_labels, numberOfComponents, axes, columns, drawScreePlot = false) {
         const pca = new PCA();
 
         labels = labels.flat()
@@ -911,68 +911,69 @@ export default class ChartController {
             mode: 'text'
         };
         var data = [trace1, trace2, trace3];
-        console.log('ss');
-
-        Plotly.newPlot('scree_plot', data, {
-            legend: {
-                x: 0.1,
-                y: 0.2,
-                traceorder: 'normal',
-                orientation: "h",
-                font: {
-                    size: 8,
+        if (drawScreePlot) {
+            Plotly.newPlot('scree_plot', data, {
+                legend: {
+                    x: 0.1,
+                    y: 0.2,
+                    traceorder: 'normal',
+                    orientation: "h",
+                    font: {
+                        size: 8,
+                    },
+                    bgcolor: 'rgba(0,0,0,0)',
                 },
-                bgcolor: 'rgba(0,0,0,0)',
-            },
-            shapes: [
-                {
-                    type: 'line',
-                    x0: 1,
-                    y0: 0.9,
-                    x1: Math.max(...compnentsaxis),
-                    y1: 0.9,
-                    line: {
-                        color: 'rgb(250, 0, 0)',
-                        width: 1.5,
-                        dash: 'dashdot'
-                    }
-                }, {
-                    type: 'line',
-                    x0: 1,
-                    y0: 0.8,
-                    x1: Math.max(...compnentsaxis),
-                    y1: 0.8,
-                    line: {
-                        color: 'rgb(50, 171, 96)',
-                        width: 1.5,
-                        dash: 'dashdot'
-                    }
-                }],
-            margin: {
-                l: 60,
-                r: 60,
-                b: 40,
-                t: 40,
-                pad: 10
-            },
-            xaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                tickmode: 'linear',
-                dtick: 1,
-                mirror: true,
-                zeroline: false,
-                title: 'Number of PCs'
-            },
-            yaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                rang: [0, 1],
-                zeroline: false,
-                mirror: true,
-                title: 'Explained variance'
-            }
-        }, { ...plotlyImageExportConfig, responsive: true });
+                shapes: [
+                    {
+                        type: 'line',
+                        x0: 1,
+                        y0: 0.9,
+                        x1: Math.max(...compnentsaxis),
+                        y1: 0.9,
+                        line: {
+                            color: 'rgb(250, 0, 0)',
+                            width: 1.5,
+                            dash: 'dashdot'
+                        }
+                    }, {
+                        type: 'line',
+                        x0: 1,
+                        y0: 0.8,
+                        x1: Math.max(...compnentsaxis),
+                        y1: 0.8,
+                        line: {
+                            color: 'rgb(50, 171, 96)',
+                            width: 1.5,
+                            dash: 'dashdot'
+                        }
+                    }],
+                margin: {
+                    l: 60,
+                    r: 60,
+                    b: 40,
+                    t: 40,
+                    pad: 10
+                },
+                xaxis: {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    tickmode: 'linear',
+                    dtick: 1,
+                    mirror: true,
+                    zeroline: false,
+                    title: 'Number of PCs'
+                },
+                yaxis: {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    rang: [0, 1],
+                    zeroline: false,
+                    mirror: true,
+                    title: 'Explained variance'
+                }
+            }, { ...plotlyImageExportConfig, responsive: true });
+        }
+
         // Highcharts.chart('scree_plot', {
         //     credits: {
         //         enabled: false
