@@ -229,6 +229,8 @@ export default class LogisticRegression extends ClassificationModel {
                     ,toJSON(cv_summary)
                     ,toJSON(conf_int_lambda_min_df)
                     ,toJSON(conf_int_lambda_1se_df)
+                    ,lambda_min
+                    ,lambda_1se
                     )
 
                     `);
@@ -263,14 +265,17 @@ export default class LogisticRegression extends ClassificationModel {
                 p_values: JSON.parse(await results[17].toArray()),
                 aic: await results[20].toNumber(),
             },
-            fit: JSON.parse(await results[21].toArray())
+            fit: JSON.parse(await results[21].toArray()),
+            lambda_min: await results[24].toNumber(),
+            lambda_1se: await results[25].toNumber(),
+
         };
 
         this.model_stats_matrix = [];
         let cols = [...labels]
         cols.unshift("(Intercept)")
-        let min_ols_columns = [...new Set(this.summary['best_fit_min'].names)];
-        let se_ols_columns = [...new Set(this.summary['best_fit_1se'].names)];
+        let min_ols_columns = [...new Set(this.summary['best_fit_min'].names)].map(m => m.replace(/^`|`$/g, ''));
+        let se_ols_columns = [...new Set(this.summary['best_fit_1se'].names)].map(m => m.replace(/^`|`$/g, ''));
 
 
 
@@ -368,22 +373,34 @@ export default class LogisticRegression extends ClassificationModel {
                 },
                 type: 'scatter', mode: 'markers',
                 showlegend: true,  // Make sure the trace appears in the legend
-                legendgroup: 'group_2',
             })
             let y_classes_min = this.summary.best_fit_min.names
                 .map((item, i) => item + '_' + this.summary.best_fit_min.confidence_intervals[i][0]).reverse()
-            conf_intervals = this.summary.best_fit_min.confidence_intervals.reverse()
+            let conf_intervals_min = this.summary.best_fit_min.confidence_intervals.reverse()
             traces_params.push({
                 name: 'lasso min',
-                x: conf_intervals.map(item => item[1]),
+                x: conf_intervals_min.map(item => item[1]),
                 y: y_classes_min,
                 error_x: {
                     type: 'data',
-                    array: conf_intervals.map(item => Math.abs(item[3] - item[1])),
+                    array: conf_intervals_min.map(item => Math.abs(item[3] - item[1])),
                 },
                 type: 'scatter', mode: 'markers',
                 showlegend: true,  // Make sure the trace appears in the legend
-                legendgroup: 'group_1',
+            })
+            let y_classes_1se = this.summary.best_fit_1se.names
+                .map((item, i) => item + '_' + this.summary.best_fit_1se.confidence_intervals[i][0]).reverse()
+            let conf_intervals_1se = this.summary.best_fit_1se.confidence_intervals.reverse()
+            traces_params.push({
+                name: 'lasso 1se',
+                x: conf_intervals_1se.map(item => item[1]),
+                y: y_classes_1se,
+                error_x: {
+                    type: 'data',
+                    array: conf_intervals_1se.map(item => Math.abs(item[3] - item[1])),
+                },
+                type: 'scatter', mode: 'markers',
+                showlegend: true,  // Make sure the trace appears in the legend
             })
             await Plotly.newPlot('parameters_plot_' + current.id, {
                 'data': traces_params,
@@ -445,12 +462,70 @@ export default class LogisticRegression extends ClassificationModel {
                     },
                     showarrow: false
                 });
+                annotations.push([
+                    {
+                        x: this.summary.lambda_min,
+                        y: 0.5, // Center the text along the line
+                        xref: 'x',
+                        yref: 'paper',
+                        text: "Lambda min",
+                        showarrow: false,
+                        font: {
+                            size: 14,
+                            color: "red"
+                        },
+                        textangle: -90, // Rotate text to be vertical
+                        align: "center"
+                    },
+                    {
+                        x: this.summary.lambda_1se,
+                        y: 0.5, // Center the text along the line
+                        xref: 'x',
+                        yref: 'paper',
+                        text: "Lambda 1se",
+                        showarrow: false,
+                        font: {
+                            size: 14,
+                            color: "red"
+                        },
+                        textangle: -90, // Rotate text to be vertical
+                        align: "center"
+                    }
+                ])
             });
 
             await Plotly.newPlot('errors_' + current.id, {
 
                 'data': traces,
                 'layout': {
+                    shapes: [
+                        {
+                            type: 'line',
+                            x0: this.summary.lambda_min,
+                            x1: this.summary.lambda_min,
+                            y0: 0,
+                            y1: 1,
+                            xref: 'x',
+                            yref: 'paper',
+                            line: {
+                                color: 'rgb(55, 128, 191)',
+                                width: 3
+                            }
+                        },
+                        {
+                            type: 'line',
+                            x0: this.summary.lambda_1se,
+                            x1: this.summary.lambda_1se,
+                            y0: 0,
+                            y1: 1,
+                            xref: 'x',
+                            yref: 'paper',
+                            line: {
+                                color: 'rgb(55, 128, 191)',
+                                width: 3
+                            }
+                        },
+                    ],
                     annotations: annotations,
                     showlegend: false,
                     margin: {

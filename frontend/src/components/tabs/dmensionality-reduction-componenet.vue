@@ -5,8 +5,7 @@
                 <p class="control">
                     <b-button
                         :disabled="numberOfComponents < 2 || numberOfComponents > this.settings.items.filter(column => column.selected && column.type === 1)?.length"
-                        size="is-small" @click="findPCA([], null)" type="is-info" :loading="loadingPCA"
-                        label="Fit PCA" />
+                        size="is-small" @click="findPCA()" type="is-info" :loading="loadingPCA" label="Fit PCA" />
                 </p>
             </b-field>
             <div class="columns is-multiline" id="pca_container">
@@ -173,29 +172,46 @@ export default {
         async drawPCA(x = 1, y = 2) {
             await this.findPCA([[x, y]]);
         },
-        async findPCA(containers = [], n = null) {
+        async findPCA() {
             try {
                 this.prepareData()
                 this.loadingPCA = true;
+
                 for (let i = 0; i < this.pcaContainers.length; i++) {
                     chartController.purge_charts('pca_' + i)
                 }
-                for (let i = 0; i < this.numberOfComponents; i++) {
-                    for (let j = i + 1; j < this.numberOfComponents; j++) {
-                        let index = this.pcaContainers?.findIndex(m => m[0] == i + 1 && m[1] == j + 1)
-                        if (index != -1) {
-                            this.pcaContainers.push([i + 1, j + 1]);
+                this.pcaContainers = []
+                // for (let i = 0; i < this.numberOfComponents; i++) {
+                //     for (let j = i + 1; j < this.numberOfComponents; j++) {
+                //         let index = this.pcaContainers?.findIndex(m => m[0] == i + 1 && m[1] == j + 1)
+                //         if (index != -1) {
+                //             this.pcaContainers.push([i + 1, j + 1]);
+                //         }
+                //     }
+                // }
+                if (this.numberOfComponents == 2) {
+                    this.pcaContainers.push([1, 2])
+                } else {
+                    if (this.numberOfComponents == 3) {
+                        this.pcaContainers.push([1, 2], [1, 3], [2, 3])
+                    } else if (this.numberOfComponents > 3) {
+                        this.pcaContainers.push([1, 2], [1, 3], [2, 3])
+                        for (let i = 4; i <= this.numberOfComponents; i++) {
+                            let j = 1;
+                            while (j <= i - 1) {
+                                this.pcaContainers.push([j, i])
+                                j++
+                            }
                         }
                     }
                 }
-                this.pcaContainers = containers
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
                 let x = this.df.loc({ columns: numericColumns }).values;
                 await chartController.draw_pca(
                     x,
                     this.settings.isClassification ? this.df.loc({ columns: [this.settings.modelTarget] }).values : [],
                     this.df.loc({ columns: [this.settings.modelTarget] }).values,
-                    n == null ? x[0]?.length : this.numberOfComponents,
+                    this.numberOfComponents,
                     this.pcaContainers,
                     numericColumns
                 )

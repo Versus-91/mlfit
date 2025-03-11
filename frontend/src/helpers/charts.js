@@ -755,7 +755,7 @@ export default class ChartController {
                         x: items_for_label.map(m => m.x),
                         y: items_for_label.map(m => m.y),
                         mode: 'markers',
-                        type: 'scattergl',
+                        type: 'scatter',
                         name: label,
                         marker: {
                             size: 4,
@@ -772,7 +772,7 @@ export default class ChartController {
                     x: x,
                     y: y,
                     mode: 'markers',
-                    type: 'scattergl',
+                    type: 'scatter',
                     marker: {
                         color: x.map(item => this.indexToColorSequential(item, min, max)),
                         size: 4,
@@ -810,7 +810,7 @@ export default class ChartController {
                     mirror: true,
                     title: 'PC' + axis[1]
                 }
-            }, { ...plotlyImageExportConfig, responsive: true });
+            }, { ...plotlyImageExportConfig, responsive: true, staticPlot: true });
 
         }
         let arrows = [];

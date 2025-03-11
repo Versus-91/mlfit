@@ -57,6 +57,9 @@ export const settingStore = defineStore({
         getSeed: (state) => {
             return state.seed
         },
+        getMethodResults: (state) => {
+            return state.results
+        },
         getResultTab: (state) => {
             return state.resultActiveTab
         },

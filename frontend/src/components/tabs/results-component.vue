@@ -1,24 +1,38 @@
 <template>
     <div>
-        <button class="button is-info my-2" @click="compareResults"> Compare models</button>
-        <div class="columns is-12 mt-2 is-multiline" v-show="compare">
-            <div class="column is-12">
+        {{ comparisonMetric }}
+        <button class="button is-info my-2" @click="compareResults"
+            :disabled="!datasetName || isClassication == -1 || comparisonMetric == -1">
+            Compare
+            models</button>
+        <div class="columns is-12 mt-2 is-multiline">
+            <div class="column is-10">
                 <div class="select">
-                    <select>
-                        <option>Select dropdown</option>
-                        <option>With options</option>
+                    <select v-model="datasetName">
+                        <option>Select Dataest</option>
+                        <option v-for="(dataset, index) in [...new Set(this.settings.results.map(m => m.datasetName))]"
+                            :key="index">
+                            {{ dataset }}
+                        </option>
                     </select>
                 </div>
-
                 <div class="select">
-                    <select>
-                        <option>Select dropdown</option>
-                        <option>With options</option>
+                    <select v-model="isClassication" @change="fillMetrics()">
+                        <option value="-1">Task</option>
+                        <option value="0">Regression</option>
+                        <option value="1">Classification</option>
+                    </select>
+                </div>
+                <div class="select">
+                    <select v-model="comparisonMetric">
+                        <option>Metric</option>
+                        <option v-for="m in baseMetrics" :key="m.id" :value="m.id">
+                            {{ m.name }}</option>
                     </select>
                 </div>
             </div>
 
-            <div class="column is-6" id="myDiv"></div>
+            <div v-show="compare" class="column is-6" id="comaprison_plot" style="height:350px;"></div>
         </div>
         <b-tabs v-model="activeResult" v-if="this.settings.results?.length > 0" @input="resize()">
             <template v-for="result in this.settings.results">
@@ -76,36 +90,78 @@ export default {
     data() {
         return {
             compare: false,
+            datasetName: '',
+            isClassication: -1,
+            comparisonMetric: '',
+            baseMetrics: [],
             activeTab: null,
             visitedTabs: [],
         }
     },
     methods: {
+        fillMetrics() {
+            if (this.isClassication == 1) {
+                this.baseMetrics = [{ name: 'accuracy', id: 1 }, { name: 'f1 micro', id: 2 }, { 'name': 'f1 macro', id: 3 }]
+            } else if (this.isClassication == 0) {
+                this.baseMetrics = [{ name: 'R2', id: 1 }, { name: 'MSE', id: 0 }]
+            }
+
+        },
         compareResults() {
+            try {
+                Plotly.purge('comaprison_plot');
+            } catch (error) {
+                console.log('no plot to remove');
+
+            }
+            let methodResults = this.settings.getMethodResults.filter(m => m.datasetName == this.datasetName && m.modelTask == this.isClassication)
             this.compare = true;
+            let x = [];
+            let y = [];
 
+            methodResults.forEach(result => {
+                let metrics = result.metrics;
+                x.push(result.name + '.' + result.id)
+                if (this.isClassication == 1) {
+                    y.push(metrics[3])
+                } else if (this.isClassication == 0) {
+                    y.push(metrics[this.comparisonMetric])
+                }
+            });
             var trace2 = {
-                x: [2, 3, 4, 5],
-                y: [16, 5, 11, 9],
-                mode: 'lines'
+                x: x,
+                y: y,
+                // eslint-disable-next-line no-unused-vars
+                width: x.map(_ => 0.5),
+                type: 'bar', marker: {
+                    color: 'rgb(158,202,225)',
+                    opacity: 0.6,
+                    line: {
+                        color: 'rgb(8,48,107)',
+                        width: 0.2
+                    }
+                }
             };
 
-            var trace3 = {
-                x: [1, 2, 3, 4],
-                y: [12, 9, 15, 12],
-                mode: 'lines+markers'
-            };
 
-            var data = [trace2, trace3];
+            var data = [trace2];
 
             var layout = {
+                height: 200,
+                margin: {
+                    l: 40,
+                    r: 40,
+                    b: 30,
+                    t: 10,
+                    pad: 4
+                },
+                barmode: 'group'
+
             };
 
-            Plotly.newPlot('myDiv', data, layout, { responsive: true });
+            Plotly.newPlot('comaprison_plot', data, layout, { responsive: true });
         },
         resize() {
-            console.log('resize');
-
             window.dispatchEvent(new Event('resize'));
         },
         deleteResult(id) {
