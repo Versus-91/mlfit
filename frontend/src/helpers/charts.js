@@ -823,9 +823,13 @@ export default class ChartController {
                 ayref: 'y',
                 y: 0,
                 arrowside: 'start',
+                font: {
+                    color: "black",
+                    size: 8
+                },
                 arrowwidth: 1.2,
                 arrowhead: 3,
-                // text: columns[i],
+                text: columns[i],
                 hovertext: columns[i] + `(${circels[i][0].toFixed(2)},${circels[i][1].toFixed(2)})`,
                 ax: circels[i][0],
                 ay: circels[i][1],
