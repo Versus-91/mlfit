@@ -5,7 +5,7 @@
             :disabled="!datasetName || isClassication == -1 || comparisonMetric == -1">
             Compare
             models</button>
-        <div class="columns is-12 mt-2 is-multiline">
+        <div class="columns is-12 mt-2 is-multiline" style="height:300px;">
             <div class="column is-10">
                 <div class="select">
                     <select v-model="datasetName">
@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            <div v-show="compare" class="column is-6" id="comaprison_plot" style="height:350px;"></div>
+            <div v-show="compare" class="column is-6" id="comaprison_plot" style="height:100%;"></div>
         </div>
         <b-tabs v-model="activeResult" v-if="this.settings.results?.length > 0" @input="resize()">
             <template v-for="result in this.settings.results">
@@ -151,7 +151,7 @@ export default {
                 margin: {
                     l: 40,
                     r: 40,
-                    b: 30,
+                    b: 50,
                     t: 10,
                     pad: 4
                 },

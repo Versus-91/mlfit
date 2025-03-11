@@ -414,8 +414,15 @@ export default class LogisticRegression extends ClassificationModel {
                     },
                     showlegend: true,
                     legend: {
-                        bgcolor: 'rgba(0,0,0,0)',
-
+                        xanchor: 'left',
+                        yanchor: 'top',
+                        x: 0.02, 
+                        y: 0.98,
+                        font: {
+                            size: 8,  // Set font size for legend
+                            color: "black" // Change font color if needed
+                        },
+                        bgcolor: "rgba(0,0,0,0)"
                     },
                     xaxis: {
                         linecolor: 'black',
@@ -462,7 +469,7 @@ export default class LogisticRegression extends ClassificationModel {
                     },
                     showarrow: false
                 });
-                annotations.push([
+                annotations = annotations.concat([
                     {
                         x: this.summary.lambda_min,
                         y: 0.5, // Center the text along the line
@@ -471,8 +478,8 @@ export default class LogisticRegression extends ClassificationModel {
                         text: "Lambda min",
                         showarrow: false,
                         font: {
-                            size: 14,
-                            color: "red"
+                            size: 8,
+                            color: "black"
                         },
                         textangle: -90, // Rotate text to be vertical
                         align: "center"
@@ -485,8 +492,8 @@ export default class LogisticRegression extends ClassificationModel {
                         text: "Lambda 1se",
                         showarrow: false,
                         font: {
-                            size: 14,
-                            color: "red"
+                            size: 8,
+                            color: "black"
                         },
                         textangle: -90, // Rotate text to be vertical
                         align: "center"
@@ -508,8 +515,9 @@ export default class LogisticRegression extends ClassificationModel {
                             xref: 'x',
                             yref: 'paper',
                             line: {
-                                color: 'rgb(55, 128, 191)',
-                                width: 3
+                                color: 'black',
+                                dash: 'dashdot',
+                                width: 1
                             }
                         },
                         {
@@ -521,8 +529,9 @@ export default class LogisticRegression extends ClassificationModel {
                             xref: 'x',
                             yref: 'paper',
                             line: {
-                                color: 'rgb(55, 128, 191)',
-                                width: 3
+                                color: 'black',
+                                dash: 'dashdot',
+                                width: 1
                             }
                         },
                     ],
