@@ -1,40 +1,44 @@
 <template>
     <div>
-        {{ comparisonMetric }}
-        <button class="button is-info my-2" @click="compareResults"
-            :disabled="!datasetName || isClassication == -1 || comparisonMetric == -1">
-            Compare
-            models</button>
-        <div class="columns is-12 mt-2 is-multiline" style="height:300px;">
-            <div class="column is-10">
-                <div class="select">
-                    <select v-model="datasetName">
-                        <option>Select Dataest</option>
-                        <option v-for="(dataset, index) in [...new Set(this.settings.results.map(m => m.datasetName))]"
-                            :key="index">
-                            {{ dataset }}
-                        </option>
-                    </select>
-                </div>
-                <div class="select">
-                    <select v-model="isClassication" @change="fillMetrics()">
-                        <option value="-1">Task</option>
-                        <option value="0">Regression</option>
-                        <option value="1">Classification</option>
-                    </select>
-                </div>
-                <div class="select">
-                    <select v-model="comparisonMetric">
-                        <option>Metric</option>
-                        <option v-for="m in baseMetrics" :key="m.id" :value="m.id">
-                            {{ m.name }}</option>
-                    </select>
-                </div>
-            </div>
 
-            <div v-show="compare" class="column is-6" id="comaprison_plot" style="height:100%;"></div>
-        </div>
         <b-tabs v-model="activeResult" v-if="this.settings.results?.length > 0" @input="resize()">
+            <b-tab-item label="compare">
+                {{ comparisonMetric }}
+                <button class="button is-info my-2" @click="compareResults"
+                    :disabled="!datasetName || isClassication == -1 || comparisonMetric == -1">
+                    Compare
+                    models</button>
+                <div class="columns is-12 mt-2 is-multiline" style="height:300px;">
+                    <div class="column is-10">
+                        <div class="select">
+                            <select v-model="datasetName">
+                                <option>Select Dataest</option>
+                                <option
+                                    v-for="(dataset, index) in [...new Set(this.settings.results.map(m => m.datasetName))]"
+                                    :key="index">
+                                    {{ dataset }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="select">
+                            <select v-model="isClassication" @change="fillMetrics()">
+                                <option value="-1">Task</option>
+                                <option value="0">Regression</option>
+                                <option value="1">Classification</option>
+                            </select>
+                        </div>
+                        <div class="select">
+                            <select v-model="comparisonMetric">
+                                <option>Metric</option>
+                                <option v-for="m in baseMetrics" :key="m.id" :value="m.id">
+                                    {{ m.name }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div v-show="compare" class="column is-6" id="comaprison_plot" style="height:100%;"></div>
+                </div>
+            </b-tab-item>
             <template v-for="result in this.settings.results">
                 <b-tab-item :label="(result.id + 1) + '.' + result.name.toString()" :key="result.id">
                     <classification-view-component @delete-result="deleteResult" :result="result"

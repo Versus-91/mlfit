@@ -415,7 +415,7 @@ export default {
                     this.settings.setActiveTab(2);
                     setTimeout(async () => {
                         4
-                        this.settings.setResultActiveTab(model.id);
+                        this.settings.setResultActiveTab(model.id + 1);
                         window.dispatchEvent(new Event('resize'));
                     }, 100);
 
