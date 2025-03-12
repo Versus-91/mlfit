@@ -736,8 +736,8 @@ export default class ChartController {
         const [pca_data, _, explained_variances, circels, distances] = await pca.predict(dataset, numberOfComponents)
 
         let x = []
-        let principle_components = []
         for (let i = 0; i < axes.length; i++) {
+            let principle_components = []
             let axis = axes[i]
             pca_data.forEach((element, i) => {
                 principle_components.push({
@@ -775,7 +775,7 @@ export default class ChartController {
                     type: 'scatter',
                     marker: {
                         color: x.map(item => this.indexToColorSequential(item, min, max)),
-                        size: 4,
+                        size: 2,
                     },
 
                 })
@@ -823,12 +823,15 @@ export default class ChartController {
                 ayref: 'y',
                 y: 0,
                 arrowside: 'start',
+                arrowcolor: this.indexToColor(i, distances.length),
                 font: {
                     color: "black",
                     size: 8
                 },
+                xanchor: 'left',   // Align text properly
+                yanchor: 'top', // Align text properly
                 arrowwidth: 1.2,
-                arrowhead: 3,
+                arrowhead: 5,
                 text: columns[i],
                 hovertext: columns[i] + `(${circels[i][0].toFixed(2)},${circels[i][1].toFixed(2)})`,
                 ax: circels[i][0],
@@ -854,7 +857,7 @@ export default class ChartController {
         Plotly.newPlot('correlation_circle', [], {
             annotations: arrows,
             shapes: shapes,
-            showlegend: uniqueLabels.length != 0 ? true : false,
+            showlegend: true,
             height: 300,
             width: 300,
             margin: {
