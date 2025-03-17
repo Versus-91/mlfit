@@ -134,7 +134,7 @@
                     v-if="result.name.toString().includes('neighbour')">
                 </div>
                 <div class="column is-12">
-                    <article class="message">
+                    <article class="message is-info">
                         <div class="message-header"> Partial Dependence Plot and Permutation Feature Importance</div>
                         <div class="message-body">
                             <div class="columns is-multiline">
