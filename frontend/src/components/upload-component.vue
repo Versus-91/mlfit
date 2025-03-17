@@ -193,6 +193,7 @@ export default {
                 .catch(error => {
                     console.error('Error fetching the file:', error);
                 });
+
         },
     }
 }

@@ -9,12 +9,12 @@
 
                 <p class="subtitle is-6 my-1 is-size-7">Features :</p>
                 <p class="ml-2 my-1 subtitle is-6 is-size-7">Categorical Features : <span
-                        v-for="feature in result.categoricalFeatures " :key="feature">
+                        v-for="feature in result.categoricalFeatures" :key="feature">
                         {{ feature + ', ' }}
                     </span>
                 </p>
                 <p class="ml-2 my-1 subtitle is-6 is-size-7">Numerical Features : <span
-                        v-for="feature in result.numericColumns " :key="feature">
+                        v-for="feature in result.numericColumns" :key="feature">
                         {{ feature + ', ' }}
                     </span></p>
                 <p class="ml-2 my-1 subtitle is-6 is-size-7" v-show="result.transformations?.length > 0">Transformations
@@ -27,9 +27,9 @@
                     {{ key }}: {{ value['value'] }}
                 </p>
                 <p class="subtitle my-1 is-size-7">Goodness of Fit :</p>
-                <p class="ml-2 my-1 subtitle is-size-7">Accuracy : {{ result.metrics[4].toFixed(2) }}</p>
-                <p class="ml-2 my-1 subtitle is-size-7">f1 micro : {{ result.metrics[2].toFixed(2) }}</p>
-                <p class="ml-2 my-1 subtitle is-size-7"> f1 macro :{{ result.metrics[3].toFixed(2) }}</p>
+                <p class="ml-2 my-1 subtitle is-size-7">Accuracy : {{ result.metrics.accuracy.toFixed(2) }}</p>
+                <p class="ml-2 my-1 subtitle is-size-7">f1 micro : {{ result.metrics.f1_micro.toFixed(2) }}</p>
+                <p class="ml-2 my-1 subtitle is-size-7"> f1 macro :{{ result.metrics.f1_macro.toFixed(2) }}</p>
                 <button class="button is-danger has-text-white is-small" style="color:#fff !important"
                     @click="deleteTab()">Delete </button>
                 <button class="button is-success is-small" @click="toggleHelp(result.helpSectionId)">Method description
@@ -42,7 +42,8 @@
                 <div class="message-header"> Confusion Matrix and PCA of predictions</div>
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
-                        <div class="column is-6 my-1" style="height: 400px;" :id="'confusion_matrix_' + result.id"></div>
+                        <div class="column is-6 my-1" style="height: 400px;" :id="'confusion_matrix_' + result.id">
+                        </div>
                         <div v-show="result.showProbas" class="column is-6 my-1" style="height: 400px;"
                             :id="'proba_plot_' + result.id">
                         </div>

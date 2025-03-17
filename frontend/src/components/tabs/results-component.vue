@@ -1,43 +1,13 @@
 <template>
     <div>
 
-        <b-tabs v-model="activeResult" v-if="this.settings.results?.length > 0" @input="resize()">
-            <b-tab-item label="compare">
-                {{ comparisonMetric }}
-                <button class="button is-info my-2" @click="compareResults"
-                    :disabled="!datasetName || isClassication == -1 || comparisonMetric == -1">
+        <b-tabs v-model="activeResult" v-if="this.settings.results?.length > 0" @input="resize">
+            <b-tab-item label="compare" @click="compareResults">
+                <button class="button is-info my-2" @click="compareResults">
                     Compare
                     models</button>
-                <div class="columns is-12 mt-2 is-multiline" style="height:300px;">
-                    <div class="column is-10">
-                        <div class="select">
-                            <select v-model="datasetName">
-                                <option>Select Dataest</option>
-                                <option
-                                    v-for="(dataset, index) in [...new Set(this.settings.results.map(m => m.datasetName))]"
-                                    :key="index">
-                                    {{ dataset }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="select">
-                            <select v-model="isClassication" @change="fillMetrics()">
-                                <option value="-1">Task</option>
-                                <option value="0">Regression</option>
-                                <option value="1">Classification</option>
-                            </select>
-                        </div>
-                        <div class="select">
-                            <select v-model="comparisonMetric">
-                                <option>Metric</option>
-                                <option v-for="m in baseMetrics" :key="m.id" :value="m.id">
-                                    {{ m.name }}</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <div v-show="compare" class="column is-6" id="comaprison_plot" style="height:100%;"></div>
-                </div>
+                <div v-show="compare" class="column is-12" id="comaprison_plot" style="height:400px;"></div>
             </b-tab-item>
             <template v-for="result in this.settings.results">
                 <b-tab-item :label="(result.id + 1) + '.' + result.name.toString()" :key="result.id">
@@ -118,54 +88,74 @@ export default {
                 console.log('no plot to remove');
 
             }
-            let methodResults = this.settings.getMethodResults.filter(m => m.datasetName == this.datasetName && m.modelTask == this.isClassication)
+            let methodResults = this.settings.getMethodResults.filter(m => m.datasetName == this.settings.datasetName)
             this.compare = true;
             let x = [];
-            let y = [];
-
+            let y = {};
+            let traces = [];
             methodResults.forEach(result => {
                 let metrics = result.metrics;
                 x.push(result.name + '.' + result.id)
-                if (this.isClassication == 1) {
-                    y.push(metrics[3])
-                } else if (this.isClassication == 0) {
-                    y.push(metrics[this.comparisonMetric])
-                }
-            });
-            var trace2 = {
-                x: x,
-                y: y,
-                // eslint-disable-next-line no-unused-vars
-                width: x.map(_ => 0.5),
-                type: 'bar', marker: {
-                    color: 'rgb(158,202,225)',
-                    opacity: 0.6,
-                    line: {
-                        color: 'rgb(8,48,107)',
-                        width: 0.2
+                for (const key in result.metrics) {
+                    if (key != 'precision' && key != 'recall') {
+                        const metric = metrics[key];
+                        if (key in y) {
+                            y[key].push(metric);
+                        } else {
+                            y[key] = [];
+                            y[key].push(metric);
+
+                        }
+
                     }
                 }
-            };
+
+            });
+            let i = 1;
+            for (const key in y) {
+                let trace = {
+                    x: x,
+                    y: y[key],
+                    name: key,
+                    xaxis: 'x' + i,
+                    yaxis: 'y' + i,
+                    type: 'scatter',
+                    marker: {
+                        color: 'rgb(158,202,225)',
+                        opacity: 0.6,
+                        line: {
+                            color: 'rgb(8,48,107)',
+                            width: 0.2
+                        }
+                    }
+                };
+                traces.push(trace);
+                i++;
+            }
 
 
-            var data = [trace2];
+
 
             var layout = {
-                height: 200,
+                grid: { rows: 1, columns: Object.keys(y).length, pattern: 'independent' },
+
+                height: 300,
                 margin: {
                     l: 40,
                     r: 40,
-                    b: 50,
+                    b: 80,
                     t: 10,
-                    pad: 4
+                    pad: 10
                 },
-                barmode: 'group'
-
             };
 
-            Plotly.newPlot('comaprison_plot', data, layout, { responsive: true });
+            Plotly.newPlot('comaprison_plot', traces, layout, { responsive: true });
         },
-        resize() {
+        resize(v) {
+            if (v === 0) {
+                this.compareResults()
+            }
+
             window.dispatchEvent(new Event('resize'));
         },
         deleteResult(id) {

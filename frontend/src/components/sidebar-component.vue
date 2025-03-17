@@ -5,7 +5,7 @@
         <figure class="image is-96x96">
             <img src="/logo.png" />
         </figure>
-        <section v-if="!configureFeatures">
+        <section>
             <upload-component @uploaded="generateTargetDropdown"></upload-component>
             <div class="column is-12">
                 <b-field>
@@ -18,7 +18,7 @@
                     </b-input>
                 </b-field>
                 <b-field label="Target" :label-position="'on-border'">
-                    <b-select :expanded="true" v-model="modelTarget" size="is-small">
+                    <b-select :expanded="true" v-model="modelTarget" @input="checkmodelTask" size="is-small">
                         <option v-for="option in columns" :value="option" :key="option">
                             {{ option }}
                         </option>
@@ -81,48 +81,6 @@
                 </b-field>
                 <b-loading :is-full-page="false" v-model="training"></b-loading>
             </div>
-        </section>
-        <section v-else>
-            <b-button @click="updateFeatures()" size="is-small" icon-pack="fas" icon-left="arrow-left"
-                type="is-primary is-light">{{ configureFeatures ? 'settings' : '' }}
-            </b-button>
-            <section>
-
-                <p class="my-2 title is-size-7">Configure Features :</p>
-                <div class="table-container">
-                    <table class="table is-striped is-bordered is-narrow is-size-7 is-fullwidth">
-                        <thead>
-                            <tr>
-                                <th>
-                                    select
-                                </th>
-                                <th>
-                                    name
-                                </th>
-                                <th>
-                                    scale
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(feature, index) in featureSettings" :key="index">
-                                <td> <b-checkbox v-model="feature.selected"></b-checkbox>
-                                </td>
-                                <td>{{ feature.name }}</td>
-                                <td>
-                                    <b-select :expanded="true" v-model="feature.type" size="is-small"
-                                        @input="checkmodelTask">
-                                        <option v-for="option in featureTypeOptions" :value="option.id"
-                                            :key="option.id">
-                                            {{ option.name }}
-                                        </option>
-                                    </b-select>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
         </section>
     </div>
 </template>
@@ -256,13 +214,17 @@ export default {
 
         },
         checkmodelTask() {
-            let targetFeature = this.featureSettings.find(feature => feature.name == this.modelTarget);
+            this.settings.setTarget(this.modelTarget)
+            let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1);
+            let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1);
+            let features = numericColumns.concat(categorical_columns);
+            let targetFeature = features.find(feature => feature.name == this.modelTarget);
             this.settings.setmodelTask(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
             this.modelOptions = targetFeature.type === FeatureCategories.Numerical.id ? Settings.regression : Settings.classification;
-            let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
-            for (let i = 0; i < selectedFeatures.length; i++) {
-                this.settings.addFeature(selectedFeatures[i])
-            }
+            // let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
+            // for (let i = 0; i < selectedFeatures.length; i++) {
+            //     this.settings.addFeature(selectedFeatures[i])
+            // }
         },
         async train() {
             try {
@@ -418,7 +380,7 @@ export default {
                         this.settings.setResultActiveTab(model.id + 1);
                         window.dispatchEvent(new Event('resize'));
                     }, 100);
-
+                    
                     await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, x_train.columns, categoricalFeatures)
                     this.settings.increaseCounter();
                     this.toggleTraining();
@@ -507,16 +469,6 @@ export default {
         }
     },
     watch: {
-        modelTarget: function name(target, oldVal) {
-            if (target !== oldVal && target) {
-                this.settings.setTarget(target)
-                let targetFeature = this.featureSettings.find(feature => feature.name == target);
-                this.settings.setmodelTask(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
-                this.modelOptions = targetFeature.type === FeatureCategories.Numerical.id ? Settings.regression : Settings.classification;
-                this.modelOption = null
-                this.getDefaultModelConfiguration()
-            }
-        },
         modelOption: function () {
             this.modelConfigurations = null
         },

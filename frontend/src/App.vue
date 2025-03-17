@@ -6,9 +6,9 @@
       Due to the large size of dataset only 10,000 radom samples from dataset would be used.
     </b-notification>
     <div class="columns is-multiline" id="app">
-      <SidebarComponent @updateFeatures="updateFeatureStats" @selected-features="setSelectedFeatures">
+      <SidebarComponent ref="sidebar" @updateFeatures="updateFeatureStats">
       </SidebarComponent>
-      <MainComponent ref="main" :dataframe="this.settings.df" :selectedFeatures="selectedFeatures"></MainComponent>
+      <MainComponent ref="main" :dataframe="this.settings.df" @check-target="checkTarget()"></MainComponent>
     </div>
   </div>
 
@@ -49,6 +49,9 @@ export default {
     }
   },
   methods: {
+    checkTarget() {
+      this.$refs.sidebar.checkmodelTask()
+    },
     reset() {
       this.settings.resetDF();
     },

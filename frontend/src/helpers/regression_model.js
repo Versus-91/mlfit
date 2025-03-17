@@ -22,7 +22,7 @@ export class RegressionModel {
         throw new Error('Not implemented', x, y, x_test, y_test)
     }
     async evaluateModel(y, predictions) {
-        return [calculateMSE(y, predictions), calculateRSquared(y, predictions)];
+        return { mse: calculateMSE(y, predictions), rsquared: calculateRSquared(y, predictions) };
     }
     async visualize(x_test, y_test, _, predictions) {
         let current = this;

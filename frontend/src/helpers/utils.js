@@ -223,7 +223,14 @@ export async function metrics(y, y_pred, labels) {
     try {
         const { results, error } = await asyncRun(script, context);
         if (results) {
-            return results;
+            return {
+                precision: results[0],
+                recall: results[1],
+                f1_micro: results[2],
+                f1_macro: results[3],
+                accuracy: results[4],
+
+            }
         } else if (error) {
             throw error
         }

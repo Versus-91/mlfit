@@ -1216,18 +1216,18 @@ export default class ChartController {
 
         const confusionMatrix = await metrics.confusionMatrix(y, predictedLabels, uniqueClasses.length);
         let metric = await ClassificationMetric(y.arraySync(), predictedLabels.arraySync(), uniqueClasses)
-        let accuracy = metric[4].toFixed(2);
-        let f1Micro = metric[2].toFixed(2)
-        let f1Macro = metric[3].toFixed(2)
+        let accuracy = metric.accuracy.toFixed(2);
+        let f1Micro = metric.f1_micro.toFixed(2)
+        let f1Macro = metric.f1_macro.toFixed(2)
 
         let len = confusionMatrix[0].length
         let preceissions = [];
         let recalls = [];
         for (let j = 0; j < len; j++) {
-            preceissions.push(parseFloat(metric[0][j].toFixed(2)))
+            preceissions.push(parseFloat(metric.precision[j].toFixed(2)))
         }
         for (let j = 0; j < len; j++) {
-            recalls.push(parseFloat(metric[1][j].toFixed(2)))
+            recalls.push(parseFloat(metric.recall[j].toFixed(2)))
         }
         tensorflow.dispose(y)
         tensorflow.dispose(predictedLabels)

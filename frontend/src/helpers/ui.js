@@ -454,6 +454,7 @@ export default class UI {
             { field: 'mean', label: 'Mean' },
             { field: 'median', label: 'Median' }
                 , { field: 'std', label: 'std' }, { field: 'missingVlauesCount', label: '# NAs' }
+                , { field: 'type', label: 'type' }
             ];
         const categoricalHeaders =
             [{ field: 'name', label: '#' }, { field: 'shape', label: 'Shape' }, { field: 'mode', label: 'Mode' }, { field: 'percentage', label: 'Mode Percentage' }
@@ -461,7 +462,7 @@ export default class UI {
             ];
 
         for (let i = 0; i < continuousFeatures.length; i++) {
-            const column = continuousFeatures[i];
+            const column = continuousFeatures[i].name;
             continuousFeaturesStats.push({
                 name: column,
                 min: data.column(column).min().toFixed(2),
@@ -469,12 +470,15 @@ export default class UI {
                 median: data.column(column).median().toFixed(2),
                 mean: data.column(column).mean().toFixed(2),
                 std: data.column(column).std().toFixed(2),
-                missingVlauesCount: data.column(column).isNa().sum()
+                missingValuesCount: data.column(column).isNa().sum(),
+                type: 1,
+                selected: continuousFeatures[i].selected
             })
         }
 
 
-        categoricalFeatures.forEach((column, i) => {
+        categoricalFeatures.forEach((item, i) => {
+            let column = item.name
             const shape = [...new Set(data.column(column).values)];
             const category_info = this.getCategoricalMode(data.column(column).values)
             categoricalFeaturesStats.push({
@@ -482,7 +486,9 @@ export default class UI {
                 shape: shape.length,
                 mode: category_info['mode'],
                 percentage: ((category_info[category_info['mode']] / category_info['total'])).toFixed(2),
-                missingVlauesCount: data.column(column).isNa().sum()
+                missingValuesCount: data.column(column).isNa().sum(),
+                type: 2,
+                selected: item.selected
             })
 
         });

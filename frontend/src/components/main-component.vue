@@ -12,19 +12,82 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                        }})</p>
+                                            }})</p>
                                     </div>
                                     <div class="column is-6">
-                                        <h5 class="title is-7 has-text-left">Continuous Features :</h5>
-                                        <b-table class="is-size-7" :data="continuousFeaturesStats"
-                                            :columns="continuousFeaturesColumns" :narrowed="true" :bordered="true"
-                                            :striped="true" :hoverable="true"></b-table>
+                                        <h5 class="title is-7 has-text-left">Continuous Features:
+                                            <button class="button is-small" @click="applyChanges()">apply</button>
+                                        </h5>
+                                        <table class="table is-size-7">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>name</th>
+                                                    <th>Min</th>
+                                                    <th>Max</th>
+                                                    <th>Mean</th>
+                                                    <th>Median</th>
+                                                    <th>std</th>
+                                                    <th>#NAs</th>
+                                                    <th>TYPE</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="feature in continuousFeaturesStats" :key="feature.name">
+                                                    <td> <b-checkbox v-model="feature.selected"></b-checkbox>
+                                                    </td>
+                                                    <td>{{ feature.name }}</td>
+                                                    <td>{{ feature.min }}</td>
+                                                    <td>{{ feature.max }}</td>
+                                                    <td>{{ feature.median }}</td>
+                                                    <td>{{ feature.mean }}</td>
+                                                    <td>{{ feature.std }}</td>
+                                                    <td>{{ feature.missingValuesCount }}</td>
+                                                    <td> <b-select :expanded="true" v-model="feature.type"
+                                                            size="is-small">
+                                                            <option v-for="option in featureTypeOptions"
+                                                                :value="option.id" :key="option.id">
+                                                                {{ option.name }}
+                                                            </option>
+                                                        </b-select></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Categorical Features :</h5>
-                                        <b-table class="is-size-7" :data="categoricalFeaturesStats"
-                                            :columns="categoricalFeaturesColumns" :narrowed="true" :bordered="true"
-                                            :striped="true" :hoverable="true"></b-table>
+                                        <table class="table is-size-7">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th>Name</th>
+                                                    <th>Shape</th>
+                                                    <th>Mode</th>
+                                                    <th>Mode percentage</th>
+                                                    <th>#NAs</th>
+                                                    <th>TYPE</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="feature in categoricalFeaturesStats" :key="feature.name">
+                                                    <td> <b-checkbox v-model="feature.selected"></b-checkbox>
+                                                    </td>
+                                                    <td>{{ feature.name }}</td>
+                                                    <td>{{ feature.shape }}</td>
+                                                    <td>{{ feature.mode }}</td>
+                                                    <td>{{ feature.percentage }}</td>
+                                                    <td>{{ feature.missingValuesCount }}</td>
+
+                                                    <td> <b-select :expanded="true" v-model="feature.type"
+                                                            size="is-small">
+                                                            <option v-for="option in featureTypeOptions"
+                                                                :value="option.id" :key="option.id">
+                                                                {{ option.name }}
+                                                            </option>
+                                                        </b-select></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Sample Data :</h5>
@@ -92,7 +155,7 @@
                         :columns="selectedFeatures"></dmensionality-reduction-component>
                 </b-tab-item>
                 <b-tab-item label="Results Analysis" icon="chart-pie" icon-pack="fas">
-                    <results-component></results-component>
+                    <results-component ref="results"></results-component>
                 </b-tab-item>
                 <b-tab-item label="Methods Details" icon="list" icon-pack="fas">
                     <methods-tab-component></methods-tab-component>
@@ -187,6 +250,7 @@ import { settingStore } from '@/stores/settings'
 import { Matrix, correlation } from 'ml-matrix';
 // eslint-disable-next-line no-unused-vars
 import Clustermap from '@/helpers/correlation/correlation-matrix'
+import { DataFrame } from 'danfojs/dist/danfojs-base';
 
 let ui = new UI(null, null);
 let chartController = new ChartController(null, null)
@@ -205,7 +269,7 @@ export default {
     },
     props: {
         msg: String,
-        selectedFeatures: []
+        selectedFeatures: [],
     },
     errorCaptured(err, vm, info) {
         console.log(`cat EC: ${err.toString()}\ninfo: ${info}`);
@@ -216,6 +280,8 @@ export default {
     },
     data() {
         return {
+            featureTypeOptions: FeatureCategories,
+            checkedRows: [],
             metric: 'euclidean',
             method: 'ward',
             img: null,
@@ -263,12 +329,55 @@ export default {
                 throw error
             }
         },
-        renderStats() {
+        applyChanges() {
+            this.renderStats(true)
+        },
+        renderStats(update = false) {
             if (this.settings.df?.columns?.length > 0) {
-                let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
-                let categoricalColumns = this.settings.items.filter(m => m.type !== FeatureCategories.Numerical.id).map(m => m.name);
+                let numericColumns, categoricalColumns;
+                if (!update) {
+                    numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(function (m) {
+                        return {
+                            name: m.name,
+                            selected: true
+                        }
+                    });
+                    categoricalColumns = this.settings.items.filter(m => m.type !== FeatureCategories.Numerical.id).map(function (m) {
+                        return {
+                            name: m.name,
+                            selected: true
+                        }
+                    });
+                } else {
+                    console.log(this.continuousFeaturesStats);
+                    let features = this.continuousFeaturesStats.concat(this.categoricalFeaturesStats)
+                    numericColumns = features.filter(m => m.type === FeatureCategories.Numerical.id).map(function (m) {
+                        return {
+                            name: m.name,
+                            selected: m.selected,
+                            scaler: m.sclaer ?? 0
+                        }
+                    });
+                    categoricalColumns = features.filter(m => m.type
+                        === FeatureCategories.Nominal.id
+                        || m.type === FeatureCategories.Ordinal.id).map(function (m) {
+                            return {
+                                name: m.name,
+                                selected: m.selected
+                            }
+                        });
 
-                let datasetStats = ui.renderDatasetStats(this.settings.df, numericColumns, categoricalColumns);
+                    let selectedFeatures = features;
+                    for (let i = 0; i < selectedFeatures.length; i++) {
+                        this.settings.addFeature(selectedFeatures[i])
+                    }
+                    this.$emit('check-target')
+
+                }
+
+
+                let df = new DataFrame(this.settings.rawData);
+                let datasetStats = ui.renderDatasetStats(df, numericColumns, categoricalColumns);
                 this.continuousFeaturesColumns = datasetStats[0];
                 this.continuousFeaturesStats = datasetStats[1];
                 this.categoricalFeaturesColumns = datasetStats[2];
