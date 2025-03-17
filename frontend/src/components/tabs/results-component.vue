@@ -88,7 +88,7 @@ export default {
                 console.log('no plot to remove');
 
             }
-            let methodResults = this.settings.getMethodResults.filter(m => m.datasetName == this.settings.datasetName)
+            let methodResults = this.settings.getMethodResults.filter(m => m.datasetName == this.settings.datasetName && this.settings.classificationTask == m.modelTask)
             this.compare = true;
             let x = [];
             let y = {};
