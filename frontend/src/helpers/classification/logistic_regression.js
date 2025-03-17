@@ -363,10 +363,11 @@ export default class LogisticRegression extends ClassificationModel {
                 .map((item, i) => item + '_' + this.summary.confidence_intervals[i][0]).reverse()
             let conf_intervals = this.summary.confidence_intervals.reverse()
             let traces_params = []
+            let ols_y = y_classes.map((m, i) => i);
             traces_params.push({
                 name: 'OLS',
                 x: conf_intervals.map(item => item[1]),
-                y: y_classes,
+                y: ols_y,
                 error_x: {
                     type: 'data',
                     array: conf_intervals.map(item => Math.abs(item[3] - item[1])),
@@ -377,10 +378,11 @@ export default class LogisticRegression extends ClassificationModel {
             let y_classes_min = this.summary.best_fit_min.names
                 .map((item, i) => item + '_' + this.summary.best_fit_min.confidence_intervals[i][0]).reverse()
             let conf_intervals_min = this.summary.best_fit_min.confidence_intervals.reverse()
+            let lasso_y = y_classes_min.map((m, i) => i + 0.2);
             traces_params.push({
                 name: 'lasso min',
                 x: conf_intervals_min.map(item => item[1]),
-                y: y_classes_min,
+                y: lasso_y,
                 error_x: {
                     type: 'data',
                     array: conf_intervals_min.map(item => Math.abs(item[3] - item[1])),
@@ -388,13 +390,14 @@ export default class LogisticRegression extends ClassificationModel {
                 type: 'scatter', mode: 'markers',
                 showlegend: true,  // Make sure the trace appears in the legend
             })
+            let _1se_y = y_classes_min.map((m, i) => i + 0.4);
             let y_classes_1se = this.summary.best_fit_1se.names
                 .map((item, i) => item + '_' + this.summary.best_fit_1se.confidence_intervals[i][0]).reverse()
             let conf_intervals_1se = this.summary.best_fit_1se.confidence_intervals.reverse()
             traces_params.push({
                 name: 'lasso 1se',
                 x: conf_intervals_1se.map(item => item[1]),
-                y: y_classes_1se,
+                y: _1se_y,
                 error_x: {
                     type: 'data',
                     array: conf_intervals_1se.map(item => Math.abs(item[3] - item[1])),
@@ -416,7 +419,7 @@ export default class LogisticRegression extends ClassificationModel {
                     legend: {
                         xanchor: 'left',
                         yanchor: 'top',
-                        x: 0.02, 
+                        x: 0.02,
                         y: 0.98,
                         font: {
                             size: 8,  // Set font size for legend
@@ -436,6 +439,8 @@ export default class LogisticRegression extends ClassificationModel {
                         linewidth: 1,
                         zeroline: false,
                         mirror: true,
+                        tickvals: lasso_y,
+                        ticktext: y_classes_1se,
                         tickfont: { size: 10 }
                     },
                 }
