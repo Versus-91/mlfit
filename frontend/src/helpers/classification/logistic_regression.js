@@ -22,6 +22,7 @@ export default class LogisticRegression extends ClassificationModel {
             y_train: y_train,
             y_test: y_test,
             X_test: x_test,
+            seed: this.seed,
             regularization_type: this.options.regularization.value === "Lasso" ? 1 : 0,
             labels: labels
         };
@@ -30,6 +31,7 @@ export default class LogisticRegression extends ClassificationModel {
         await webR.init();
         await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'nnet', 'purrr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary', 'broom'], { quiet: true });
         await webR.objs.globalEnv.bind('xx', x_train);
+        await webR.objs.globalEnv.bind('random_seed', this.seed);
         await webR.objs.globalEnv.bind('x_test', x_test);
 
         await webR.objs.globalEnv.bind('y', y_train);
@@ -49,7 +51,7 @@ export default class LogisticRegression extends ClassificationModel {
                     library(jsonlite)
                     library(glmnet)
                     library(broom)
-                    set.seed(123)
+                    set.seed(random_seed)
                     # Select all columns except the first as predictors. 
                     x <- as.matrix(xx)  
                     colnames(x) <- names

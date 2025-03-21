@@ -27,6 +27,7 @@ export default class PolynomialRegression extends RegressionModel {
         await webR.installPackages(['jsonlite', 'ggplot2', 'plotly', 'tidyr', 'broom', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary'], { quiet: true });
         await webR.objs.globalEnv.bind('xx', x_train);
         await webR.objs.globalEnv.bind('x_test', x_test);
+        await webR.objs.globalEnv.bind('random_seed', this.seed);
 
         await webR.objs.globalEnv.bind('y', y_train);
         await webR.objs.globalEnv.bind('degree', degree);
@@ -46,6 +47,7 @@ export default class PolynomialRegression extends RegressionModel {
                     library(ggrepel)
                     library(modelsummary)
                     library(glmnet)
+                    set.seed(random_seed)
 
                     # Select all columns except the first as predictors. 
                     add_powers <- function(df, degree,columns) {

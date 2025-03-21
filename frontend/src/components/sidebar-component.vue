@@ -327,6 +327,7 @@ export default {
                 }
                 let model_factory = new ModelFactory();
                 let model = model_factory.createModel(this.modelOption, this.modelConfigurations)
+                model.seed = seed;
                 model.id = this.settings.getCounter
                 this.toggleTraining()
                 model.hasExplaination = this.explainModel;
@@ -380,7 +381,7 @@ export default {
                         this.settings.setResultActiveTab(model.id + 1);
                         window.dispatchEvent(new Event('resize'));
                     }, 100);
-                    
+
                     await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, x_train.columns, categoricalFeatures)
                     this.settings.increaseCounter();
                     this.toggleTraining();

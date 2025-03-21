@@ -15,7 +15,7 @@ export class RegressionModel {
         this.tables = [];
         this.helpSectionId = 'help';
         this.hasExplaination = true;
-
+        this.seed = 123;
 
     }
     async train(x, y, x_test, y_test) {

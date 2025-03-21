@@ -32,7 +32,7 @@ export default class LinearRegression extends RegressionModel {
         await webR.installPackages(['jsonlite', 'iml', 'ggplot2', 'plotly', 'tidyr', 'dplyr', 'ggrepel', 'glmnet', 'modelsummary'], { quiet: true });
         await webR.objs.globalEnv.bind('xx', x_train);
         await webR.objs.globalEnv.bind('x_test', x_test);
-
+        await webR.objs.globalEnv.bind('random_seed', this.seed);
         await webR.objs.globalEnv.bind('y', y_train);
         await webR.objs.globalEnv.bind('names', labels);
         await webR.objs.globalEnv.bind('categorical_columns', categorical_columns?.length === 0 ? ['empty'] : categorical_columns);
@@ -49,6 +49,7 @@ export default class LinearRegression extends RegressionModel {
                     library(ggrepel)
                     library(modelsummary)
                     library(glmnet)
+                    set.seed(random_seed)
 
                     # Select all columns except the first as predictors. 
                     x <- as.matrix(xx)  
