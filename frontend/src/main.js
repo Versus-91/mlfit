@@ -1,10 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
 import Buefy from 'buefy'
-import 'buefy/dist/buefy.css'
-import { tensorflow } from 'danfojs/dist/danfojs-base';
+import 'buefy/dist/buefy.min.css'
 import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
-import * as sk from 'scikitjs'
 import { createPinia, PiniaVuePlugin } from 'pinia'
 import VueMathjax from 'vue-mathjax'
 Plotly.setPlotConfig({
@@ -13,8 +11,6 @@ Plotly.setPlotConfig({
   modeBarButtonsToRemove: ['resetScale2d', 'zoom2d', 'pan', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '], // Remove certain buttons from the mode bar
 });
 
-
-sk.setBackend(tensorflow);
 Vue.config.productionTip = false
 Vue.prototype.window = window;
 
