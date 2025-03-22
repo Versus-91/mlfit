@@ -52,9 +52,9 @@ export const Settings = {
                 "regularization": {
                     "label": "regulrization",
                     "type": "select",
-                    default: "no",
-                    value: "no",
-                    "values": [{ label: "No", value: "no" }, { label: "adaptive lasso", value: "Lasso" }, { label: "ridge", value: "ridge" }]
+                    default: "Lasso",
+                    value: "Lasso",
+                    "values": [{ label: "adaptive lasso", value: "Lasso" }, { label: "ridge", value: "ridge" }]
                 }
             }
         },

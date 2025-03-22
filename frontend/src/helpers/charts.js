@@ -2374,7 +2374,7 @@ export default class ChartController {
                 zeroline: false,
                 showticklabels: true,
                 ticks: "",
-                tickvals: tickValues.map(tick => -tick),  // Specify tick positions
+                tickvals: tickValues.map(tick => -tick),
                 ticktext: names,
                 tickangle: -45,
 
@@ -2387,7 +2387,7 @@ export default class ChartController {
                 zeroline: false,
                 showticklabels: true,
                 ticks: "",
-                tickvals: tickValues,  // Specify tick positions
+                tickvals: tickValues,
                 ticktext: names,
                 tickangle: -90,
 
@@ -2421,7 +2421,31 @@ export default class ChartController {
             margin: { l: 60, r: 30, b: 60, t: 30 },
 
         };
-
+        for (var i = 0; i < names.length; i++) {
+            for (var j = names.length - 1; j >= 0; j--) {
+                var currentValue = correlations[i][j];
+                let textColor
+                if (currentValue <= 0.0) {
+                    textColor = 'black';
+                } else {
+                    textColor = 'black';
+                }
+                var result = {
+                    xref: 'x',
+                    yref: 'y',
+                    x: tickValues[i],
+                    y: -tickValues[j],
+                    text: currentValue.toFixed(2),
+                    font: {
+                        family: 'Arial',
+                        size: 8,
+                        color: textColor
+                    },
+                    showarrow: false,
+                };
+                layout2.annotations.push(result);
+            }
+        }
         let data = dendrogramUP['data']
         data = data.concat(dendrogramRIGHT['data'])
 
