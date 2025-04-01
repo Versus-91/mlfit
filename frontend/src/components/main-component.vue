@@ -12,82 +12,88 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                            }})</p>
+                                        }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Continuous Features:
                                             <button class="button is-small" @click="applyChanges()">apply</button>
                                         </h5>
-                                        <table class="table is-size-7">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th>name</th>
-                                                    <th>Min</th>
-                                                    <th>Max</th>
-                                                    <th>Mean</th>
-                                                    <th>Median</th>
-                                                    <th>std</th>
-                                                    <th>#NAs</th>
-                                                    <th>TYPE</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="feature in continuousFeaturesStats" :key="feature.name">
-                                                    <td> <b-checkbox v-model="feature.selected"></b-checkbox>
-                                                    </td>
-                                                    <td>{{ feature.name }}</td>
-                                                    <td>{{ feature.min }}</td>
-                                                    <td>{{ feature.max }}</td>
-                                                    <td>{{ feature.median }}</td>
-                                                    <td>{{ feature.mean }}</td>
-                                                    <td>{{ feature.std }}</td>
-                                                    <td>{{ feature.missingValuesCount }}</td>
-                                                    <td> <b-select :expanded="true" v-model="feature.type"
-                                                            size="is-small">
-                                                            <option v-for="option in featureTypeOptions"
-                                                                :value="option.id" :key="option.id">
-                                                                {{ option.name }}
-                                                            </option>
-                                                        </b-select></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        <div class="table-container">
+
+                                            <table class="table is-size-7">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>name</th>
+                                                        <th>Min</th>
+                                                        <th>Max</th>
+                                                        <th>Mean</th>
+                                                        <th>Median</th>
+                                                        <th>std</th>
+                                                        <th>#NAs</th>
+                                                        <th>TYPE</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="feature in continuousFeaturesStats" :key="feature.name">
+                                                        <td> <b-checkbox v-model="feature.selected"></b-checkbox>
+                                                        </td>
+                                                        <td>{{ feature.name }}</td>
+                                                        <td>{{ feature.min }}</td>
+                                                        <td>{{ feature.max }}</td>
+                                                        <td>{{ feature.median }}</td>
+                                                        <td>{{ feature.mean }}</td>
+                                                        <td>{{ feature.std }}</td>
+                                                        <td>{{ feature.missingValuesCount }}</td>
+                                                        <td> <b-select :expanded="true" v-model="feature.type"
+                                                                size="is-small">
+                                                                <option v-for="option in featureTypeOptions"
+                                                                    :value="option.id" :key="option.id">
+                                                                    {{ option.name }}
+                                                                </option>
+                                                            </b-select></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Categorical Features :</h5>
-                                        <table class="table is-size-7">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th>Name</th>
-                                                    <th>Shape</th>
-                                                    <th>Mode</th>
-                                                    <th>Mode percentage</th>
-                                                    <th>#NAs</th>
-                                                    <th>TYPE</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="feature in categoricalFeaturesStats" :key="feature.name">
-                                                    <td> <b-checkbox v-model="feature.selected"></b-checkbox>
-                                                    </td>
-                                                    <td>{{ feature.name }}</td>
-                                                    <td>{{ feature.shape }}</td>
-                                                    <td>{{ feature.mode }}</td>
-                                                    <td>{{ feature.percentage }}</td>
-                                                    <td>{{ feature.missingValuesCount }}</td>
+                                        <div class="table-container">
 
-                                                    <td> <b-select :expanded="true" v-model="feature.type"
-                                                            size="is-small">
-                                                            <option v-for="option in featureTypeOptions"
-                                                                :value="option.id" :key="option.id">
-                                                                {{ option.name }}
-                                                            </option>
-                                                        </b-select></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                            <table class="table is-size-7">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>Name</th>
+                                                        <th>Shape</th>
+                                                        <th>Mode</th>
+                                                        <th>Mode percentage</th>
+                                                        <th>#NAs</th>
+                                                        <th>TYPE</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr v-for="feature in categoricalFeaturesStats" :key="feature.name">
+                                                        <td> <b-checkbox v-model="feature.selected"></b-checkbox>
+                                                        </td>
+                                                        <td>{{ feature.name }}</td>
+                                                        <td>{{ feature.shape }}</td>
+                                                        <td>{{ feature.mode }}</td>
+                                                        <td>{{ feature.percentage }}</td>
+                                                        <td>{{ feature.missingValuesCount }}</td>
+
+                                                        <td> <b-select :expanded="true" v-model="feature.type"
+                                                                size="is-small">
+                                                                <option v-for="option in featureTypeOptions"
+                                                                    :value="option.id" :key="option.id">
+                                                                    {{ option.name }}
+                                                                </option>
+                                                            </b-select></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Sample Data :</h5>
