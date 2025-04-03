@@ -732,6 +732,8 @@ export default class ChartController {
         labels = labels.flat()
         var uniqueLabels = [...new Set(labels)];
         const [pca_data, _, explained_variances, circels, distances] = await pca.predict(dataset, numberOfComponents)
+        let pcaComponents = pca_data[0].length;
+
         let x = []
         let pca_traces = []
         for (let i = 0; i < axes.length; i++) {
@@ -813,8 +815,8 @@ export default class ChartController {
         }
         pca_traces = []
         let index = 1;
-        for (let i = 0; i < pca_data[0].length; i++) {
-            for (let j = 0; j < pca_data[0].length; j++) {
+        for (let i = 0; i < pcaComponents; i++) {
+            for (let j = 0; j < pcaComponents; j++) {
                 if (j < i) {
                     let x = pca_data.map(pca_values => pca_values[j]);
                     let y = pca_data.map(pca_values => pca_values[i]);
@@ -833,6 +835,23 @@ export default class ChartController {
                         },
                     })
 
+                } if (j > i) {
+                    let x = dataset.map(data => data[j]);
+                    let y = dataset.map(data => data[i]);
+                    let max = Math.max(...x)
+                    let min = Math.min(...x)
+                    pca_traces.push({
+                        x: x,
+                        y: y,
+                        mode: 'markers',
+                        type: 'scatter',
+                        xaxis: 'x' + (index),
+                        yaxis: 'y' + (index),
+                        marker: {
+                            color: x.map(item => this.indexToColorSequential(item, min, max)),
+                            size: 2,
+                        },
+                    })
                 } else {
                     pca_traces.push({
                         x: [1, 2],
@@ -852,19 +871,19 @@ export default class ChartController {
 
         }
         var layout = {
-            width: pca_data[0].length * 100,
-            height: pca_data[0].length * 100,
+            width: pcaComponents * 100,
+            height: pcaComponents * 100,
             spacing: 0,
             showlegend: false,
             boxmode: 'overlay',
-            grid: { rows: pca_data[0].length, xgap: 0.0, ygap: 0.0, columns: pca_data[0].length, pattern: 'independent' },
+            grid: { rows: pcaComponents, xgap: 0.0, ygap: 0.0, columns: pcaComponents, pattern: 'independent' },
             margin: { t: 20, r: 20 },
 
         };
-        for (var i = 0; i < pca_data[0].length; i++) {
-            for (var j = 0; j < pca_data[0].length; j++) {
-                var xAxisKey = 'xaxis' + ((i * pca_data[0].length) + j + 1);
-                var yAxisKey = 'yaxis' + ((i * pca_data[0].length) + j + 1);
+        for (var i = 0; i < pcaComponents; i++) {
+            for (var j = 0; j < pcaComponents; j++) {
+                var xAxisKey = 'xaxis' + ((i * pcaComponents) + j + 1);
+                var yAxisKey = 'yaxis' + ((i * pcaComponents) + j + 1);
                 let fontSize = 10;
                 layout[xAxisKey] = {
                     linecolor: 'black',
@@ -886,7 +905,7 @@ export default class ChartController {
                         size: fontSize
                     },
                 };
-                if (i === pca_data[0].length - 1) {
+                if (i === pcaComponents - 1) {
                     layout[xAxisKey] = {
                         linecolor: 'black',
                         linewidth: 1,
@@ -895,7 +914,7 @@ export default class ChartController {
                             size: fontSize
                         },
                         title: {
-                            text: 'PC-'+(j+1), font: {
+                            text: 'PC-' + (j + 1), font: {
                                 size: fontSize
                             },
                         }
@@ -911,7 +930,7 @@ export default class ChartController {
                             size: fontSize
                         },
                         title: {
-                            text: 'PC-'+(i+1), font: {
+                            text: 'PC-' + (i + 1), font: {
                                 size: fontSize
                             },
                         }
