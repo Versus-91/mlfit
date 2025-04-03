@@ -10,7 +10,7 @@
                 <div v-show="compare" class="column is-12" id="comaprison_plot" style="height:400px;"></div>
             </b-tab-item>
             <template v-for="result in this.settings.results">
-                <b-tab-item :label="(result.id + 1) + '.' + result.name.toString()" :key="result.id">
+                <b-tab-item :label="(result.id) + '.' + result.name.toString()" :key="result.id">
                     <classification-view-component @delete-result="deleteResult" :result="result"
                         v-if="result.modelTask"></classification-view-component>
                     <regression-view-component @delete-result="deleteResult" :result="result" v-else>
@@ -93,9 +93,14 @@ export default {
             let x = [];
             let y = {};
             let traces = [];
-            methodResults.forEach(result => {
+            methodResults.forEach((result, i) => {
+
                 let metrics = result.metrics;
-                x.push(result.name + '.' + result.id)
+                if (i === 0) {
+                    x.push('best');
+                }
+                x.push(result.id + '.' + result.name)
+
                 for (const key in result.metrics) {
                     if (key != 'precision' && key != 'recall') {
                         const metric = metrics[key];
@@ -103,13 +108,11 @@ export default {
                             y[key].push(metric);
                         } else {
                             y[key] = [];
+                            y[key].push(1);
                             y[key].push(metric);
-
                         }
-
                     }
                 }
-
             });
             let i = 1;
             for (const key in y) {
@@ -133,12 +136,13 @@ export default {
                 i++;
             }
 
-
-
-
             var layout = {
                 grid: { rows: 1, columns: Object.keys(y).length, pattern: 'independent' },
-
+                xaxis: {
+                    tickfont: {
+                        size: 8
+                    }
+                },
                 height: 300,
                 margin: {
                     l: 40,
@@ -148,7 +152,11 @@ export default {
                     pad: 10
                 },
             };
-
+            for (let i = 1; i < Object.keys(y).length + 1; i++) {
+                layout[`xaxis${i === 1 ? '' : i}`] = {
+                    tickfont: { size: 10 }
+                };
+            }
             Plotly.newPlot('comaprison_plot', traces, layout, { responsive: true });
         },
         resize(v) {

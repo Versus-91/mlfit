@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export const settingStore = defineStore({
     id: 'cart',
     state: () => ({
-        counter: 0,
+        counter: 1,
         df: {},
         rawData: {},
         features: [],
