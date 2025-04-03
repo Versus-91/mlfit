@@ -15,9 +15,6 @@
                 <div class="column is-6">
                     <div id="correlation_circle" style="height: 300px;"></div>
                 </div>
-                <div class="column is-12">
-                    <div id="pca_matrix" style="height: 300px;"></div>
-                </div>
                 <div class="column is-12" v-if="hasPCA">
                     <b-field label="Number of Components">
                         <b-input v-model="numberOfComponents" size="is-small" type="number" min="2"
@@ -29,6 +26,9 @@
                                 label="Draw PCA" />
                         </p>
                     </b-field>
+                </div>
+                <div class="column is-12">
+                    <div id="pca_matrix"></div>
                 </div>
                 <div class="column is-4" v-for="(item, index) in this.pcaContainers" :key="index">
                     <div :id="'pca_' + index" style="height: 300px;"></div>
