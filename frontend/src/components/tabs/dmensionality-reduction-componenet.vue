@@ -15,6 +15,9 @@
                 <div class="column is-6">
                     <div id="correlation_circle" style="height: 300px;"></div>
                 </div>
+                <div class="column is-12">
+                    <div id="pca_matrix" style="height: 300px;"></div>
+                </div>
                 <div class="column is-12" v-if="hasPCA">
                     <b-field label="Number of Components">
                         <b-input v-model="numberOfComponents" size="is-small" type="number" min="2"

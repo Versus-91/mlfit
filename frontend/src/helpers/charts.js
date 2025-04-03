@@ -729,13 +729,11 @@ export default class ChartController {
     }
     async draw_pca(dataset, labels, regression_labels, numberOfComponents, axes, columns, drawScreePlot = false) {
         const pca = new PCA();
-
         labels = labels.flat()
         var uniqueLabels = [...new Set(labels)];
-
         const [pca_data, _, explained_variances, circels, distances] = await pca.predict(dataset, numberOfComponents)
-
         let x = []
+        let pca_traces = []
         for (let i = 0; i < axes.length; i++) {
             let principle_components = []
             let axis = axes[i]
@@ -780,7 +778,7 @@ export default class ChartController {
 
                 })
             }
-
+            pca_traces.push(trace1)
 
             Plotly.newPlot('pca_' + i, traces1, {
                 showlegend: uniqueLabels.length != 0 ? true : false,
@@ -813,6 +811,120 @@ export default class ChartController {
             }, { ...plotlyImageExportConfig, responsive: true, staticPlot: true });
 
         }
+        pca_traces = []
+        let index = 1;
+        for (let i = 0; i < pca_data[0].length; i++) {
+            for (let j = 0; j < pca_data[0].length; j++) {
+                if (j < i) {
+                    let x = pca_data.map(pca_values => pca_values[j]);
+                    let y = pca_data.map(pca_values => pca_values[i]);
+                    let max = Math.max(...x)
+                    let min = Math.min(...x)
+                    pca_traces.push({
+                        x: x,
+                        y: y,
+                        mode: 'markers',
+                        type: 'scatter',
+                        xaxis: 'x' + (index),
+                        yaxis: 'y' + (index),
+                        marker: {
+                            color: x.map(item => this.indexToColorSequential(item, min, max)),
+                            size: 2,
+                        },
+                    })
+
+                } else {
+                    pca_traces.push({
+                        x: [1, 2],
+                        y: [1, 2],
+                        type: 'scattergl',
+                        mode: 'markers',
+                        marker: {
+                            colorscale: 'Portland',
+                            size: 2,
+                        },
+                        xaxis: 'x' + (index),
+                        yaxis: 'y' + (index),
+                    })
+                }
+                index++;
+            }
+
+        }
+        var layout = {
+            width: pca_data[0].length * 100,
+            height: pca_data[0].length * 100,
+            spacing: 0,
+            showlegend: false,
+            boxmode: 'overlay',
+            grid: { rows: pca_data[0].length, xgap: 0.0, ygap: 0.0, columns: pca_data[0].length, pattern: 'independent' },
+            margin: { t: 20, r: 20 },
+
+        };
+        for (var i = 0; i < pca_data[0].length; i++) {
+            for (var j = 0; j < pca_data[0].length; j++) {
+                var xAxisKey = 'xaxis' + ((i * pca_data[0].length) + j + 1);
+                var yAxisKey = 'yaxis' + ((i * pca_data[0].length) + j + 1);
+                let fontSize = 10;
+                layout[xAxisKey] = {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                    showgrid: false,
+                    showticklabels: false,
+                    tickfont: {
+                        size: fontSize
+                    },
+                };
+                layout[yAxisKey] = {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                    showgrid: false,
+                    showticklabels: false,
+                    tickfont: {
+                        size: fontSize
+                    },
+                };
+                if (i === pca_data[0].length - 1) {
+                    layout[xAxisKey] = {
+                        linecolor: 'black',
+                        linewidth: 1,
+                        mirror: true,
+                        tickfont: {
+                            size: fontSize
+                        },
+                        title: {
+                            text: 'PC-'+(j+1), font: {
+                                size: fontSize
+                            },
+                        }
+                    };
+
+                }
+                if (j === 0) {
+                    layout[yAxisKey] = {
+                        linecolor: 'black',
+                        linewidth: 1,
+                        mirror: true,
+                        tickfont: {
+                            size: fontSize
+                        },
+                        title: {
+                            text: 'PC-'+(i+1), font: {
+                                size: fontSize
+                            },
+                        }
+                    };
+                }
+            }
+        }
+        Plotly.react('pca_matrix', pca_traces, layout, {
+            ...plotlyImageExportConfig,
+            staticPlot: true,
+            modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath ']
+        })
+
         let arrows = [];
         let shapes = []
 
