@@ -1,4 +1,5 @@
 <template>
+
     <section class="has-text-left content">
         <h4 class="title is-medium is-5" id="help">Classification metrics
         </h4>
@@ -219,6 +220,58 @@
 
             </li>
         </ul>
+        <h4 class="title is-medium" id="linear_regression_help">Linear Regression</h4>
+        <p>
+            Linear regression is a statistical method used to predict a continuous numeric value based on one or more
+            input features. It assumes a linear relationship between the inputs (independent variables) and the output
+            (dependent variable). The model fits a straight line through the data by minimizing the difference between
+            predicted and actual values, often using a method called least squares. The equation of a linear regression
+            model looks like:
+            <vue-mathjax
+                :formula="'$$ y = \\beta_0 x_0+  \\beta_1 x_1 + \\beta_2 x_2+ ...+\\beta_n x_n+ intercept $$'"></vue-mathjax>
+
+            Here, y is the predicted value,(x_i)
+            are the input features, and(β_i)
+            are the learned coefficients. Linear regression is commonly used in scenarios like predicting house prices,
+            exam scores, or sales revenue. It is evaluated using metrics such as Mean Squared Error (MSE) and R² score,
+            and assumes things like normally distributed errors and consistent variance across predictions.
+        </p>
+        <h4 class="title is-medium" id="logistic_regression_help">Logistic Regression</h4>
+        <p>
+            Logistic Regression is used when the output is categorical, especially for binary classification (e.g.,
+            yes/no, 0/1). Instead of predicting a continuous value, it predicts the probability that an input belongs to
+            a certain class. To do this, it uses the sigmoid function, which squashes any real number output into a
+            range between 0 and 1:
+            <vue-mathjax :formula="'$$ y= \\frac{1}{1 + e^{-z}} $$'"></vue-mathjax>
+            where
+            z is the linear combination of inputs (same as in linear regression). If the resulting probability is
+            greater than 0.5, the output is classified as 1; otherwise, it's classified as 0.
+            If the probability is above a certain threshold (usually 0.5), the model classifies the input as one class;
+            otherwise, it classifies it as the other. The output of the model represents the log-odds of the outcome,
+            and logistic regression is evaluated using classification metrics like accuracy, precision, recall, F1
+            score, and ROC-AUC. Though it shares structural similarity with linear regression, its purpose and behavior
+            are quite different.
+        </p>
+        <h4 class="title is-medium" id="polynomial_regression_help">Polynomial Regression</h4>
+        <p>
+            Polynomial regression is an extension of linear regression that models the relationship between the input
+            variable
+            𝑥
+            x and the output variable
+            𝑦
+            y as an nth-degree polynomial. While linear regression fits a straight line, polynomial regression fits a
+            curved line, which allows it to capture more complex, non-linear patterns in the data. The general form of
+            the equation is:
+            <vue-mathjax :formula="'$$ y = \\beta_0 +  \\beta_1 x + \\beta_2 x^2+ ...+\\beta_n x^n $$'"></vue-mathjax>
+            Here, the model includes powers of the input variable (like
+            𝑥^2, 𝑥^3, etc.) as additional features. For example, a second-degree polynomial (quadratic regression) can
+            model
+            U-shaped or inverted U-shaped curves. Polynomial regression is still considered a linear model in terms of
+            the coefficients, but it allows for non-linear relationships between x and y. It can be very effective for
+            modeling curved trends, but if the degree of the polynomial is too high, it
+            can lead to overfitting, where the model fits the training data too closely and performs poorly on new data.
+        </p>
+
         <h4 class="title is-medium is-5" id="cart_help">Tree-based and ensemble methods</h4>
         <p> These methods can be used for both regression and classification problems.
         </p>
@@ -329,6 +382,20 @@
             the same category. For example, if we look at the bike rental dataset and are interested in the partial
             dependence plot for the season, we get four numbers, one for each season. To compute the value for “summer”,
             we replace the season of all data instances with “summer” and average the predictions.
+        </p>
+        <h4>Permutation Feature Importance</h4>
+        <p>
+            Permutation feature importance is a powerful and intuitive method used to evaluate the impact of each
+            feature on a machine learning model’s performance. After a model has been trained, this technique works by
+            randomly shuffling the values of one feature at a time in the validation or test dataset. By doing so, the
+            relationship between that feature and the target variable is disrupted, while all other features remain
+            unchanged. The model is then used to make predictions on this altered dataset, and the drop in performance
+            (measured by accuracy, F1 score, RMSE, or any other metric) is recorded. A large drop indicates that the
+            feature was important to the model’s predictions, while a small or no change suggests that the feature had
+            little influence. This method is model-agnostic, meaning it can be used with any type of machine learning
+            algorithm, from decision trees to neural networks. However, one limitation is that it can be misleading when
+            features are highly correlated, as the importance may be shared among multiple features, making individual
+            effects harder to isolate.
         </p>
     </section>
 
