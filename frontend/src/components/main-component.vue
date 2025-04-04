@@ -12,11 +12,10 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                            }})</p>
+                                        }})</p>
                                     </div>
                                     <div class="column is-6">
-                                        <h5 class="title is-7 has-text-left">Continuous Features:
-                                            <button class="button is-small" @click="applyChanges()">apply</button>
+                                        <h5 class="title is-7 has-text-left">Numerical Features:
                                         </h5>
                                         <div class="table-container">
 
@@ -56,6 +55,8 @@
                                                 </tbody>
                                             </table>
                                         </div>
+                                        <button class="button is-small" @click="applyChanges()">apply changes</button>
+
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Categorical Features :</h5>
