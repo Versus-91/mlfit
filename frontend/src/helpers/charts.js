@@ -889,7 +889,7 @@ export default class ChartController {
             showlegend: false,
             boxmode: 'overlay',
             grid: { rows: pcaComponents, xgap: 0.0, ygap: 0.0, columns: pcaComponents, pattern: 'independent' },
-            margin: { t: 30, r: 30 },
+            margin: { t: 30, r: 30, l: 30, b: 40 },
 
         };
         for (var i = 0; i < pcaComponents; i++) {
@@ -3043,6 +3043,14 @@ export default class ChartController {
 
         })
         var layout = {
+            title: {
+                text: 'Parallel Coordinate Plot',
+                font: {
+                    size: 14
+                },
+                xref: 'paper',
+                x: 0.05,
+            },
             xaxis: {
                 linecolor: 'black',
                 linewidth: 1,

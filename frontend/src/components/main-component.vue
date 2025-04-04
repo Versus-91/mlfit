@@ -12,7 +12,7 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                        }})</p>
+                                            }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Numerical Features:
@@ -23,14 +23,14 @@
                                                 <thead>
                                                     <tr>
                                                         <th></th>
-                                                        <th>name</th>
+                                                        <th>Name</th>
                                                         <th>Min</th>
                                                         <th>Max</th>
                                                         <th>Mean</th>
                                                         <th>Median</th>
-                                                        <th>std</th>
+                                                        <th>st.d</th>
                                                         <th>#NAs</th>
-                                                        <th>TYPE</th>
+                                                        <th>Type</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -58,7 +58,7 @@
                                         <button class="button is-small" @click="applyChanges()">apply changes</button>
                                     </div>
                                     <div class="column is-6">
-                                        <h5 class="title is-7 has-text-left">Categorical Features :</h5>
+                                        <h5 class="title is-7 has-text-left">Categorical Features(Nominal/Ordinal):</h5>
                                         <div class="table-container">
 
                                             <table class="table is-size-7">
@@ -70,7 +70,7 @@
                                                         <th>Mode</th>
                                                         <th>Mode percentage</th>
                                                         <th>#NAs</th>
-                                                        <th>TYPE</th>
+                                                        <th>Typs</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -94,6 +94,8 @@
                                                 </tbody>
                                             </table>
                                         </div>
+                                        <p class="subtitle is-7"> Nominal features are one hot encoded and ordinal
+                                            features are encoded in one column.</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Sample Data :</h5>
