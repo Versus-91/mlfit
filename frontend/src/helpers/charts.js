@@ -835,8 +835,8 @@ export default class ChartController {
                         },
                     })
 
-                } if (j > i) {
-                    let x = dataset.map(data => data[j]);
+                } else if (j > i) {
+                    let x = pca_data.map(data => data[j]);
                     let y = dataset.map(data => data[i]);
                     let max = Math.max(...x)
                     let min = Math.min(...x)
@@ -853,17 +853,21 @@ export default class ChartController {
                         },
                     })
                 } else {
+                    let x = pca_data.map(data => data[j]);
+                    let y = dataset.map(data => data[i]);
+                    let max = Math.max(...x)
+                    let min = Math.min(...x)
                     pca_traces.push({
-                        x: [1, 2],
-                        y: [1, 2],
-                        type: 'scattergl',
+                        x: x,
+                        y: y,
                         mode: 'markers',
-                        marker: {
-                            colorscale: 'Portland',
-                            size: 2,
-                        },
+                        type: 'scatter',
                         xaxis: 'x' + (index),
                         yaxis: 'y' + (index),
+                        marker: {
+                            color: x.map(item => this.indexToColorSequential(item, min, max)),
+                            size: 2,
+                        },
                     })
                 }
                 index++;
@@ -874,10 +878,18 @@ export default class ChartController {
             width: pcaComponents * 100,
             height: pcaComponents * 100,
             spacing: 0,
+            title: {
+                text: 'PCA Matrix',
+                font: {
+                    size: 14
+                },
+                xref: 'paper',
+                x: 0.05,
+            },
             showlegend: false,
             boxmode: 'overlay',
             grid: { rows: pcaComponents, xgap: 0.0, ygap: 0.0, columns: pcaComponents, pattern: 'independent' },
-            margin: { t: 20, r: 20 },
+            margin: { t: 30, r: 30 },
 
         };
         for (var i = 0; i < pcaComponents; i++) {
