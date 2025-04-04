@@ -8,11 +8,6 @@
         <section>
             <upload-component @uploaded="generateTargetDropdown"></upload-component>
             <div class="column is-12">
-                <b-field>
-                    <b-button @click="configureFeatures = true" size="is-small" type="is-primary is-light"
-                        icon-pack="fas" icon-left="cog">Select Features {{featureSettings.filter(feature =>
-                            feature.selected).length}}</b-button>
-                </b-field>
                 <b-field label="Seed" :label-position="'on-border'">
                     <b-input v-model="seed" size="is-small" placeholder="Seed" type="number" min="0">
                     </b-input>
