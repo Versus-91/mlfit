@@ -120,8 +120,8 @@
                                     </b-tooltip></div>
                                 <div class="message-body">
                                     <div class="columns is-gapless">
-                                        <div class="column is-6"></div>
-                                        <div class="column is-6">
+                                        <div class="column is-6 mx-1"></div>
+                                        <div class="column is-6 mx-1">
                                             <b-field label="Linkage method, Distance Metric" custom-class="is-small">
                                                 <b-select size="is-small" placeholder="Method" v-model="method">
                                                     <option value="single">single</option>
@@ -149,7 +149,7 @@
 
                                     </div>
 
-                                    <div class="columns is-multiline is-centered mb-2 p-0">
+                                    <div class="columns is-multiline is-centered mb-2 p-0 is-gapless">
                                         <div class="column is-6" id="correlation_matrix" style="height: 400px;"></div>
                                         <div class="column is-6" id="correlation_matrix_ordered" style="height: 400px;">
                                         </div>
