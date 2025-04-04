@@ -342,13 +342,13 @@ export default {
             if (this.settings.df?.columns?.length > 0) {
                 let numericColumns, categoricalColumns;
                 if (!update) {
-                    numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(function (m) {
+                    numericColumns = this.settings.items.filter(m => m?.type === FeatureCategories.Numerical.id).map(function (m) {
                         return {
                             name: m.name,
                             selected: true
                         }
                     });
-                    categoricalColumns = this.settings.items.filter(m => m.type !== FeatureCategories.Numerical.id).map(function (m) {
+                    categoricalColumns = this.settings.items.filter(m => m?.type !== FeatureCategories.Numerical.id).map(function (m) {
                         return {
                             name: m.name,
                             selected: true
@@ -357,16 +357,16 @@ export default {
                 } else {
                     console.log(this.continuousFeaturesStats);
                     let features = this.continuousFeaturesStats.concat(this.categoricalFeaturesStats)
-                    numericColumns = features.filter(m => m.type === FeatureCategories.Numerical.id).map(function (m) {
+                    numericColumns = features.filter(m => m?.type === FeatureCategories.Numerical.id).map(function (m) {
                         return {
                             name: m.name,
                             selected: m.selected,
                             scaler: m.sclaer ?? 0
                         }
                     });
-                    categoricalColumns = features.filter(m => m.type
+                    categoricalColumns = features.filter(m => m?.type
                         === FeatureCategories.Nominal.id
-                        || m.type === FeatureCategories.Ordinal.id).map(function (m) {
+                        || m?.type === FeatureCategories.Ordinal.id).map(function (m) {
                             return {
                                 name: m.name,
                                 selected: m.selected

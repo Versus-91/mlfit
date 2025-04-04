@@ -214,11 +214,21 @@ export default {
 
         },
         checkmodelTask() {
+            console.log(this.modelTarget);
+
             this.settings.setTarget(this.modelTarget)
-            let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1);
-            let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1);
-            let features = numericColumns.concat(categorical_columns);
-            let targetFeature = features.find(feature => feature.name == this.modelTarget);
+            let targetFeature = this.settings.items.find(feature => feature.name == this.modelTarget);
+            if (!targetFeature.selected) {
+                let message = 'Target is not selected'
+                this.$buefy.toast.open(
+                    {
+                        duration: 3000,
+                        message: message,
+                        type: 'is-warning',
+                    })
+                this.settings.addMessage({ message: message, type: 'warning' });
+                return
+            }
             this.settings.setmodelTask(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
             this.modelOptions = targetFeature.type === FeatureCategories.Numerical.id ? Settings.regression : Settings.classification;
             // let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
