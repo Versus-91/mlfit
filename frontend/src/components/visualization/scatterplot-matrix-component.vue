@@ -1,7 +1,7 @@
 <template>
     <section style="overflow-y: auto;overflow-x: auto;">
         <article class="message is-info">
-            <div class="message-header">Scatterplot Matrix <b-tooltip append-to-body
+            <div class="message-header p-2">Scatterplot Matrix <b-tooltip append-to-body
                     label="nrd method and guassian kernel is used for kernel density estimation." multilined>
                     <b-button icon-left="info" icon-pack="fas" size="is-small" type="is-dark" />
                 </b-tooltip></div>

@@ -39,7 +39,7 @@
         </div>
         <div class="column is-12">
             <article class="message is-info">
-                <div class="message-header"> Confusion Matrix and PCA of predictions</div>
+                <div class="message-header p-2"> Confusion Matrix and PCA of predictions</div>
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
                         <div class="column is-6 my-1" style="height: 400px;" :id="'confusion_matrix_' + result.id">
@@ -108,7 +108,7 @@
         </div>
         <div class="column is-12" v-show="result.hasExplaination && result.name !== 'Logistic Regression'">
             <article class="message is-info">
-                <div class="message-header"> Partial Dependence Plot</div>
+                <div class="message-header p-2"> Partial Dependence Plot</div>
                 <div class="message-body mx-1">
                     <div class="columns is-multiline">
                         <div class="column is-6" style="height: 400px;" :id="'knn_table_' + result.id"

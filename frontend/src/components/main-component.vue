@@ -6,7 +6,7 @@
                 <b-tab-item label="Data Analysis" icon="search" icon-pack="fas">
                     <section v-if="this.settings.datasetShape?.count > 0">
                         <div class="message is-info" v-if="isActive" :closable="false">
-                            <div class="message-header">Data summary</div>
+                            <div class="message-header p-2">Data summary</div>
                             <div class="message-body">
                                 <div class="columns is-multiline">
                                     <div class="column is-12 has-text-left">
@@ -114,37 +114,44 @@
                         </section>
                         <section>
                             <article class="message is-info mt-2">
-                                <div class="message-header">Correlation Matrix and Dendrogram <b-tooltip append-to-body
-                                        label="Ward method requires euclidean distance" multilined>
+                                <div class="message-header p-2">Correlation Matrix and Dendrogram <b-tooltip
+                                        append-to-body label="Ward method requires euclidean distance" multilined>
                                         <b-button icon-left="info" icon-pack="fas" size="is-small" type="is-dark" />
                                     </b-tooltip></div>
                                 <div class="message-body">
-                                    <b-field label="Linkage method, Distance Metric">
-                                        <b-select placeholder="Method" v-model="method">
-                                            <option value="single">single</option>
-                                            <option value="complete">complete</option>
-                                            <option value="average">average</option>
-                                            <option value="weighted">weighted</option>
-                                            <option value="centroid">centroid</option>
-                                            <option value="median">median</option>
-                                            <option value="ward">ward</option>
-                                        </b-select>
-                                        <b-select placeholder="Metric" v-model="metric">
-                                            <option value="euclidean">euclidean</option>
-                                            <option value="correlation">correlation</option>
-                                            <option value="mahalanobis">mahalanobis</option>
-                                            <option value="cosine">cosine</option>
-                                        </b-select>
-                                        <p class="control">
-                                            <b-button class="is-success" @click="correlationMatrix" :disabled="loading"
-                                                :loading="loading">Correlation
-                                                Cluster Diagram</b-button>
-                                        </p>
-                                    </b-field>
+                                    <div class="columns is-gapless">
+                                        <div class="column is-6"></div>
+                                        <div class="column is-6">
+                                            <b-field label="Linkage method, Distance Metric" custom-class="is-small">
+                                                <b-select size="is-small" placeholder="Method" v-model="method">
+                                                    <option value="single">single</option>
+                                                    <option value="complete">complete</option>
+                                                    <option value="average">average</option>
+                                                    <option value="weighted">weighted</option>
+                                                    <option value="centroid">centroid</option>
+                                                    <option value="median">median</option>
+                                                    <option value="ward">ward</option>
+                                                </b-select>
+                                                <b-select size="is-small" placeholder="Metric" v-model="metric">
+                                                    <option value="euclidean">euclidean</option>
+                                                    <option value="correlation">correlation</option>
+                                                    <option value="mahalanobis">mahalanobis</option>
+                                                    <option value="cosine">cosine</option>
+                                                </b-select>
+                                                <p class="control">
+                                                    <b-button class="is-success is-small" @click="correlationMatrix"
+                                                        :disabled="loading" :loading="loading">Correlation
+                                                        Cluster Diagram</b-button>
+                                                </p>
+                                            </b-field>
 
-                                    <div class="columns is-multiline is-centered mb-2">
-                                        <div class="column is-5" id="correlation_matrix" style="height: 400px;"></div>
-                                        <div class="column is-5" id="correlation_matrix_ordered" style="height: 400px;">
+                                        </div>
+
+                                    </div>
+
+                                    <div class="columns is-multiline is-centered mb-2 p-0">
+                                        <div class="column is-6" id="correlation_matrix" style="height: 400px;"></div>
+                                        <div class="column is-6" id="correlation_matrix_ordered" style="height: 400px;">
                                         </div>
                                     </div>
                                 </div>

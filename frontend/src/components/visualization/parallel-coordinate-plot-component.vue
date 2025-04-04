@@ -1,7 +1,7 @@
 <template>
     <section class="my-1">
         <article class="message">
-            <div class="message-header">Parallel Coordinate Plot</div>
+            <div class="message-header p-2">Parallel Coordinate Plot</div>
             <div class="message-body">
                 <div id="parallel_coordinate_plot"></div>
             </div>
