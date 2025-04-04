@@ -29,6 +29,8 @@
                 </div>
                 <div class="column is-12">
                     <div id="pca_matrix"></div>
+                    <button class="button is-small mt-1" :disabled="!this.pcaData" @click="downloadPCA()">Download PCA
+                        data</button>
                 </div>
                 <div class="column is-4" v-for="(item, index) in this.pcaContainers" :key="index">
                     <div :id="'pca_' + index" style="height: 300px;"></div>
@@ -124,9 +126,10 @@
 <script>
 import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
-import { tensorflow } from 'danfojs/dist/danfojs-base';
+import { tensorflow, DataFrame } from 'danfojs/dist/danfojs-base';
+import { $toCSV } from 'danfojs/dist/danfojs-base/io/browser/io.csv';
+
 import { FeatureCategories } from '@/helpers/settings'
-import { DataFrame } from 'danfojs/dist/danfojs-base';
 
 // eslint-disable-next-line no-unused-vars
 let chartController = new ChartController();
@@ -151,6 +154,7 @@ export default {
             loadingAutoEncoder: false,
             hiddenLayerSize: 2,
             iterationsTSNE: 200,
+            pcaData: null,
             iterations: 200,
             encoderActivationFunction: 'linear',
             decoderActivationFunction: 'linear',
@@ -222,7 +226,7 @@ export default {
                 }
 
                 let x = this.df.loc({ columns: numericColumns }).values;
-                await chartController.draw_pca(
+                this.pcaData = await chartController.draw_pca(
                     x,
                     this.settings.isClassification ? this.df.loc({ columns: [this.settings.modelTarget] }).values : [],
                     this.df.loc({ columns: [this.settings.modelTarget] }).values,
@@ -240,6 +244,12 @@ export default {
                 throw error;
             }
 
+        },
+        downloadPCA() {
+            console.log(this.pcaData);
+
+            let df = new DataFrame(this.pcaData)
+            $toCSV(df, { filePath: "pca_data.csv", download: true });
         },
         async findTSNE() {
             try {

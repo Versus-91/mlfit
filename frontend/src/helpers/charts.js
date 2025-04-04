@@ -1210,7 +1210,7 @@ export default class ChartController {
         //     }],
 
         // });
-
+        return pca_data.map(item => Array.from(item))
     }
     // eslint-disable-next-line no-unused-vars
     drawStackedHorizontalChart(categories, lable) {
