@@ -10,12 +10,13 @@
                             <div class="message-body">
                                 <div class="columns is-multiline">
                                     <div class="column is-12 has-text-left">
-                                        <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
-                                            this.settings.datasetShape.columns
-                                        }})</p>
+                                        <p class="title is-6 m-0 mb-1"> Data Shape: ({{
+                                            this.settings.datasetShape.count }},{{
+                                                this.settings.datasetShape.columns
+                                            }})</p>
                                     </div>
                                     <div class="column is-6">
-                                        <h5 class="title is-6 has-text-left">Numerical Features:
+                                        <h5 class="title is-6 has-text-left m-0 mb-1">Numerical Features:
                                         </h5>
                                         <div class="table-container">
 
@@ -55,10 +56,12 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <button class="button is-small" @click="applyChanges()">Apply changes</button>
+                                        <button class="button is-small is-info" @click="applyChanges()">Apply
+                                            changes</button>
                                     </div>
                                     <div class="column is-6">
-                                        <h5 class="title is-6 has-text-left">Categorical Features(Nominal/Ordinal):</h5>
+                                        <h5 class="title is-6 has-text-left m-0 mb-1">Categorical
+                                            Features(Nominal/Ordinal):</h5>
                                         <div class="table-container">
 
                                             <table class="table is-size-7 mb-1">
@@ -101,7 +104,7 @@
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-6 has-text-left">Sample Data :</h5>
-                                        <b-table class="is-size-7" :data="sampleData" :columns="datasetColumns"
+                                        <b-table class="is-size-7 m-0 mb-1" :data="sampleData" :columns="datasetColumns"
                                             :narrowed="true" :bordered="true" :striped="true"
                                             :hoverable="true"></b-table>
                                     </div>
