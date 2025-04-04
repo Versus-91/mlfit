@@ -956,7 +956,7 @@ export default class ChartController {
                 arrowside: 'start',
                 arrowcolor: this.indexToColor(i, distances.length),
                 font: {
-                    color: "black",
+                    color: this.indexToColor(i, distances.length),
                     size: 8
                 },
                 xanchor: 'left',   // Align text properly
@@ -986,15 +986,23 @@ export default class ChartController {
         ]
 
         Plotly.newPlot('correlation_circle', [], {
+            title: {
+                text: 'Biplot',
+                font: {
+                    size: 14
+                },
+                xref: 'paper',
+                x: 0.05,
+            },
             annotations: arrows,
             shapes: shapes,
             showlegend: true,
             height: 300,
             width: 300,
             margin: {
-                l: 40,
+                l: 60,
                 r: 40,
-                b: 40,
+                b: 60,
                 t: 40,
                 pad: 10
             },
@@ -1009,14 +1017,14 @@ export default class ChartController {
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
-                title: 'PC1'
+                title: 'cor with PC1'
             },
             yaxis: {
                 range: [-1.2, 1.2],
                 linecolor: 'black',
                 linewidth: 1,
                 mirror: true,
-                title: 'PC2'
+                title: 'cor with PC2'
             }
         }, { ...plotlyImageExportConfig, responsive: true });
 
@@ -1051,6 +1059,14 @@ export default class ChartController {
         var data = [trace1, trace2, trace3];
         if (drawScreePlot) {
             Plotly.newPlot('scree_plot', data, {
+                title: {
+                    text: 'Scree Plot',
+                    font: {
+                        size: 14
+                    },
+                    xref: 'paper',
+                    x: 0.05,
+                },
                 legend: {
                     x: 0.1,
                     y: 0.2,
@@ -2990,9 +3006,12 @@ export default class ChartController {
             labelEncoder.fit(labels)
             labels = labelEncoder.transform(labels)
         }
-        var uniqueLabels = [...new Set(labels)].sort((a, b) => a - b);
+        var uniqueLabels = [...new Set(labels)];
+        if (uniqueLabels.length === 2) {
+            uniqueLabels.sort()
+        }
         let points = this.uniformSplist(uniqueLabels.length)
-        let colorMapping = uniqueLabels.map((label, i) => [points[i], this.indexToColor(label, uniqueLabels.length)])
+        let colorMapping = uniqueLabels.map((label, i) => [points[i], this.indexToColor(uniqueLabels.indexOf(label), uniqueLabels.length)])
 
         var data = [{
             type: 'parcoords',

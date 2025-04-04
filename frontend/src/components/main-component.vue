@@ -56,7 +56,6 @@
                                             </table>
                                         </div>
                                         <button class="button is-small" @click="applyChanges()">apply changes</button>
-
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Categorical Features :</h5>
