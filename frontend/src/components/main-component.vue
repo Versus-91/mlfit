@@ -12,7 +12,7 @@
                                     <div class="column is-12 has-text-left">
                                         <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
-                                            }})</p>
+                                        }})</p>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Numerical Features:
@@ -55,13 +55,13 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <button class="button is-small" @click="applyChanges()">apply changes</button>
+                                        <button class="button is-small" @click="applyChanges()">Apply changes</button>
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Categorical Features(Nominal/Ordinal):</h5>
                                         <div class="table-container">
 
-                                            <table class="table is-size-7">
+                                            <table class="table is-size-7 mb-1">
                                                 <thead>
                                                     <tr>
                                                         <th></th>
@@ -93,9 +93,11 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
+                                            <p class="subtitle is-7 m-0 p-0"> Nominal features are one hot encoded and
+                                                ordinal
+                                                features are encoded in one column.</p>
                                         </div>
-                                        <p class="subtitle is-7"> Nominal features are one hot encoded and ordinal
-                                            features are encoded in one column.</p>
+
                                     </div>
                                     <div class="column is-6">
                                         <h5 class="title is-7 has-text-left">Sample Data :</h5>
