@@ -10,27 +10,27 @@
                             <div class="message-body">
                                 <div class="columns is-multiline">
                                     <div class="column is-12 has-text-left">
-                                        <p class="title is-7"> Data Shape : ({{ this.settings.datasetShape.count }},{{
+                                        <p class="title is-6"> Data Shape : ({{ this.settings.datasetShape.count }},{{
                                             this.settings.datasetShape.columns
                                         }})</p>
                                     </div>
                                     <div class="column is-6">
-                                        <h5 class="title is-7 has-text-left">Numerical Features:
+                                        <h5 class="title is-6 has-text-left">Numerical Features:
                                         </h5>
                                         <div class="table-container">
 
                                             <table class="table is-size-7">
                                                 <thead>
                                                     <tr>
-                                                        <th></th>
-                                                        <th>Name</th>
-                                                        <th>Min</th>
-                                                        <th>Max</th>
-                                                        <th>Mean</th>
-                                                        <th>Median</th>
-                                                        <th>st.d</th>
-                                                        <th>#NAs</th>
-                                                        <th>Type</th>
+                                                        <th class="is-success"></th>
+                                                        <th class="is-success">Name</th>
+                                                        <th class="is-success">Min</th>
+                                                        <th class="is-success">Max</th>
+                                                        <th class="is-success">Mean</th>
+                                                        <th class="is-success">Median</th>
+                                                        <th class="is-success">st.d</th>
+                                                        <th class="is-success">#NAs</th>
+                                                        <th class="is-success">Type</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -58,19 +58,19 @@
                                         <button class="button is-small" @click="applyChanges()">Apply changes</button>
                                     </div>
                                     <div class="column is-6">
-                                        <h5 class="title is-7 has-text-left">Categorical Features(Nominal/Ordinal):</h5>
+                                        <h5 class="title is-6 has-text-left">Categorical Features(Nominal/Ordinal):</h5>
                                         <div class="table-container">
 
                                             <table class="table is-size-7 mb-1">
                                                 <thead>
                                                     <tr>
-                                                        <th></th>
-                                                        <th>Name</th>
-                                                        <th>Shape</th>
-                                                        <th>Mode</th>
-                                                        <th>Mode percentage</th>
-                                                        <th>#NAs</th>
-                                                        <th>Typs</th>
+                                                        <th class="is-success"></th>
+                                                        <th class="is-success">Name</th>
+                                                        <th class="is-success">Shape</th>
+                                                        <th class="is-success">Mode</th>
+                                                        <th class="is-success">Mode percentage</th>
+                                                        <th class="is-success">#NAs</th>
+                                                        <th class="is-success">Typs</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -100,7 +100,7 @@
 
                                     </div>
                                     <div class="column is-6">
-                                        <h5 class="title is-7 has-text-left">Sample Data :</h5>
+                                        <h5 class="title is-6 has-text-left">Sample Data :</h5>
                                         <b-table class="is-size-7" :data="sampleData" :columns="datasetColumns"
                                             :narrowed="true" :bordered="true" :striped="true"
                                             :hoverable="true"></b-table>
