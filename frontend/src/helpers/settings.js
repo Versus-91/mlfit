@@ -47,6 +47,7 @@ export const Settings = {
         "logistic_regression": {
             "id": 1,
             "label": "Logistic Regression",
+            "title": "Logi.Reg",
             "value": 1,
             "options": {
                 "regularization": {
@@ -61,6 +62,7 @@ export const Settings = {
         "discriminant_analysis": {
             "id": 2,
             "label": "Discriminant Analysis",
+            "title": "DA",
             "value": 2,
             "options": {
                 "type": {
@@ -79,6 +81,7 @@ export const Settings = {
         "k_nearest_neighbour": {
             "id": 3,
             "label": "k nearest neighbour",
+            "title": "KNN",
             "value": 3,
             "options": {
                 "min": {
@@ -102,6 +105,7 @@ export const Settings = {
         "support_vector_machine": {
             "id": 4,
             "label": "Support vector machine",
+            "title": "SVM",
             "value": 4,
             "options": {
                 "kernel": {
@@ -134,6 +138,7 @@ export const Settings = {
         "random_forest": {
             "id": 5,
             "label": "Random forest",
+            "title": "RF",
             "value": 5,
             "options": {
                 "estimators": {
@@ -163,6 +168,7 @@ export const Settings = {
         "boosting": {
             "id": 6,
             "label": "Boosting",
+            "title": "Boosting",
             "value": 6,
             "options": {
                 "booster": {
@@ -191,6 +197,7 @@ export const Settings = {
         },
         "naive_bayes": {
             "label": "Naive Bayes",
+            "title": "NB",
             "value": 7,
             "id": 7,
             "options": {
@@ -217,6 +224,7 @@ export const Settings = {
     "regression": {
         "linear_regression": {
             "label": "Linear Regression",
+            "title": "Lin.Reg",
             "value": 9,
             "id": 9,
             "feature_selection": ["no", "Lasso", "ridge"],
@@ -232,6 +240,7 @@ export const Settings = {
         },
         "polynomial_regression": {
             "label": "Polynomial Regression",
+            "title": "Poly.Reg",
             "value": 14,
             "id": 14,
             "feature_selection": ["no", "Lasso", "ridge"],
@@ -252,6 +261,7 @@ export const Settings = {
         },
         "k_nearest_neighbour": {
             "label": "k nearest neighbour Regression",
+            "title": "KNN",
             "value": 10,
             "id": 10,
             "options": {
@@ -269,6 +279,7 @@ export const Settings = {
         },
         "boosting": {
             "label": "Boosting Regression",
+            "title": "Boosting",
             "value": 11,
             "id": 11,
             "options": {
@@ -298,6 +309,7 @@ export const Settings = {
         },
         "support_vector_machine": {
             "label": "Support vector machine Regression",
+            "title": "SVM.Reg",
             "value": 12,
             "id": 12,
             "options": {
@@ -330,6 +342,7 @@ export const Settings = {
         },
         "random_forest": {
             "label": "Random forest Regression",
+            "title": "RF.Reg",
             "value": 13,
             "id": 13,
             "options": {
@@ -359,6 +372,7 @@ export const Settings = {
         },
         "kernel_regression": {
             "label": "Kernel Regression",
+            "title": "Ker.Reg",
             "value": 15,
             "id": 15,
             "options": {
@@ -370,6 +384,7 @@ export const Settings = {
         },
         "bspline_regression": {
             "label": "Bspline Regression",
+            "title": "Bspl.Reg",
             "value": 16,
             "id": 16,
 

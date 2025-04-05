@@ -36,7 +36,7 @@
                 <b-field label="Model" :label-position="'on-border'">
                     <b-select :disabled="tuneModel" :expanded="true" v-model="modelOption" size="is-small">
                         <option v-for="option in modelOptions" :value="option.id" :key="option.id">
-                            {{ option.label }}
+                            {{ option.title }}
                         </option>
                     </b-select>
                     <b-button @click="configureModel" size="is-small" icon-pack="fas"
@@ -181,7 +181,7 @@ export default {
                         model.options[key].value = model.options[key]?.default;
                     }
                     this.modelConfigurations = model.options;
-                    this.modelName = model.label
+                    this.modelName = model.title
                 }
             }
         },
@@ -290,7 +290,7 @@ export default {
                 }))
                 let x_train, y_train, x_test, y_test;
                 if (cross_validation_setting === CV_OPTIONS.KFOLD &&
-                    (this.modelName != Settings.classification.logistic_regression.name || this.modelName != Settings.regression.linear_regression.name)) {
+                    (this.modelName != Settings.classification.logistic_regression.title || this.modelName != Settings.regression.linear_regression.title)) {
                     let performances = [];
                     for (let i = 1; i < 6; i++) {
                         [x_train, y_train, x_test, y_test] = this.kfoldSplit(filterd_dataset, targets, i);

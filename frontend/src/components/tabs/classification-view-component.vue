@@ -112,7 +112,7 @@
                 <div class="message-body mx-1">
                     <div class="columns is-multiline is-gapless">
                         <div class="column is-6" style="height: 400px;" :id="'knn_table_' + result.id"
-                            v-if="result.name.toString().includes('neighbour')">
+                            v-if="result.name.toString().toLowerCase().includes('knn')">
                         </div>
                         <div :id="'pdp_containers_' + result.id"></div>
                     </div>
