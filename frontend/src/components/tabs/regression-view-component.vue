@@ -135,9 +135,10 @@
                 </div>
                 <div class="column is-12">
                     <article class="message is-info">
-                        <div class="message-header p-2"> Partial Dependence Plot and Permutation Feature Importance</div>
+                        <div class="message-header p-2"> Partial Dependence Plot and Permutation Feature Importance
+                        </div>
                         <div class="message-body">
-                            <div class="columns is-multiline">
+                            <div class="columns is-multiline is-gapless">
                                 <div class="column is-6" style="height: 400px;" v-show="result.hasExplaination"
                                     :id="'pfi_boxplot_' + result.id">
                                 </div>

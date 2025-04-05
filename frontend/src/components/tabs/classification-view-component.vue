@@ -110,7 +110,7 @@
             <article class="message is-info">
                 <div class="message-header p-2"> Partial Dependence Plot</div>
                 <div class="message-body mx-1">
-                    <div class="columns is-multiline">
+                    <div class="columns is-multiline is-gapless">
                         <div class="column is-6" style="height: 400px;" :id="'knn_table_' + result.id"
                             v-if="result.name.toString().includes('neighbour')">
                         </div>
