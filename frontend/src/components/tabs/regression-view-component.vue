@@ -122,16 +122,27 @@
             </div>
         </div>
         <div class="column is-12" v-else>
-            <div class="columns is-multiline">
-                <div class="column is-6">
-                    <div :id="'regression_y_yhat_' + result.id" width="100%" style="height:300px">
-                    </div>
-                </div>
-                <div class="column is-6">
-                    <div :id="'errors_' + result.id" width="100%" style="height:300px"></div>
-                </div>
-                <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
-                    v-if="result.name.toString().includes('neighbour')">
+            <div class="columns is-multiline is-gapless">
+                <div class="column is-12">
+                    <article class="message is-info">
+                        <div class="message-header p-2"> Predictions and residuals plot
+                        </div>
+                        <div class="message-body">
+                            <div class="columns is-multiline is-gapless">
+
+                                <div class="column is-6">
+                                    <div :id="'regression_y_yhat_' + result.id" width="100%" style="height:300px">
+                                    </div>
+                                </div>
+                                <div class="column is-6">
+                                    <div :id="'errors_' + result.id" width="100%" style="height:300px"></div>
+                                </div>
+                                <div class="column is-6" style="height: 350px;" :id="'knn_table_' + result.id"
+                                    v-if="result.name.toString().toLowerCase().includes('knn')">
+                                </div>
+                            </div>
+                        </div>
+                    </article>
                 </div>
                 <div class="column is-12">
                     <article class="message is-info">

@@ -876,15 +876,15 @@ export default class UI {
             name: "y",
             mode: 'markers',
             marker: {
-                color: 'black',
-                size: 2
+                color: 'blue',
+                size: 4
             },
         }, {
             x: y_test,
             y: y_test,
             mode: 'lines',
             type: 'scatter',
-            line: { color: 'red', dash: 'dash' },
+            line: { color: 'red', dash: 'solid' },
             name: 'y = x line'
         }], {
             height: 300,
@@ -892,7 +892,7 @@ export default class UI {
             title: {
                 text: title,
                 font: {
-                    size: 10
+                    size: 14
                 },
                 xref: 'paper',
                 x: 0.05,
@@ -914,7 +914,7 @@ export default class UI {
                 linewidth: 1,
                 mirror: true,
                 title: {
-                    text: 'predictions',
+                    text: 'Predictions',
                     font: {
                         size: 14,
                     }
@@ -924,63 +924,76 @@ export default class UI {
                 l: 40,
                 r: 10,
                 b: 40,
-                t: 20,
+                t: 40,
                 pad: 0
             }
         }, {
-            responsive: true, staticPlot: true,
+            responsive: true, staticPlot: false,
         });
     }
     residual_plot(y, residuals, container, title = '') {
-        Plotly.newPlot(container, [{
-            x: y,
-            y: residuals,
-            type: 'scatter',
-            name: "y",
-            mode: 'markers',
-            marker: {
-                color: 'black',
-                size: 2
-            },
-        }], {
-            title: {
-                text: title,
-                font: {
-                    size: 10
-                },
-                xref: 'paper',
-                x: 0.05,
-            },
-            showlegend: false,
-            xaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
-                title: {
-                    text: 'y',
-                    font: {
-                        size: 14,
-                    }
+        Plotly.newPlot(container, [
+
+            {
+                x: y,
+                y: residuals,
+                type: 'scatter',
+                name: "y",
+                mode: 'markers',
+                marker: {
+                    color: 'blue',
+                    size: 4
                 },
             },
-            yaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
-                title: {
-                    text: 'residuals',
-                    font: {
-                        size: 14,
-                    }
-                }
-            },
-            margin: {
-                l: 40,
-                r: 10,
-                b: 40,
-                t: 20,
-                pad: 0
+            {
+                x: y,
+                y: y.map(m => 0),
+                mode: 'lines',
+                type: 'scatter',
+                line: { color: 'red', dash: 'solid' },
             }
-        }, { responsive: true, staticPlot: true, });
+        ],
+            {
+                height: 300,
+                width: 300,
+                title: {
+                    text: title,
+                    font: {
+                        size: 14
+                    },
+                    xref: 'paper',
+                    x: 0.05,
+                },
+                showlegend: false,
+                xaxis: {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                    title: {
+                        text: 'y',
+                        font: {
+                            size: 14,
+                        }
+                    },
+                },
+                yaxis: {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                    title: {
+                        text: 'Residuals',
+                        font: {
+                            size: 14,
+                        }
+                    }
+                },
+                margin: {
+                    l: 40,
+                    r: 10,
+                    b: 40,
+                    t: 40,
+                    pad: 0
+                }
+            }, { responsive: true, staticPlot: false });
     }
 }

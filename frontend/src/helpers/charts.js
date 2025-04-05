@@ -1629,7 +1629,7 @@ export default class ChartController {
             y: y_test,
             mode: 'lines',
             type: 'scatter',
-            line: { color: 'red', dash: 'dash' },
+            line: { color: 'red', dash: 'solids' },
             name: 'y = x line'
         }], {
             title: {
@@ -2206,7 +2206,7 @@ export default class ChartController {
                 "orientation": "h",
                 font: {
                     family: 'sans-serif',
-                    size: 8,
+                    size: 10,
                     color: '#000'
                 },
             },
