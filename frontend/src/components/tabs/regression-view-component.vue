@@ -125,7 +125,7 @@
             <div class="columns is-multiline is-gapless">
                 <div class="column is-12">
                     <article class="message is-info">
-                        <div class="message-header p-2"> Predictions and residuals plot
+                        <div class="message-header p-2"> Predictions and Residuals Plot
                         </div>
                         <div class="message-body">
                             <div class="columns is-multiline is-gapless">

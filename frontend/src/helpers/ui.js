@@ -5,7 +5,14 @@ import { MinMaxScaler, StandardScaler } from 'danfojs/dist/danfojs-base';
 import { calculateRSquared, calculateMSE, encode_name } from './utils';
 import { FeatureCategories, Settings } from "./settings.js";
 import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
-
+const plotlyImageExportConfig = {
+    toImageButtonOptions: {
+        format: 'png', // one of png, svg, jpeg, webp
+        height: null,
+        width: null,
+        scale: 2
+    }
+};
 export default class UI {
     constructor(parser, chart_controller) {
         this.data_parser = parser
@@ -868,132 +875,5 @@ export default class UI {
             }
         });
     }
-    yhat_plot(y_test, predictions, container, title = '') {
-        Plotly.newPlot(container, [{
-            x: y_test,
-            y: predictions,
-            type: 'scatter',
-            name: "y",
-            mode: 'markers',
-            marker: {
-                color: 'blue',
-                size: 4
-            },
-        }, {
-            x: y_test,
-            y: y_test,
-            mode: 'lines',
-            type: 'scatter',
-            line: { color: 'red', dash: 'solid' },
-            name: 'y = x line'
-        }], {
-            height: 300,
-            width: 300,
-            title: {
-                text: title,
-                font: {
-                    size: 14
-                },
-                xref: 'paper',
-                x: 0.05,
-            },
-            showlegend: false,
-            xaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
-                title: {
-                    text: 'y',
-                    font: {
-                        size: 14,
-                    }
-                },
-            },
-            yaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
-                title: {
-                    text: 'Predictions',
-                    font: {
-                        size: 14,
-                    }
-                }
-            },
-            margin: {
-                l: 40,
-                r: 10,
-                b: 40,
-                t: 40,
-                pad: 0
-            }
-        }, {
-            responsive: true, staticPlot: false,
-        });
-    }
-    residual_plot(y, residuals, container, title = '') {
-        Plotly.newPlot(container, [
 
-            {
-                x: y,
-                y: residuals,
-                type: 'scatter',
-                name: "y",
-                mode: 'markers',
-                marker: {
-                    color: 'blue',
-                    size: 4
-                },
-            },
-            {
-                x: y,
-                y: y.map(m => 0),
-                mode: 'lines',
-                type: 'scatter',
-                line: { color: 'red', dash: 'solid' },
-            }
-        ],
-            {
-                height: 300,
-                width: 300,
-                title: {
-                    text: title,
-                    font: {
-                        size: 14
-                    },
-                    xref: 'paper',
-                    x: 0.05,
-                },
-                showlegend: false,
-                xaxis: {
-                    linecolor: 'black',
-                    linewidth: 1,
-                    mirror: true,
-                    title: {
-                        text: 'y',
-                        font: {
-                            size: 14,
-                        }
-                    },
-                },
-                yaxis: {
-                    linecolor: 'black',
-                    linewidth: 1,
-                    mirror: true,
-                    title: {
-                        text: 'Residuals',
-                        font: {
-                            size: 14,
-                        }
-                    }
-                },
-                margin: {
-                    l: 40,
-                    r: 10,
-                    b: 40,
-                    t: 40,
-                    pad: 0
-                }
-            }, { responsive: true, staticPlot: false });
-    }
 }

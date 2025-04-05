@@ -1624,19 +1624,24 @@ export default class ChartController {
             type: 'scatter',
             name: "y",
             mode: 'markers',
+            marker: {
+                color: 'blue',
+                size: 4
+            },
         }, {
             x: y_test,
             y: y_test,
             mode: 'lines',
             type: 'scatter',
-            line: { color: 'red', dash: 'solids' },
+            line: { color: 'red', dash: 'solid' },
             name: 'y = x line'
         }], {
+            height: 300,
+            width: 300,
             title: {
                 text: title,
                 font: {
-                    family: 'sans-serif',
-                    size: 10
+                    size: 14
                 },
                 xref: 'paper',
                 x: 0.05,
@@ -1649,9 +1654,7 @@ export default class ChartController {
                 title: {
                     text: 'y',
                     font: {
-                        family: 'sans-serif',
                         size: 14,
-                        color: '#7f7f7f'
                     }
                 },
             },
@@ -1660,11 +1663,9 @@ export default class ChartController {
                 linewidth: 1,
                 mirror: true,
                 title: {
-                    text: 'predictions',
+                    text: 'Predictions',
                     font: {
-                        family: 'sans-serif',
                         size: 14,
-                        color: '#7f7f7f'
                     }
                 }
             },
@@ -1672,67 +1673,77 @@ export default class ChartController {
                 l: 40,
                 r: 10,
                 b: 40,
-                t: 20,
+                t: 40,
                 pad: 0
             }
-        }, { responsive: true, });
+        }, {
+            responsive: true, staticPlot: false, ...plotlyImageExportConfig, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath ']
+        });
     }
     residual_plot(y, residuals, container, title = '') {
-        Plotly.newPlot(container, [{
-            x: y,
-            y: residuals,
-            type: 'scatter',
-            name: "y",
-            mode: 'markers',
-            marker: {
-                color: 'rgb(17, 157, 255)',
-                size: 7
-            },
-        }], {
-            title: {
-                text: title,
-                font: {
-                    family: 'sans-serif',
-                    size: 10
-                },
-                xref: 'paper',
-                x: 0.05,
-            },
-            showlegend: false,
-            xaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
-                title: {
-                    text: 'y',
-                    font: {
-                        family: 'sans-serif',
-                        size: 14,
-                        color: '#7f7f7f'
-                    }
+        Plotly.newPlot(container, [
+
+            {
+                x: y,
+                y: residuals,
+                type: 'scatter',
+                name: "y",
+                mode: 'markers',
+                marker: {
+                    color: 'blue',
+                    size: 4
                 },
             },
-            yaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
-                title: {
-                    text: 'residuals',
-                    font: {
-                        family: 'sans-serif',
-                        size: 14,
-                        color: '#7f7f7f'
-                    }
-                }
-            },
-            margin: {
-                l: 40,
-                r: 10,
-                b: 40,
-                t: 20,
-                pad: 0
+            {
+                x: y,
+                y: y.map(m => 0),
+                mode: 'lines',
+                type: 'scatter',
+                line: { color: 'red', dash: 'solid' },
             }
-        }, { responsive: true, });
+        ],
+            {
+                height: 300,
+                width: 300,
+                title: {
+                    text: title,
+                    font: {
+                        size: 14
+                    },
+                    xref: 'paper',
+                    x: 0.05,
+                },
+                showlegend: false,
+                xaxis: {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                    title: {
+                        text: 'y',
+                        font: {
+                            size: 14,
+                        }
+                    },
+                },
+                yaxis: {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                    title: {
+                        text: 'Residuals',
+                        font: {
+                            size: 14,
+                        }
+                    }
+                },
+                margin: {
+                    l: 40,
+                    r: 10,
+                    b: 40,
+                    t: 40,
+                    pad: 0
+                }
+            }, { responsive: true, ...plotlyImageExportConfig, staticPlot: false, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
     }
 
     ScatterplotMatrix(items, features, labels, number_of_categoricals, is_classification = true, numeric_columns, categorical_columns, dataset) {
@@ -2104,12 +2115,14 @@ export default class ChartController {
         var layout = {
             showlegend: true,
             legend: {
-                "orientation": "h",
+                x: 0.1,
+                y: 0.2,
+                traceorder: 'normal',
+                orientation: "h",
                 font: {
-                    family: 'sans-serif',
-                    size: 8,
-                    color: '#000'
+                    size: 12,
                 },
+                bgcolor: 'rgba(0,0,0,0)',
             },
             xaxis: {
                 linecolor: 'black',
@@ -2203,12 +2216,14 @@ export default class ChartController {
         var layout = {
             showlegend: true,
             legend: {
-                "orientation": "h",
+                x: 0.1,
+                y: 0.2,
+                traceorder: 'normal',
+                orientation: "h",
                 font: {
-                    family: 'sans-serif',
                     size: 10,
-                    color: '#000'
                 },
+                bgcolor: 'rgba(0,0,0,0)',
             },
             xaxis: {
                 title: {
