@@ -73,7 +73,7 @@
                                                         <th class="is-success">Mode</th>
                                                         <th class="is-success">Mode percentage</th>
                                                         <th class="is-success">#NAs</th>
-                                                        <th class="is-success">Typs</th>
+                                                        <th class="is-success">Type</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
