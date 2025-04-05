@@ -2632,7 +2632,7 @@ export default class ChartController {
                     x: Array.from(importance),
                     type: 'box',
                     name: columns[index],
-                    marker: { color: this.indexToColorSequential(avgs[index] + 0.1, min, max) },
+                    marker: { color: this.indexToColor(index, importances.length) },
                 }
             )
         });
