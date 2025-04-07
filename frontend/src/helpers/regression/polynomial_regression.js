@@ -201,21 +201,21 @@ export default class PolynomialRegression extends RegressionModel {
 
                     z <- modelplot(models =models,coef_omit = 'Interc')
                     qqplot_ols <-ggplot(data.frame(residuals = residuals_ols), aes(sample = residuals_ols)) +
-                        stat_qq() +
+                        stat_qq(color = "blue") +
                         stat_qq_line(col = "red") +
                         labs(title = "QQ Plot of Residuals",
                             x = "Theoretical Quantiles",
                             y = "Sample Quantiles") +
                         theme_bw()
                     qqplot_1se <-ggplot(data.frame(residuals = residuals_1se), aes(sample = residuals_1se)) +
-                        stat_qq() +
+                        stat_qq(color = "blue") +
                         stat_qq_line(col = "red") +
                         labs(title = "QQ Plot of Residuals",
                             x = "Theoretical Quantiles",
                             y = "Sample Quantiles") +
                         theme_bw()
                     qqplot_min <-ggplot(data.frame(residuals = residuals_min), aes(sample = residuals_min)) +
-                        stat_qq() +
+                        stat_qq(color = "blue") +
                         stat_qq_line(col = "red") +
                         labs(title = "QQ Plot of Residuals",
                             x = "Theoretical Quantiles",
@@ -357,7 +357,7 @@ export default class PolynomialRegression extends RegressionModel {
 
             size: 10
         };
-        this.summary.qqplot_ols_plot.data[0].marker.size = 2;
+        this.summary.qqplot_ols_plot.data[0].marker.size = 3;
         this.summary.qqplot_ols_plot.layout.xaxis.title.font = {
 
             size: 10
@@ -373,7 +373,7 @@ export default class PolynomialRegression extends RegressionModel {
 
             size: 10
         };
-        this.summary.qqplot_1se_plot.data[0].marker.size = 2;
+        this.summary.qqplot_1se_plot.data[0].marker.size = 3;
 
         this.summary.qqplot_1se_plot.layout.xaxis.title.font = {
 
@@ -398,7 +398,7 @@ export default class PolynomialRegression extends RegressionModel {
 
             size: 10
         };
-        this.summary.qqplot_min_plot.data[0].marker.size = 2;
+        this.summary.qqplot_min_plot.data[0].marker.size = 3;
         return this.summary['predictions'];
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {

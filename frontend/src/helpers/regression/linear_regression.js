@@ -181,21 +181,21 @@ export default class LinearRegression extends RegressionModel {
                         )
                     z <- modelplot(models =models,coef_omit = 'Interc')
                     qqplot_ols <-ggplot(data.frame(residuals = residuals_ols), aes(sample = residuals_ols)) +
-                        stat_qq() +
+                        stat_qq(color = "blue") +
                         stat_qq_line(col = "red") +
                         labs(title = "QQ Plot of Residuals",
                             x = "Theoretical Quantiles",
                             y = "Sample Quantiles") +
                         theme_bw()
                     qqplot_1se <-ggplot(data.frame(residuals = residuals_1se), aes(sample = residuals_1se)) +
-                        stat_qq() +
+                        stat_qq(color = "blue") +
                         stat_qq_line(col = "red") +
                         labs(title = "QQ Plot of Residuals",
                             x = "Theoretical Quantiles",
                             y = "Sample Quantiles") +
                         theme_bw()
                     qqplot_min <-ggplot(data.frame(residuals = residuals_min), aes(sample = residuals_min)) +
-                        stat_qq() +
+                        stat_qq(color = "blue") +
                         stat_qq_line(col = "red") +
                         labs(title = "QQ Plot of Residuals",
                             x = "Theoretical Quantiles",
@@ -312,7 +312,7 @@ export default class LinearRegression extends RegressionModel {
         };
 
         coefs_plot.layout.xaxis.linecolor = 'rgba(235, 235, 235, 1)';
-        coefs_plot.layout.xaxis.linewidth = 2;
+        coefs_plot.layout.xaxis.linewidth = 3;
         coefs_plot.layout.xaxis.mirror = true;
         coefs_plot.layout.xaxis.zeroline = true;
 
@@ -335,7 +335,8 @@ export default class LinearRegression extends RegressionModel {
 
 
 
-        this.summary.qqplot_ols_plot.data[0].marker.size = 2;
+        this.summary.qqplot_ols_plot.data[0].marker.size = 3;
+        this.summary.qqplot_ols_plot.data[0].marker.color = "blue";
         this.summary.qqplot_ols_plot.layout.height = 300
         this.summary.qqplot_ols_plot.layout.width = 300
 
@@ -354,7 +355,7 @@ export default class LinearRegression extends RegressionModel {
 
             size: 10
         };
-        this.summary.qqplot_1se_plot.data[0].marker.size = 2;
+        this.summary.qqplot_1se_plot.data[0].marker.size = 3;
 
         this.summary.qqplot_1se_plot.layout.xaxis.title.font = {
 
@@ -382,7 +383,7 @@ export default class LinearRegression extends RegressionModel {
         };
 
 
-        this.summary.qqplot_min_plot.data[0].marker.size = 2;
+        this.summary.qqplot_min_plot.data[0].marker.size = 1;
         return this.summary['predictions'];
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
@@ -447,12 +448,12 @@ export default class LinearRegression extends RegressionModel {
         await Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot, { autosize: true, staticPlot: true, });
         await Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot, { autosize: true, staticPlot: true, });
         await Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot, { autosize: true, staticPlot: true, });
-        current.ui.yhat_plot(y_test, this.summary['predictions'], 'regression_y_yhat_' + current.id, 'OLS predictions')
-        current.ui.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + current.id, 'lasso min predictions')
-        current.ui.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + current.id, 'lasso 1se predictions')
-        current.ui.residual_plot(y_test, this.summary['residuals_ols'], 'regression_residual_' + current.id, 'OLS residuals')
-        current.ui.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + current.id, 'lasso min residuals')
-        current.ui.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + current.id, 'lasso 1se residuals')
+        current.chartController.yhat_plot(y_test, this.summary['predictions'], 'regression_y_yhat_' + current.id, 'OLS predictions')
+        current.chartController.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + current.id, 'lasso min predictions')
+        current.chartController.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + current.id, 'lasso 1se predictions')
+        current.chartController.residual_plot(y_test, this.summary['residuals_ols'], 'regression_residual_' + current.id, 'OLS residuals')
+        current.chartController.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + current.id, 'lasso min residuals')
+        current.chartController.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + current.id, 'lasso 1se residuals')
         this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
         window.dispatchEvent(new Event('resize'));
 

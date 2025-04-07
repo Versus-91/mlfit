@@ -33,7 +33,7 @@
 
             </b-message>
         </div>
-        <div class="column is-12" v-if="result.name === 'Linear Regression' || result.name === 'Polynomial Regression'">
+        <div class="column is-12" v-if="result.name.includes('Lin.Reg') || result.name.includes('Poly.Reg')">
             <div class="columns is-multiline">
 
                 <div class="column is-7">

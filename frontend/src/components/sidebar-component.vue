@@ -338,7 +338,7 @@ export default {
                 model.hasExplaination = this.explainModel;
                 if (this.usePCAs) {
                     const pca = new PCA();
-                    let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
+                    let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1 && column.name != this.modelTarget).map(column => column.name);
                     let [pca_train, _, __, ___, ____, pca_test] = await pca.predict(x_train.loc({ columns: numericColumns }).values,
                         this.numberOfComponents, x_test.loc({ columns: numericColumns }).values)
                     pca_train = pca_train.map(m => [].slice.call(m))
