@@ -52,14 +52,14 @@
                             :id="'roc_plot_' + result.id">
                         </div>
 
-                        <div v-show="result.hasExplaination && result.name !== 'Logistic Regression'"
+                        <div v-show="result.hasExplaination && result.if !== 1"
                             class="column is-6 my-1" style="height: 400px;" :id="'pfi_boxplot_' + result.id">
                         </div>
                     </div>
                 </div>
             </article>
         </div>
-        <div class="column is-12" v-show="result.name === 'Logistic Regression'">
+        <div class="column is-12" v-show="result.id === 1">
             <div class="columns is-multiline">
                 <div class="column is-7">
                     <div class="table-container">
@@ -106,7 +106,7 @@
                 </div>
             </div>
         </div>
-        <div class="column is-12" v-show="result.hasExplaination && result.name !== 'Logistic Regression'">
+        <div class="column is-12" v-show="result.hasExplaination && result.id !== 1">
             <article class="message is-info">
                 <div class="message-header p-2"> Partial Dependence Plot</div>
                 <div class="message-body mx-1">

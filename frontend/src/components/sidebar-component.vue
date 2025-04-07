@@ -367,7 +367,7 @@ export default {
                             id: this.modelOption,
                             labels: uniqueLabels
                         },
-                        name: this.modelName,
+                        name: this.usePCAs ? 'PC.' + this.modelName : this.modelName,
                         datasetName: this.settings.getDatasetName,
                         modelTask: this.settings.classificationTask,
                         metrics: metrics,

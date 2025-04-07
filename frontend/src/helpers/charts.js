@@ -1749,10 +1749,13 @@ export default class ChartController {
     ScatterplotMatrix(items, features, labels, number_of_categoricals, is_classification = true, numeric_columns, categorical_columns, dataset) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
+                
                 let unique_labels = [...new Set(labels)];
                 if (unique_labels.length === 2) {
                     unique_labels.sort()
                 }
+                console.log('splom', unique_labels);
+
                 var colors = labels.map(label => this.indexToColor(unique_labels.indexOf(label), unique_labels.length));
                 let traces = []
                 let index = 1;
@@ -1840,7 +1843,7 @@ export default class ChartController {
                                             name: 'Red',
                                             fill: 'tozeroy',
                                             line: {
-                                                color: this.indexToColor(i, allData.length),
+                                                color: this.indexToColor(i, unique_labels.length),
                                                 opacity: 0.7,
                                                 width: 3
                                             }
@@ -3037,6 +3040,8 @@ export default class ChartController {
         if (uniqueLabels.length === 2) {
             uniqueLabels.sort()
         }
+        console.log('pc labels', uniqueLabels);
+
         let points = this.uniformSplist(uniqueLabels.length)
         let colorMapping = uniqueLabels.map((label, i) => [points[i], this.indexToColor(uniqueLabels.indexOf(label), uniqueLabels.length)])
 
