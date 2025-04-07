@@ -460,12 +460,12 @@ export default class PolynomialRegression extends RegressionModel {
         Plotly.newPlot('qqplot_ols_' + current.id, current.summary.qqplot_ols_plot);
         Plotly.newPlot('qqplot_min_' + current.id, current.summary.qqplot_min_plot);
         Plotly.newPlot('qqplot_1se_' + current.id, current.summary.qqplot_1se_plot);
-        current.ui.yhat_plot(y_test, this.summary['predictions'], 'regression_y_yhat_' + + current.id, 'OLS predictions')
-        current.ui.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + + current.id, 'lasso min predictions')
-        current.ui.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + + current.id, 'lasso 1se predictions')
-        current.ui.residual_plot(y_test, this.summary['residuals_ols'], 'regression_residual_' + + current.id, 'OLS residuals')
-        current.ui.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + + current.id, 'lasso min residuals')
-        current.ui.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + + current.id, 'lasso 1se residuals')
+        current.chartController.yhat_plot(y_test, this.summary['predictions'], 'regression_y_yhat_' + + current.id, 'OLS predictions')
+        current.chartController.yhat_plot(y_test, this.summary['predictionsmin'], 'regression_y_yhat_min_' + + current.id, 'lasso min predictions')
+        current.chartController.yhat_plot(y_test, this.summary['predictions1se'], 'regression_y_yhat_1se_' + + current.id, 'lasso 1se predictions')
+        current.chartController.residual_plot(y_test, this.summary['residuals_ols'], 'regression_residual_' + + current.id, 'OLS residuals')
+        current.chartController.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + + current.id, 'lasso min residuals')
+        current.chartController.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + + current.id, 'lasso 1se residuals')
         this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
     }
 
