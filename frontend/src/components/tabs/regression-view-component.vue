@@ -75,48 +75,67 @@
                 </div>
                 <div class="column is-5" :id="'parameters_plot_' + result.id" width="100%">
                 </div>
-                <!-- <div class="column is-12" :id="'metrics_' + result.id">
-            </div> -->
+                <div class="column is-12 mb-2">
+                    <div class="message is-info">
+                        <div class="message-header p-2">
+                            Regularization Plots
+                        </div>
+                        <div class="message-body">
+                            <div class="columns is-multiline is-gapless">
+                                <div class="column is-6" :id="'errors_' + result.id" width="100%" style="height:250px">
+                                </div>
+                                <div class="column is-6" :id="'regularization_' + result.id" width="100%"
+                                    style="height:250px">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="message is-info">
+                    <div class="message-header p-2">
+                        Residuals Plots
+                    </div>
+                    <div class="message-body">
+                        <div class="columns is-multiline is-gapless">
 
-                <div class="column is-6" :id="'errors_' + result.id" width="100%" style="height:250px">
-                </div>
-                <div class="column is-6" :id="'regularization_' + result.id" width="100%" style="height:250px">
-                </div>
-                <div class="column is-4">
-                    <div :id="'regression_y_yhat_' + result.id" width="100%" style="height:300px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'regression_y_yhat_min_' + result.id" width="100%" style="height:300px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'regression_y_yhat_1se_' + result.id" width="100%" style="height:300px">
-                    </div>
-                </div>
+                            <div class="column is-4">
+                                <div :id="'regression_y_yhat_' + result.id" width="100%" style="height:300px">
+                                </div>
+                            </div>
+                            <div class="column is-4">
+                                <div :id="'regression_y_yhat_min_' + result.id" width="100%" style="height:300px">
+                                </div>
+                            </div>
+                            <div class="column is-4">
+                                <div :id="'regression_y_yhat_1se_' + result.id" width="100%" style="height:300px">
+                                </div>
+                            </div>
 
-                <div class="column is-4">
-                    <div :id="'regression_residual_' + result.id" width="100%" style="height:300px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'regression_residual_min_' + result.id" width="100%" style="height:300px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'regression_residual_1se_' + result.id" width="100%" style="height:300px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'qqplot_ols_' + result.id" width="100%" style="height:300px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'qqplot_min_' + result.id" width="100%" style="height:300px">
-                    </div>
-                </div>
-                <div class="column is-4">
-                    <div :id="'qqplot_1se_' + result.id" width="100%" style="height:300px">
+                            <div class="column is-4">
+                                <div :id="'regression_residual_' + result.id" width="100%" style="height:300px">
+                                </div>
+                            </div>
+                            <div class="column is-4">
+                                <div :id="'regression_residual_min_' + result.id" width="100%" style="height:300px">
+                                </div>
+                            </div>
+                            <div class="column is-4">
+                                <div :id="'regression_residual_1se_' + result.id" width="100%" style="height:300px">
+                                </div>
+                            </div>
+                            <div class="column is-4">
+                                <div :id="'qqplot_ols_' + result.id" width="100%" style="height:300px">
+                                </div>
+                            </div>
+                            <div class="column is-4">
+                                <div :id="'qqplot_min_' + result.id" width="100%" style="height:300px">
+                                </div>
+                            </div>
+                            <div class="column is-4">
+                                <div :id="'qqplot_1se_' + result.id" width="100%" style="height:300px">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
