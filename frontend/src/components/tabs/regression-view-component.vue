@@ -34,7 +34,7 @@
             </b-message>
         </div>
         <div class="column is-12" v-if="result.name.includes('Lin.Reg') || result.name.includes('Poly.Reg')">
-            <div class="columns is-multiline">
+            <div class="columns is-multiline is-gapless">
 
                 <div class="column is-7">
                     <div class="table-container">
@@ -159,6 +159,7 @@
                 </div>
             </div>
         </div>
+
     </div>
 </template>
 

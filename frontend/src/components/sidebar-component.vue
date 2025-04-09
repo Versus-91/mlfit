@@ -236,15 +236,13 @@ export default {
                 if (!this.modelConfigurations) {
                     this.getDefaultModelConfiguration()
                 }
-                let seed = this.seed;
+                let seed = +this.seed;
                 this.settings.setSeed(seed)
                 let categoricalFeatures = []
                 let dataset = null;
-                if (this.seed != this.settings.getSeed) {
-                    dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
-                } else {
-                    dataset = await this.dataframe
-                }
+                this.dataframe = new DataFrame(this.settings.rawData);
+                dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
+
                 let numericColumns = this.settings.items.filter(m => m.selected && m.type === FeatureCategories.Numerical.id).map(m => m.name);
                 const target = this.settings.modelTarget;
                 dataset = handle_missing_values(dataset)
@@ -347,6 +345,7 @@ export default {
                     x_train = new DataFrame(pca_train, { columns: cols })
                     x_test = new DataFrame(pca_test, { columns: cols })
                 }
+                console.log(new Set(encoded_y));
 
                 let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
                 let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
@@ -378,6 +377,7 @@ export default {
                         transformations: [...this.settings.transformationsList.filter(feature => feature.type != 0)],
                         tables: model.tables,
                         plots: model.plots,
+                        predictions: predictions
 
                     });
                     this.settings.setActiveTab(2);

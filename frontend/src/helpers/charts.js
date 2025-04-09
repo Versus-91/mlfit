@@ -1680,6 +1680,62 @@ export default class ChartController {
             responsive: true, staticPlot: false, ...plotlyImageExportConfig, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath ']
         });
     }
+    comparison(x, y, container, title = '', yLabel = '') {
+        Plotly.newPlot(container, [{
+            x: x,
+            y: y,
+            type: 'scatter',
+            name: "y",
+            mode: 'line',
+            marker: {
+                color: 'blue',
+                size: 4
+            },
+        }], {
+            height: 300,
+            width: 300,
+            title: {
+                text: title,
+                font: {
+                    size: 14
+                },
+                xref: 'paper',
+                x: 0.05,
+            },
+            showlegend: false,
+            xaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: {
+                    text: 'y',
+                    font: {
+                        size: 14,
+                    }
+                },
+            },
+            yaxis: {
+                linecolor: 'black',
+                linewidth: 1,
+                mirror: true,
+                title: {
+                    text: yLabel,
+                    font: {
+                        size: 14,
+                    }
+                }
+            },
+            margin: {
+                l: 40,
+                r: 10,
+                b: 40,
+                t: 40,
+                pad: 0
+            }
+        }, {
+            responsive: true, staticPlot: false, ...plotlyImageExportConfig, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath ']
+        });
+    }
     residual_plot(y, residuals, container, title = '') {
         Plotly.newPlot(container, [
 
@@ -1749,7 +1805,7 @@ export default class ChartController {
     ScatterplotMatrix(items, features, labels, number_of_categoricals, is_classification = true, numeric_columns, categorical_columns, dataset) {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                
+
                 let unique_labels = [...new Set(labels)];
                 if (unique_labels.length === 2) {
                     unique_labels.sort()

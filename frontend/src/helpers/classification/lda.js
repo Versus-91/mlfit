@@ -65,7 +65,6 @@ export default class DiscriminantAnalysis extends ClassificationModel {
             tprs.append(tpr)
 
         except Exception as e:
-            print(e)
             auc = roc_auc_score(y_test,probas,multi_class = 'ovr')
             aucs.append(auc)
             for i in range(num_classes):
