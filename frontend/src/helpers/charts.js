@@ -747,71 +747,6 @@ export default class ChartController {
                 })
                 x.push(regression_labels[i][0])
             });
-            let traces1 = []
-            if (uniqueLabels.length !== 0) {
-                uniqueLabels.forEach((label, i) => {
-                    var items_for_label = principle_components.filter(m => m.label === label)
-                    traces1.push({
-                        x: items_for_label.map(m => m.x),
-                        y: items_for_label.map(m => m.y),
-                        mode: 'markers',
-                        type: 'scatter',
-                        name: label,
-                        marker: {
-                            size: 4,
-                            color: this.indexToColor(i, uniqueLabels.length),
-                        }
-                    })
-                })
-            } else {
-                let x = principle_components.map(m => m.x);
-                let y = principle_components.map(m => m.y);
-                let max = Math.max(...x)
-                let min = Math.min(...x)
-                traces1.push({
-                    x: x,
-                    y: y,
-                    mode: 'markers',
-                    type: 'scatter',
-                    marker: {
-                        color: x.map(item => this.indexToColorSequential(item, min, max)),
-                        size: 2,
-                    },
-
-                })
-            }
-            pca_traces.push(trace1)
-
-            Plotly.newPlot('pca_' + i, traces1, {
-                showlegend: uniqueLabels.length != 0 ? true : false,
-                margin: {
-                    l: 40,
-                    r: 40,
-                    b: 40,
-                    t: 40,
-                    pad: 10
-                },
-                legend: {
-                    x: 1,
-                    xanchor: 'right',
-                    y: 1,
-                    bgcolor: 'rgba(0,0,0,0)',
-
-                },
-                xaxis: {
-                    linecolor: 'black',
-                    linewidth: 1,
-                    mirror: true,
-                    title: 'PC' + axis[0]
-                },
-                yaxis: {
-                    linecolor: 'black',
-                    linewidth: 1,
-                    mirror: true,
-                    title: 'PC' + axis[1]
-                }
-            }, { ...plotlyImageExportConfig, responsive: true, staticPlot: true });
-
         }
         pca_traces = []
         let index = 1;
@@ -875,8 +810,8 @@ export default class ChartController {
 
         }
         var layout = {
-            width: pcaComponents * 100,
-            height: pcaComponents * 100,
+            width: pcaComponents * 150,
+            height: pcaComponents * 150,
             spacing: 0,
             title: {
                 text: 'PCA Matrix',
@@ -952,8 +887,7 @@ export default class ChartController {
         }
         Plotly.react('pca_matrix', pca_traces, layout, {
             ...plotlyImageExportConfig,
-            staticPlot: true,
-            modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath ']
+            staticPlot: false,
         })
 
         let arrows = [];
@@ -1682,7 +1616,7 @@ export default class ChartController {
                 pad: 0
             }
         }, {
-            responsive: true, staticPlot: false, ...plotlyImageExportConfig, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath ']
+            responsive: true, staticPlot: false, ...plotlyImageExportConfig
         });
     }
     comparison(x, y, container, title = '', yLabel = '') {

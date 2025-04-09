@@ -38,9 +38,6 @@
                             PCA
                             data</button>
                     </div>
-                    <div class="column is-4" v-for="(item, index) in this.pcaContainers" :key="index">
-                        <div :id="'pca_' + index" style="height: 300px;"></div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -206,19 +203,7 @@ export default {
             try {
                 this.prepareData()
                 this.loadingPCA = true;
-
-                for (let i = 0; i < this.pcaContainers.length; i++) {
-                    chartController.purge_charts('pca_' + i)
-                }
                 this.pcaContainers = []
-                // for (let i = 0; i < this.numberOfComponents; i++) {
-                //     for (let j = i + 1; j < this.numberOfComponents; j++) {
-                //         let index = this.pcaContainers?.findIndex(m => m[0] == i + 1 && m[1] == j + 1)
-                //         if (index != -1) {
-                //             this.pcaContainers.push([i + 1, j + 1]);
-                //         }
-                //     }
-                // }
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
                 if (drawExplainedVariance == false) {
                     if (this.numberOfComponents == 2) {
