@@ -120,7 +120,7 @@ export default {
             methodResults.forEach((result, i) => {
                 let metrics = result.metrics;
                 if (i === 0) {
-                    x.push('best');
+                    x.push('Theoretical best');
                 }
                 x.push(result.id + '.' + result.name)
                 for (const key in result.metrics) {

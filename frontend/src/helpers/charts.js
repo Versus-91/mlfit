@@ -997,7 +997,12 @@ export default class ChartController {
 
         ]
 
-        Plotly.newPlot('correlation_circle', [], {
+        Plotly.newPlot('correlation_circle', [{
+            x: [],
+            y: [],
+            type: 'scatter',
+            mode: 'markers'
+        }], {
             title: {
                 text: 'Biplot',
                 font: {
@@ -1210,7 +1215,7 @@ export default class ChartController {
         //     }],
 
         // });
-        return pca_data.map(item => Array.from(item))
+        return [pca_data.map(item => Array.from(item)), cumulatedExplainedVaraince]
     }
     // eslint-disable-next-line no-unused-vars
     drawStackedHorizontalChart(categories, lable) {
@@ -1705,10 +1710,10 @@ export default class ChartController {
             showlegend: false,
             xaxis: {
                 linecolor: 'black',
+                tickangle: -45,
                 linewidth: 1,
                 mirror: true,
                 title: {
-                    text: 'y',
                     font: {
                         size: 14,
                     }
@@ -1728,7 +1733,7 @@ export default class ChartController {
             margin: {
                 l: 40,
                 r: 10,
-                b: 40,
+                b: 80,
                 t: 40,
                 pad: 0
             }

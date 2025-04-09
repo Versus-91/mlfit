@@ -41,7 +41,7 @@
             <article class="message is-info">
                 <div class="message-header p-2"> Confusion Matrix and PCA of predictions</div>
                 <div class="message-body mx-1">
-                    <div class="columns is-multiline">
+                    <div class="columns is-multiline is-gapless">
                         <div class="column is-6 my-1" style="height: 400px;" :id="'confusion_matrix_' + result.id">
                         </div>
                         <div v-show="result.showProbas" class="column is-6 my-1" style="height: 400px;"

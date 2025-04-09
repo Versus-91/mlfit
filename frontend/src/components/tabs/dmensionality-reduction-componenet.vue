@@ -17,6 +17,9 @@
                     <div class="column is-6">
                         <div id="correlation_circle" style="height: 300px;"></div>
                     </div>
+                    <button class="button is-small mt-1" v-if="this.pcaVarianceData"
+                        @click="downloadExplainedVariance()">Download
+                        PCA variance data</button>
                     <div class="column is-12" v-if="hasPCA">
                         <b-field label="Number of Components">
                             <b-input v-model="numberOfComponents" size="is-small" type="number" min="2"
@@ -31,7 +34,7 @@
                     </div>
                     <div class="column is-12">
                         <div id="pca_matrix"></div>
-                        <button class="button is-small mt-1" :disabled="!this.pcaData" @click="downloadPCA()">Download
+                        <button class="button is-small mt-1" v-if="this.pcaData" @click="downloadPCA()">Download
                             PCA
                             data</button>
                     </div>
@@ -165,6 +168,7 @@ export default {
             hiddenLayerSize: 2,
             iterationsTSNE: 200,
             pcaData: null,
+            pcaVarianceData: null,
             iterations: 200,
             encoderActivationFunction: 'linear',
             decoderActivationFunction: 'linear',
@@ -238,7 +242,7 @@ export default {
                 }
 
                 let x = this.df.loc({ columns: numericColumns }).values;
-                this.pcaData = await chartController.draw_pca(
+                let pcaData = await chartController.draw_pca(
                     x,
                     this.settings.isClassification ? this.df.loc({ columns: [this.settings.modelTarget] }).values : [],
                     this.df.loc({ columns: [this.settings.modelTarget] }).values,
@@ -247,7 +251,8 @@ export default {
                     numericColumns,
                     drawExplainedVariance
                 )
-
+                this.pcaData = pcaData[0]
+                this.pcaVarianceData = pcaData[1]
                 this.hasPCA = true;
                 this.loadingPCA = false;
 
@@ -258,10 +263,17 @@ export default {
 
         },
         downloadPCA() {
-            console.log(this.pcaData);
-
             let df = new DataFrame(this.pcaData)
             $toCSV(df, { filePath: "pca_data.csv", download: true });
+        },
+        downloadExplainedVariance() {
+            let varianceData = [];
+            for (let i = 1; i <= this.pcaVarianceData.length; i++) {
+                const element = this.pcaVarianceData[i - 1];
+                varianceData.push({ Components: i, ExplainedVariace: element })
+            }
+            let df = new DataFrame(varianceData)
+            $toCSV(df, { filePath: "variance_data.csv", download: true });
         },
         async findTSNE() {
             try {
