@@ -425,7 +425,7 @@ export function encode_dataset(data_frame, columns_types) {
 }
 
 export function merge_classes(classes, dataframe) {
-    let newClass = classes.map(m => m.class).join('-');
+    let newClass = classes.map(m => m.class).join('_');
     classes.forEach(cls => {
         dataframe.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
     });

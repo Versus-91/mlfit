@@ -3,8 +3,9 @@
 
         <b-tabs v-model="activeResult" v-if="this.settings.results?.length > 0" @input="resize">
             <b-tab-item label="Comparison" @click="compareResultsDraw()">
-                <button class="button is-info my-2" @click="compareResultsDraw()">
-                    Compare Models</button>
+                <button v-for="(item, index) in metricsCollection" :key="index"
+                    class="button is-small ml-1 is-info my-2" @click="compareResultsDraw(item)">{{
+                        item.name + '-' + (item.task ? 'cls' : 'reg') }}</button>
                 <div class="message is-info ">
                     <div class="message-header p-2">
                         Methods Comparison
@@ -79,6 +80,7 @@ export default {
     },
     data() {
         return {
+            metricsCollection: [],
             compare: false,
             datasetName: '',
             isClassication: -1,
@@ -99,14 +101,19 @@ export default {
             }
 
         },
-        compareResults() {
+        compareResults(dataset) {
+            let datasetName = this.settings.datasetName
+            let task = this.settings.classificationTask;
             try {
                 Plotly.purge('comaprison_plot');
             } catch (error) {
                 console.log('no plot to remove');
-
             }
-            let methodResults = this.settings.getMethodResults.filter(m => m.datasetName == this.settings.datasetName && this.settings.classificationTask == m.modelTask)
+            if (dataset) {
+                datasetName = dataset.name
+                task = dataset.task
+            }
+            let methodResults = this.settings.getMethodResults.filter(m => m.datasetName == datasetName && task == m.modelTask)
             this.compare = true;
             let x = [];
             let y = {};
@@ -137,13 +144,28 @@ export default {
                 chartController.comparison(this.xTicks, this.metrics[k], k, k)
             }
         },
-        compareResultsDraw() {
-            this.compareResults();
-            this.draw()
+        compareResultsDraw(dataset) {
+            let results = [];
+            this.compareResults(dataset);
+            for (let i = 0; i < this.settings.getMethodResults.length; i++) {
+                const res = this.settings.getMethodResults[i];
+                let index = results.findIndex(m => m.task === res.modelTask && m.name === res.datasetName)
+                if (index == -1) {
+                    results.push({ name: res.datasetName, task: res.modelTask })
+                }
+
+            }
+            //  results = [...new Set(this.settings.getMethodResults.map(m => m.datasetName))];
+
+            this.metricsCollection = results;
+
+            setTimeout(() => {
+                this.draw()
+            }, 500);
         },
         resize(v) {
             if (v === 0) {
-                this.compareResults()
+                this.compareResultsDraw()
             }
 
             window.dispatchEvent(new Event('resize'));

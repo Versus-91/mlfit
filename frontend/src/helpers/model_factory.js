@@ -20,7 +20,6 @@ import BoostingRegression from "./regression/boosting";
 
 export var ModelFactory = function () {
     this.createModel = (modelName, options) => {
-        console.log(options);
         switch (modelName) {
             case Settings.classification.logistic_regression.value:
                 return new LogisticRegression(options);

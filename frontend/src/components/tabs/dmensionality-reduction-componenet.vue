@@ -181,7 +181,7 @@ export default {
             this.df.dropNa({ axis: 1, inplace: true })
             if (this.settings.isClassification && this.settings.mergedClasses?.length > 0) {
                 this.settings.mergedClasses.forEach((classes) => {
-                    let newClass = classes.map(m => m.class).join('-');
+                    let newClass = classes.map(m => m.class).join('_');
                     classes.forEach(cls => {
                         this.df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
                     });

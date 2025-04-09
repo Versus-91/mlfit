@@ -106,7 +106,7 @@
                 </div>
             </div>
         </div>
-        <div class="column is-12" v-show="result.hasExplaination && result.name.includes('Logi.Reg')">
+        <div class="column is-12" v-show="result.hasExplaination && !result.name.includes('Logi.Reg')">
             <article class="message is-info">
                 <div class="message-header p-2"> Partial Dependence Plot</div>
                 <div class="message-body mx-1">

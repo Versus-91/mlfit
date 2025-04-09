@@ -45,7 +45,7 @@ export default {
             const df = new DataFrame(this.settings.rawData);
             if (this.settings.isClassification && this.settings.classTransformations.length > 0) {
                 this.settings.mergedClasses.forEach((classes) => {
-                    let newClass = classes.map(m => m.class).join('-');
+                    let newClass = classes.map(m => m.class).join('_');
                     classes.forEach(cls => {
                         df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
                     });

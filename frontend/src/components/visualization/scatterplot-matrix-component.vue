@@ -82,7 +82,7 @@ export default {
         updateClassesInfo() {
             this.df = new DataFrame(this.settings.rawData);
             this.settings.mergedClasses.forEach((classes) => {
-                let newClass = classes.map(m => m.class).join('-');
+                let newClass = classes.map(m => m.class).join('_');
                 classes.forEach(cls => {
                     this.df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
                 });
@@ -138,7 +138,7 @@ export default {
 
             }
             if (this.settings.isClassification && this.selectedClasses?.length > 0) {
-                let newClass = this.selectedClasses.map(m => m.class).join('-');
+                let newClass = this.selectedClasses.map(m => m.class).join('_');
                 this.selectedClasses.forEach(cls => {
                     this.df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
                 });
@@ -167,7 +167,7 @@ export default {
                     transformations.push(`feature: ${transformation['name']} ,scaler: ${transformation['scalerLabel']} `)
                 });
 
-                let message = { message: 'scaled fetures: <br> ' + transformations.join('-'), type: 'info' }
+                let message = { message: 'scaled fetures: <br> ' + transformations.join('_'), type: 'info' }
                 this.$buefy.toast.open('scaled fetures: ' + transformations)
                 this.settings.addMessage(message)
             } else {

@@ -34,7 +34,7 @@ export default class SupportVectorMachine extends ClassificationModel {
         };
         const script = `
         from sklearn import svm
-        from js import X_train,y_train,X_test,y_test,kernel,coef,degree,features,seed,c
+        from js import X_train,y_train,X_test,y_test,kernel,coef,degree,features,seed,c,explain
         import matplotlib
         matplotlib.use("AGG")
         from sklearn.inspection import PartialDependenceDisplay
