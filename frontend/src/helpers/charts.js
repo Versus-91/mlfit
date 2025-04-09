@@ -1738,7 +1738,7 @@ export default class ChartController {
                     t: 40,
                     pad: 0
                 }
-            }, { responsive: true, ...plotlyImageExportConfig, staticPlot: false, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
+            }, { responsive: true, ...plotlyImageExportConfig, staticPlot: false });
     }
 
     ScatterplotMatrix(items, features, labels, number_of_categoricals, is_classification = true, numeric_columns, categorical_columns, dataset) {
