@@ -4,7 +4,7 @@
         <b-tabs v-model="activeResult" v-if="this.settings.results?.length > 0" @input="resize">
             <b-tab-item label="Comparison" @click="compareResultsDraw()">
                 <button v-for="(item, index) in metricsCollection" :key="index"
-                    class="button is-small ml-1 is-info my-2" @click="compareResultsDraw(item)">{{
+                    class="button is-small ml-1 is-success my-2" @click="compareResultsDraw(item)">{{
                         item.name + '-' + (item.task ? 'cls' : 'reg') }}</button>
                 <div class="message is-info ">
                     <div class="message-header p-2">

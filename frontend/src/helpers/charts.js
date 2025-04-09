@@ -1672,7 +1672,7 @@ export default class ChartController {
                 pad: 0
             }
         }, {
-            responsive: true, staticPlot: false, ...plotlyImageExportConfig, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath ']
+            responsive: true, staticPlot: false, ...plotlyImageExportConfig
         });
     }
     residual_plot(y, residuals, container, title = '') {
