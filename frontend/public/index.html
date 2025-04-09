@@ -50,7 +50,10 @@
     integrity="sha512-Vgj9fas1rIsERPmMJLow8xuIQOBltfpm7Vum5R2HFDhr3jOYT5hochU4I+AO4+RUu9a9dxd0nVlSTx9RZCexpA=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="
-  https://cdn.jsdelivr.net/npm/highcharts-histogram-bellcurve@0.1.7/histogram-bellcurve.min.js
+    https://code.jquery.com/jquery-3.7.0.min.js
+    "></script>
+  <script src="
+  https://cdn.datatables.net/v/bm/dt-1.13.8/r-2.5.0/sb-1.6.0/datatables.min.js
   "></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.14.1"></script>
@@ -66,14 +69,6 @@
           window.webr = new WebR({ interactive: false });
         }
       )
-      let script = document.createElement('script');
-      script.src = "https://code.jquery.com/jquery-3.7.0.min.js";
-      script.async = true;
-      document.body.appendChild(script);
-      script = document.createElement('script');
-      script.src = "https://cdn.datatables.net/v/bm/dt-1.13.8/r-2.5.0/sb-1.6.0/datatables.min.js";
-      script.async = true;
-      document.body.appendChild(script);
     });
 
   </script>

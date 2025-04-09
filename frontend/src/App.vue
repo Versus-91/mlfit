@@ -32,7 +32,8 @@ export default {
     return { settings }
   },
   errorCaptured(err, vm, info) {
-    console.log(`cat EC: ${err.toString()}\ninfo: ${info}`);
+    console.log(`cat EC: ${err.toString()}\ninfo: ${info} + ${ err.stack}`);
+
     this.$buefy.toast.open(
       {
         duration: 3000,

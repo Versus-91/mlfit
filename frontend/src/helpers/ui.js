@@ -2,17 +2,8 @@
 /* eslint-disable no-undef */
 
 import { MinMaxScaler, StandardScaler } from 'danfojs/dist/danfojs-base';
-import { calculateRSquared, calculateMSE, encode_name } from './utils';
+import { encode_name } from './utils';
 import { FeatureCategories, Settings } from "./settings.js";
-import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
-const plotlyImageExportConfig = {
-    toImageButtonOptions: {
-        format: 'png', // one of png, svg, jpeg, webp
-        height: null,
-        width: null,
-        scale: 2
-    }
-};
 export default class UI {
     constructor(parser, chart_controller) {
         this.data_parser = parser
@@ -90,292 +81,6 @@ export default class UI {
 
     }
 
-
-    // createDatasetPropsDropdown(items) {
-    //     const myClass = this
-    //     //feature selection
-    //     $('#props').empty()
-    //     $('#normalizations').empty()
-    //     $('#features-selection').empty()
-    //     $('#features').empty()
-    //     $('#props').append(this.createTargetDropdown(items))
-    //     $('#features-selection').append(`<div class="column is-6"><button id ="feature_selection_modal" class="button is-warning is-small" >Select Features</button></div>`)
-    //     document.querySelector('#feature_selection_modal').addEventListener('click', function (e) {
-    //         var features_dropdown = document.getElementById("config_modal")
-    //         var props = document.getElementById("props")
-    //         var props_feature_selection_button = document.getElementById("feature_selection_modal")
-
-    //         if (window.getComputedStyle(features_dropdown).display !== "none") {
-    //             props_feature_selection_button.innerText = "Select Features"
-    //             features_dropdown.style.display = "none"
-    //             props.style.display = "block"
-    //             const redraw_plots_data_analysis = new CustomEvent("update_graphs");
-    //             props_feature_selection_button.dispatchEvent(redraw_plots_data_analysis)
-    //             return
-    //         }
-    //         props_feature_selection_button.innerText = "Config model"
-    //         features_dropdown.style.display = "block"
-    //         props.style.display = "none"
-
-    //     });
-    //     $("#features-selection").append(`
-    //             <div id="config_modal" style="display:none;overflow-y:scroll;max-height: 600px;height:500px">
-    //                 <table class="table is-narrow is-size-7" 
-    //                 <thead>
-    //                 <tr>
-    //                   <th><input id="select_all" value="1" name="selectall" type="checkbox" checked="checked" /></th>
-    //                   <th>Name</th>
-    //                   <th>Scale</th>
-    //                 </tr>
-    //               </thead>
-    //               <tbody id="features">
-    //               </tbody>
-    //                 </table>
-    //             </div>
-    //         </div>
-    //         `)
-    //     document.querySelector('#select_all').addEventListener('click', function (e) {
-    //         if ($("#select_all").prop('checked')) {
-    //             $('.features-filter').prop('checked', true);
-    //         } else {
-    //             $('.features-filter').prop('checked', false);
-    //         }
-    //     });
-    //     const default_target = items.columns[items.columns.length - 1]
-    //     items.columns.forEach(column => {
-    //         let key = encode_name(column)
-    //         $('#features').append(`
-    //             <tr>
-    //                 <td>
-    //                 <label class="checkbox my-2">
-    //                 <input id="${key + "-checkbox"}" type="checkbox" value="1" class="features-filter" checked="checked">
-    //                 </label>
-    //                 </td>
-    //                 <td class="mt-1">
-    //                 ${column}
-    //                 </td>
-    //                 <td>
-    //                 <div class="select is-small is-fullwidth mb-1">
-    //                     <select id="${key}">
-    //                         <option value="${FeatureCategories.Numerical}">Numerical</option>
-    //                         <option value="${FeatureCategories.Nominal}">Nominal</option>
-    //                         <option value="${FeatureCategories.Ordinal}">Ordinal</option>
-    //                     </select>
-    //                 </div>
-    //                 </td>
-    //             </tr>
-    //             `);
-    //         $('#' + key).on('change', function (e) {
-    //             const type = e.target.value
-    //             if (key === document.getElementById("target").value) {
-    //                 $('#algorithm').empty()
-    //                 if (type === 'Numerical') {
-    //                     $('#algorithm').append(myClass.updateAlgorithmsSelect(1));
-    //                 } else {
-    //                     $('#algorithm').append(myClass.updateAlgorithmsSelect(2));
-    //                 }
-    //             }
-    //         });
-    //         const id = column
-    //         if (items.column(column).dtype !== 'string') {
-    //             $('#' + key).val(FeatureCategories.Numerical)
-    //         } else {
-    //             $('#' + key).val(FeatureCategories.Ordinal)
-    //         }
-    //     });
-
-
-
-
-
-
-    //     // $(document).on('change', '#' + default_target, function (e) {
-    //     //     $("#algorithm").empty();
-    //     //     $("#algorithm").append(myClass.updateAlgorithmsSelect(e.target.value == 1 ? 1 : 2))
-    //     // });
-    //     $("#model_options").empty();
-    //     $('#algorithm').on('change', function () {
-    //         $("#model_options").empty();
-    //     });
-    //     $('#props').append(`
-    //         <div class="column is-12">
-    //             <div class="label is-size-7">Seed</div>
-    //             <input
-    //             id="seed"
-    //             required
-    //             min="0"
-    //             class="input is-info is-small"
-    //             type="number"
-    //             placeholder="Seed"
-    //             value = "123"
-    //             />
-    //         </div>`);
-    //     $('#props').append(`
-    //         <div class="column is-12">
-    //             <div class="label is-size-7">Imputation
-    //                 <span id="imputation_help" class="icon has-text-success">
-    //                     <i class="fas fa-info-circle"></i>
-    //                 </span>
-    //             </div>
-    //             <div class="select is-small is-fullwidth mb-1">
-    //                 <select id="imputation">
-    //                     <option value="1">Delete rows</option>
-    //                     <option value="2">Mean and Mode</option>
-    //                     <option value="3">Linear regression</option>
-    //                     <option value="4">random forest</option>
-    //                 </select>
-    //             </div>
-    //         </div>
-    //         `);
-    //     $('#props').append(`
-    //         <div class="column is-12">
-    //             <div class="label is-size-7">Cross Validation
-    //             <span id="cv_help" class="icon has-text-success">
-    //                 <i class="fas fa-info-circle"></i>
-    //             </span>
-    //             </div>
-    //             <div class="select is-fullwidth is-small mb-1">
-    //                 <select id="cross_validation">
-    //                     <option value="1">70 % training - 30 % test</option>
-    //                     <option value="2">No</option>
-    //                     <option value="3">K-fold</option>
-    //                 </select>
-    //             </div>
-    //         </div>
-    //         `)
-    //     $('#target').val(default_target)
-
-
-    //     $('#target').on('change', function (e) {
-    //         const redraw_plots_data_analysis = new CustomEvent("update_graphs");
-    //         var props_feature_selection_button = document.getElementById("feature_selection_modal")
-    //         props_feature_selection_button.dispatchEvent(redraw_plots_data_analysis)
-    //         const type = document.getElementById(e.target.value).value
-    //         $('#algorithm').empty()
-    //         if (type === 'Numerical') {
-    //             $('#algorithm').append(myClass.updateAlgorithmsSelect(1));
-    //         } else {
-    //             $('#algorithm').append(myClass.updateAlgorithmsSelect(2));
-    //         }
-    //     });
-
-
-
-
-    //     //modle options
-    //     $('#algorithm').on('change', function (e) {
-    //         const model_type = items.column(default_target).dtype !== 'string' ? 1 : 2;
-    //         const label = model_type == 1 ? "regression" : "classification"
-    //         for (const key in Settings[label]) {
-    //             if (Settings.hasOwnProperty.call(Settings[label], key)) {
-    //                 const item = Settings[label][key];
-    //             }
-    //         }
-    //     });
-    //     if (items.column(default_target).dtype !== 'string') {
-    //         $('#props').append(this.createAlgorithmsSelect(1));
-    //     } else {
-    //         $('#props').append(this.createAlgorithmsSelect(2));
-    //     }
-    //     $("#props").append(`
-    //         <div class="column is-3">
-    //         <button class="button is-small is-success" id="config_modal_button">
-    //         <span class="icon is-small">
-    //         <i class="fas fa-cog"></i>
-    //         </span>
-    //         </button>
-    //         </div>
-    //         <div class="column is-12" id="settings" style="display:none">
-    //         </div>`)
-    //     $("#model_name").on("change", () => {
-    //         document.getElementById("settings").innerHTML = ""
-    //         document.getElementById("settings").style.display = "none";
-
-    //     })
-    //     document.querySelector('#config_modal_button').addEventListener('click', function (e) {
-    //         let model_name = document.getElementById('model_name').value;
-    //         const target = document.getElementById("target").value;
-    //         let is_classification = document.getElementById(target).value !== FeatureCategories.Numerical;
-    //         var model;
-    //         if (is_classification) {
-    //             for (const key in Settings.classification) {
-    //                 if (Object.hasOwnProperty.call(Settings.classification, key)) {
-    //                     const element = Settings.classification[key];
-    //                     if (element.value === parseInt(model_name)) {
-    //                         model = Settings.classification[key];
-    //                     }
-    //                 }
-    //             }
-    //         } else {
-    //             for (const key in Settings.regression) {
-    //                 if (Object.hasOwnProperty.call(Settings.regression, key)) {
-    //                     const element = Settings.regression[key];
-    //                     if (element.value === parseInt(model_name)) {
-    //                         model = Settings.regression[key];
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         var options_modal_content = document.getElementById("settings");
-    //         if (window.getComputedStyle(options_modal_content).display !== "none") {
-    //             options_modal_content.innerHTML = ""
-    //             options_modal_content.style.display = "none"
-    //             return
-    //         }
-    //         options_modal_content.innerHTML = ""
-    //         for (const key in model.options) {
-    //             options_modal_content.style.display = "block"
-    //             if (Object.hasOwnProperty.call(model.options, key)) {
-    //                 const option_type = model.options[key]["type"]
-    //                 const placeholder = model.options[key]["placeholder"]
-    //                 if (option_type === "number" || option_type === "text") {
-    //                     $('#settings').append(`
-    //                         <div class="column is-12">
-    //                             <div class="field is-horizontal">
-    //                                 <div class="field-label is-small">
-    //                                 <label class="label is-size-7">${key}</label>
-    //                                 </div>
-    //                                 <div class="field-body">
-    //                                 <div class="control">
-    //                                     <input id="${key + "_" + model_name}" class="input is-small" type="${option_type}" placeholder="${placeholder ?? ""}">
-    //                                 </div>
-    //                                 </div>
-    //                             </div>
-    //                         </div>
-    //                         `)
-    //                     if (model.options[key]["default"]) {
-    //                         document.getElementById(key + "_" + model_name).value = model.options[key]["default"]
-    //                     }
-    //                 } else if (option_type === "select") {
-    //                     console.log(model.options[key]["for"]);
-
-    //                     let result = ""
-    //                     let options = model.options[key]["values"]
-    //                     result = `
-    //                         <div class="column is-12">
-    //                             <div class="field is-horizontal">
-    //                                 <div class="field-label is-small">
-    //                                    <label class="label is-size-7 mr-1">${key}</label>
-    //                                 </div>
-    //                                 <div class="field-body">
-    //                                     <div class="select is-small">
-    //                                         <select id="${key + "_" + model_name}">
-    //                                 </div>
-    //                         `
-    //                     for (let i = 0; i < options.length; i++) {
-    //                         result += `<option value="${options[i]?.value}">${options[i].label}</option>`
-    //                     }
-    //                     result += "</select></div></div></div>"
-    //                     $('#settings').append(result)
-
-    //                 }
-    //             }
-    //         }
-    //     });
-    //     $('#props').append(`<div class="column is-6"><button class="button is-info mt-2" id="train-button">train</button></div>`);
-
-    //     // $('#kde_select').append(this.createFeaturesDropdown(rowMetadata))
-    // }
 
     createAlgorithmsSelect(category) {
         let result = '<div id="algorithm" class="column is-9"><div class="select is-small mb-1"> <select id="model_name" class="select">'
@@ -484,7 +189,7 @@ export default class UI {
         }
 
 
-        categoricalFeatures.forEach((item, i) => {
+        categoricalFeatures.forEach((item) => {
             let column = item.name
             const shape = [...new Set(data.column(column).values)];
             const category_info = this.getCategoricalMode(data.column(column).values)
@@ -583,8 +288,7 @@ export default class UI {
         let selected_columns = this.find_selected_columns(columns, false)
         return this.find_selected_columns_types(selected_columns);
     }
-    async visualize(dataset, len, file_name) {
-        const current_class = this
+    async visualize(dataset, file_name) {
         this.renderDatasetStats(dataset);
         let numericColumns = this.get_numeric_columns(dataset, true)
         let categorical_columns = this.get_categorical_columns(dataset, true)
@@ -628,7 +332,6 @@ export default class UI {
         } else {
             this.chart_controller.regression_target_chart(dataset.column(target).values, "target_chart", target);
         }
-        let features = []
 
         numericColumns = this.get_numeric_columns(dataset, true)
         categorical_columns = this.get_categorical_columns(dataset, true)
@@ -814,7 +517,7 @@ export default class UI {
             paging: true,
             columnDefs: [
                 {
-                    render: function (data, type, row) {
+                    render: function (data) {
                         return data.toFixed(2);
                     },
                     targets: "_all",
@@ -860,13 +563,13 @@ export default class UI {
                     // targets: [-3]
                 },
                 {
-                    render: function (data, type, row) {
+                    render: function (data) {
                         return data.toFixed(2);
                     },
                     targets: [...Array(table_columns.length).keys()].filter(m => m >= 2)
                 }
             ],
-            rowCallback: function (row, data, index) {
+            rowCallback: function (row, data) {
                 var prediction = data[0];
                 var y = data[1];
                 if (prediction !== y) {

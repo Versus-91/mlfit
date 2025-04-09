@@ -2,7 +2,7 @@
     <div>
 
         <b-tabs v-model="activeResult" v-if="this.settings.results?.length > 0" @input="resize">
-            <b-tab-item label="compare" @click="compareResults">
+            <b-tab-item label="Comparison" @click="compareResults">
                 <button class="button is-info my-2" @click="compareResults">
                     Compare
                     models</button>
