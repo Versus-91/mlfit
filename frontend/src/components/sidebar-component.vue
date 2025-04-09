@@ -265,10 +265,12 @@ export default {
                 if (this.settings.isClassification) {
                     let selectedClasses = this.settings.mergedClasses
                     if (selectedClasses?.length > 0) {
-                        let newClass = selectedClasses.map(m => m.class).join('');
-                        selectedClasses.forEach(cls => {
-                            filterd_dataset.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
-                        });
+                        this.settings.mergedClasses.forEach((classes) => {
+                            let newClass = classes.map(m => m.class).join('-');
+                            classes.forEach(cls => {
+                                filterd_dataset.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
+                            });
+                        })
                     }
                 }
 

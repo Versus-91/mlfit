@@ -157,7 +157,6 @@ export default {
             this.$emit('uploaded', true)
         },
         async process_file(file, type) {
-
             let options = {
                 separator: this.separator,
                 delimiter: this.decimal,
@@ -172,6 +171,9 @@ export default {
                 this.settings.setDatasizeFlag(false);
             }
             let dataFrame = new DataFrame(processdDataset);
+            let idIndex = dataFrame.columns.findIndex(col => col.toLowerCase() === 'id')
+            if (idIndex > -1)
+                dataFrame.drop({ columns: dataFrame.columns[idIndex], inplace: true })
             this.settings.setRawData(processdDataset);
 
             return dataFrame

@@ -83,6 +83,9 @@ export const settingStore = defineStore({
             this.transformations = []
             this.classTransformations = []
         },
+        resetClassTransformations() {
+            this.classTransformations = []
+        },
         resetTransformations() {
             this.transformations = []
         },
@@ -116,7 +119,7 @@ export const settingStore = defineStore({
             this.features.push(feature)
         },
         setClassTransformation(transformations) {
-            this.classTransformations = transformations
+            this.classTransformations.push(transformations)
         },
 
         addTransformation(transformation) {

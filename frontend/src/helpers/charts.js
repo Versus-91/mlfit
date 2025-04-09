@@ -1830,7 +1830,7 @@ export default class ChartController {
                                             subsets.push(items.filter(m => m[items[0].length - 1] === unique_labels[k]).map(m => m[i]));
                                         }
                                         traces.push({
-                                            x: unique_labels,
+                                            x: unique_labels.map(label => '' + label),
                                             y: subsets.map(set => set.length),
                                             type: 'bar',
                                             xaxis: 'x' + (index),

@@ -39,14 +39,17 @@ export default {
     },
     methods: {
         ParallelCoordinatePlot() {
+            console.log('ssss');
+
             this.isLoading = true;
             const df = new DataFrame(this.settings.rawData);
             if (this.settings.isClassification && this.settings.classTransformations.length > 0) {
-                let selectedClasses = this.settings.classTransformations.concat()
-                let newClass = selectedClasses.map(m => m.class).join('-');
-                selectedClasses.forEach(cls => {
-                    df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
-                });
+                this.settings.mergedClasses.forEach((classes) => {
+                    let newClass = classes.map(m => m.class).join('-');
+                    classes.forEach(cls => {
+                        df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
+                    });
+                })
             }
 
             let validTransformations = this.settings.items.filter(column => column.selected && column.type === 1)

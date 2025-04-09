@@ -26,7 +26,7 @@
                     <parallel-coordinate-plot-component ref="coordinate_plot">
                     </parallel-coordinate-plot-component>
                 </div>
-                <div class="column is-12" v-if="this.settings.isClassification && classesInfo?.length > 2">
+                <div class="column is-12" v-if="this.settings.isClassification">
                     <h5 class="title is-7 has-text-left">Merge classes
                     </h5>
                     <b-table class="is-size-7" :data="classesInfo" :columns="classesInfoColumns" checkable
@@ -36,9 +36,7 @@
                         :disabled="selectedClasses?.length >= classesInfo?.length">Merge
                         Classes</button>
                     <button @click="scaleData(true)" class="button mt-2 mx-1 is-success is-small">reset</button>
-
                 </div>
-
                 <b-loading :is-full-page="false" v-model="isLoading"></b-loading>
             </div>
         </article>
@@ -81,6 +79,33 @@ export default {
         }
     },
     methods: {
+        updateClassesInfo() {
+            this.df = new DataFrame(this.settings.rawData);
+            this.settings.mergedClasses.forEach((classes) => {
+                let newClass = classes.map(m => m.class).join('-');
+                classes.forEach(cls => {
+                    this.df.replace(cls.class, newClass, { columns: [this.settings.modelTarget], inplace: true })
+                });
+            })
+            let targetValues = this.df.column(this.settings.modelTarget).values;
+            let samplesLength = targetValues.length;
+            let classes = new Set(...[targetValues]);
+            let result = []
+            classes.forEach(cls => {
+                result.push({
+                    class: cls,
+                    mode: +(targetValues.filter(val => val === cls).length / samplesLength).toFixed(2)
+                })
+            });
+            this.classesInfo = result.concat();
+            this.classesInfoColumns = [{
+                field: 'class',
+                label: ' class'
+            }, {
+                field: 'mode',
+                label: 'Samples in each class (%)'
+            }]
+        },
         async dispalySPLOM(dataframe) {
             try {
                 this.isLoading = true;
@@ -88,28 +113,12 @@ export default {
                 let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1).map(column => column.name);
                 let features = numericColumns.concat(categorical_columns);
                 dataframe.dropNa({ axis: 1, inplace: true })
+                console.log(new Set(dataframe.column(this.settings.modelTarget).values));
+
                 await chartController.ScatterplotMatrix(dataframe.loc({ columns: features }).values, features, dataframe.column(this.settings.modelTarget).values, categorical_columns.length,
                     this.settings.isClassification, numericColumns, categorical_columns, this.dataframe)
                 if (this.settings.isClassification) {
-
-                    let targetValues = this.settings.df.column(this.settings.modelTarget).values;
-                    let samplesLength = targetValues.length;
-                    let classes = new Set(...[targetValues]);
-                    let result = []
-                    classes.forEach(cls => {
-                        result.push({
-                            class: cls,
-                            mode: +(targetValues.filter(val => val === cls).length / samplesLength).toFixed(2)
-                        })
-                    });
-                    this.classesInfo = result;
-                    this.classesInfoColumns = [{
-                        field: 'class',
-                        label: ' class'
-                    }, {
-                        field: 'mode',
-                        label: 'Samples in each class (%)'
-                    }]
+                    this.updateClassesInfo();
                 }
                 this.$refs.coordinate_plot?.ParallelCoordinatePlot()
                 this.isLoading = false;
@@ -122,6 +131,12 @@ export default {
         },
         async scaleData(reset = false) {
             this.df = new DataFrame(this.settings.rawData);
+            if (reset) {
+                this.settings.resetClassTransformations([]);
+                this.updateClassesInfo();
+                console.log(this.settings.mergedClasses);
+
+            }
             if (this.settings.isClassification && this.selectedClasses?.length > 0) {
                 let newClass = this.selectedClasses.map(m => m.class).join('-');
                 this.selectedClasses.forEach(cls => {
@@ -132,13 +147,12 @@ export default {
                 this.$buefy.toast.open('merged classes: ' + newClass)
                 this.settings.addMessage(message)
             }
-            if (reset) {
-                this.settings.setClassTransformation([])
-            }
+
 
             let validTransformations = this.settings.items.filter(feature => feature.selected && feature.type === 1 && feature.scaler != 0)
             this.isLoading = true;
             Plotly.purge('scatterplot_mtx')
+            this.updateClassesInfo()
             applyDataTransformation(this.df, validTransformations.map(transformation => transformation.name), validTransformations);
             await this.dispalySPLOM(this.df)
             this.isLoading = false;
