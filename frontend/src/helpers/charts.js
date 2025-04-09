@@ -11,6 +11,7 @@ import { metrics } from '@tensorflow/tfjs-vis';
 import { scale_data } from './utils';
 import { tensorflow, LabelEncoder } from 'danfojs/dist/danfojs-base';
 import { MinMaxScaler } from 'danfojs/dist/danfojs-base';
+import TSNE from './dimensionality-reduction/tsne';
 const plotlyImageExportConfig = {
     toImageButtonOptions: {
         format: 'png', // one of png, svg, jpeg, webp
@@ -213,105 +214,115 @@ export default class ChartController {
 
         return result;
     }
-    async plot_tsne(data, labels, regression_labels, iterations) {
-        document.getElementById("dimensionality_reduction_panel_tsne").style.display = "block"
-        console.assert(Array.isArray(data));
-        // Create some data
-        // const items = tf.randomUniform([2000, 10]);
+    async plot_tsne(data, labels, regression_labels, seed, n) {
+        const tsne = new TSNE();
+        let Y = await tsne.predict(data, n, seed)
+        let tsneComponents = Y[0].length
+        let tsne_traces = []
+        let index = 1;
+        for (let i = 0; i < tsneComponents; i++) {
+            for (let j = 0; j < tsneComponents; j++) {
+                if (j < i) {
+                    let x = Y.map(values => values[j]);
+                    let y = Y.map(values => values[i]);
+                    let max = Math.max(...x)
+                    let min = Math.min(...x)
+                    tsne_traces.push({
+                        x: x,
+                        y: y,
+                        mode: 'markers',
+                        type: 'scatter',
+                        xaxis: 'x' + (index),
+                        yaxis: 'y' + (index),
+                        marker: {
+                            color: x.map(item => this.indexToColorSequential(item, min, max)),
+                            size: 2,
+                        },
+                    })
 
-        // Get a tsne optimizer
-        const tsneOpt = tsne.tsne(tensorflow.tensor2d(data));
+                }
+                index++;
+            }
+        }
+        var layout = {
+            width: tsneComponents * 150,
+            height: tsneComponents * 150,
+            spacing: 0,
+            title: {
+                text: 'TSNE Matrix',
+                font: {
+                    size: 14
+                },
+                xref: 'paper',
+                x: 0.05,
+            },
+            showlegend: false,
+            boxmode: 'overlay',
+            grid: { rows: tsneComponents, xgap: 0.0, ygap: 0.0, columns: tsneComponents, pattern: 'independent' },
+            margin: { t: 30, r: 30, l: 30, b: 40 },
+        };
+        for (var i = 0; i < tsneComponents; i++) {
+            for (var j = 0; j < tsneComponents; j++) {
+                var xAxisKey = 'xaxis' + ((i * tsneComponents) + j + 1);
+                var yAxisKey = 'yaxis' + ((i * tsneComponents) + j + 1);
+                let fontSize = 10;
+                layout[xAxisKey] = {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                    showgrid: false,
+                    showticklabels: false,
+                    tickfont: {
+                        size: fontSize
+                    },
+                };
+                layout[yAxisKey] = {
+                    linecolor: 'black',
+                    linewidth: 1,
+                    mirror: true,
+                    showgrid: false,
+                    showticklabels: false,
+                    tickfont: {
+                        size: fontSize
+                    },
+                };
+                if (i === tsneComponents - 1) {
+                    layout[xAxisKey] = {
+                        linecolor: 'black',
+                        linewidth: 1,
+                        mirror: true,
+                        tickfont: {
+                            size: fontSize
+                        },
+                        title: {
+                            text: 'Component-' + (j + 1), font: {
+                                size: fontSize
+                            },
+                        }
+                    };
 
-        // Compute a T-SNE embedding, returns a promise.
-        // Runs for 1000 iterations by default.
-        await tsneOpt.compute(iterations);
-        // tsne.coordinate returns a *tensor* with x, y coordinates of
-        // the embedded data.
-        const coordinates = tsneOpt.coordinates();
-        // let model = new TSNE();
-        // var Y = await model.train(data)
-        const items = coordinates.dataSync()
-        const Y = this.reshape(items, coordinates.shape)
-        let x = []
-        let traces = []
-        if (labels.length > 0) {
-            labels = labels.flat()
-            var uniqueLabels = [...new Set(labels)];
-            let points_labled = Y.map(function (item, i) {
-                return {
-                    label: labels[i],
-                    'x': item[0],
-                    'y': item[1]
+                }
+                if (j === 0) {
+                    layout[yAxisKey] = {
+                        linecolor: 'black',
+                        linewidth: 1,
+                        mirror: true,
+                        tickfont: {
+                            size: fontSize
+                        },
+                        title: {
+                            text: 'Component-' + (i + 1), font: {
+                                size: fontSize
+                            },
+                        }
+                    };
                 }
             }
-            )
-            uniqueLabels.forEach((label, i) => {
-                var items_for_label = points_labled.filter(m => m.label === label)
-                traces.push({
-                    x: items_for_label.map(m => m.x),
-                    y: items_for_label.map(m => m.y),
-                    mode: 'markers',
-                    type: 'scatter',
-                    name: label,
-                    marker: {
-                        size: 4,
-                        color: this.indexToColor(i, uniqueLabels.length),
-                    }
-                })
-            })
-        } else {
-            let points = Y.map(function (item, i) {
-                x.push(regression_labels[i][0])
-                return {
-                    'x': item[0],
-                    'y': item[1]
-                }
-            })
-            let min = Math.min(...x);
-            let max = Math.max(...x);
-
-            traces.push({
-                x: x,
-                y: points.map(m => m.y),
-                mode: 'markers+text',
-                type: 'scatter',
-                marker: {
-                    size: 4,
-                    color: x.map(item => this.indexToColorSequential(item, min, max)),
-                },
-            })
-
         }
-
-        var layout = {
-            showlegend: labels.length > 0 ? true : false,
-            margin: {
-                l: 50,
-                r: 40,
-                b: 50,
-                t: 40,
-                pad: 20
-            },
-            xaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                mirror: true,
-                zeroline: false,
-
-            },
-            yaxis: {
-                linecolor: 'black',
-                linewidth: 1,
-                zeroline: false,
-                mirror: true,
-            },
-            legend: {
-                x: 1,
-                xanchor: 'right',
-                y: 1
-            },
-        };
-        Plotly.newPlot('tsne', traces, layout, { responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
+        Plotly.react('tsne', tsne_traces, layout, {
+            ...plotlyImageExportConfig,
+            staticPlot: false,
+        })
 
     }
     trueNegatives(yTrue, yPred) {
@@ -807,7 +818,6 @@ export default class ChartController {
                 }
                 index++;
             }
-
         }
         var layout = {
             width: pcaComponents * 150,
@@ -825,7 +835,6 @@ export default class ChartController {
             boxmode: 'overlay',
             grid: { rows: pcaComponents, xgap: 0.0, ygap: 0.0, columns: pcaComponents, pattern: 'independent' },
             margin: { t: 30, r: 30, l: 30, b: 40 },
-
         };
         for (var i = 0; i < pcaComponents; i++) {
             for (var j = 0; j < pcaComponents; j++) {

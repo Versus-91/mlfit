@@ -45,14 +45,20 @@
             <div class="message-header p-2">t-distributed stochastic neighbor embedding</div>
             <div class="message-body">
 
-                <b-field label="Iterations">
-                    <b-input v-model="iterationsTSNE" size="is-small" type="number"
-                        placeholder="number of iterations"></b-input>
-                    <p class="control">
-                        <b-button @click="findTSNE" size="is-small" type="is-info" :loading="loadingTSNE"
-                            label="Fit t-SNE" />
-                    </p>
+                <b-field grouped>
+                    <b-field label="Number of Components" :label-position="'on-border'">
+                        <b-input v-model="componentsTSNE" size="is-small" type="number"
+                            placeholder="Components"></b-input>
+                    </b-field>
+                    <b-field label="Seed" :label-position="'on-border'">
+                        <b-input v-model="seedTSNE" size="is-small" type="number" placeholder="Seed"></b-input>
+                        <p class="control">
+                            <b-button @click="findTSNE" size="is-small" type="is-info" :loading="loadingTSNE"
+                                label="Fit t-SNE" />
+                        </p>
+                    </b-field>
                 </b-field>
+
                 <div class="column is-6" id="dimensionality_reduction_panel_tsne">
                     <div id="tsne">
                     </div>
@@ -66,23 +72,23 @@
                 <b-field grouped>
                     <b-field expanded>
 
-                        <b-field label="Hidden layers size" custom-class="is-small">
+                        <b-field label="Hidden layers size" :label-position="'on-border'">
                             <b-input v-model="hiddenLayerSize" size="is-small" type="number"
                                 placeholder="Hidden layer size"></b-input>
                         </b-field>
-                        <b-field label="x axis" custom-class="is-small">
+                        <b-field label="x axis" :label-position="'on-border'">
                             <b-input v-model="autoEncoderX" size="is-small" type="number"
                                 placeholder="x axis"></b-input>
                         </b-field>
-                        <b-field label="y axis" custom-class="is-small">
+                        <b-field label="y axis" :label-position="'on-border'">
                             <b-input v-model="autoEncoderY" size="is-small" type="number"
                                 placeholder="y axis"></b-input>
                         </b-field>
-                        <b-field label="iterations" custom-class="is-small">
+                        <b-field label="iterations" :label-position="'on-border'">
                             <b-input v-model="iterations" size="is-small" type="number"
                                 placeholder="iterations"></b-input>
                         </b-field>
-                        <b-field label="encoder" custom-class="is-small">
+                        <b-field label="encoder" :label-position="'on-border'">
                             <b-select v-model="encoderActivationFunction" size="is-small"
                                 placeholder="Encoder Activation Function">
                                 <option value="linear" id="linear">
@@ -96,7 +102,7 @@
                                 </option>
                             </b-select>
                         </b-field>
-                        <b-field label="decoder" custom-class="is-small">
+                        <b-field label="decoder" :label-position="'on-border'">
                             <b-select size="is-small" v-model="decoderActivationFunction"
                                 placeholder="Decoder Activation Function">
                                 <option value="linear" id="linear">
@@ -111,7 +117,7 @@
                             </b-select>
                         </b-field>
 
-                        <b-field custom-class="is-small">
+                        <b-field :label-position="'on-border'">
                             <p class="control">
                                 <b-button size="is-small" @click="autoEncoder" type="is-info"
                                     :loading="loadingAutoEncoder" label="Fit Autoencoder" />
@@ -163,7 +169,8 @@ export default {
             x: 1, y: 2,
             loadingAutoEncoder: false,
             hiddenLayerSize: 2,
-            iterationsTSNE: 200,
+            componentsTSNE: 2,
+            seedTSNE: 123,
             pcaData: null,
             pcaVarianceData: null,
             iterations: 200,
@@ -267,7 +274,7 @@ export default {
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
                 await chartController.plot_tsne(this.df.loc({ columns: numericColumns }).values,
                     this.settings.isClassification ? this.df.loc({ columns: [this.settings.modelTarget] }).values : []
-                    , this.df.loc({ columns: [this.settings.modelTarget] }).values, this.iterationsTSNE);
+                    , this.df.loc({ columns: [this.settings.modelTarget] }).values, this.seedTSNE, this.componentsTSNE);
                 this.loadingTSNE = false;
             } catch (error) {
                 this.loadingTSNE = false;
