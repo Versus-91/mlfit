@@ -650,7 +650,21 @@ export default class ChartController {
             throw new Error('falied at plotting kde.')
         }
     }
-
+    downloadPlot(container) {
+        Plotly.toImage(container, {
+            format: 'png',
+            width: null,
+            height: null,
+            scale: 2
+        }).then(function (dataUrl) {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = 'plot.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
+    }
     async classificationPCA(dataset, labels, missclassifications, uniqueLabels, index, n) {
         labels = labels.flat()
         const pca = new PCA();
@@ -782,8 +796,6 @@ export default class ChartController {
                 if (j < i) {
                     let x = pca_data.map(pca_values => pca_values[j]);
                     let y = pca_data.map(pca_values => pca_values[i]);
-                    let max = Math.max(...x)
-                    let min = Math.min(...x)
                     pca_traces.push({
                         x: x,
                         y: y,
@@ -800,8 +812,6 @@ export default class ChartController {
                 } else if (j > i) {
                     let x = pca_data.map(data => data[j]);
                     let y = dataset.map(data => data[i]);
-                    let max = Math.max(...x)
-                    let min = Math.min(...x)
                     pca_traces.push({
                         x: x,
                         y: y,
@@ -817,8 +827,6 @@ export default class ChartController {
                 } else {
                     let x = pca_data.map(data => data[j]);
                     let y = dataset.map(data => data[i]);
-                    let max = Math.max(...x)
-                    let min = Math.min(...x)
                     pca_traces.push({
                         x: x,
                         y: y,
@@ -912,7 +920,7 @@ export default class ChartController {
         }
         Plotly.react('pca_matrix', pca_traces, layout, {
             ...plotlyImageExportConfig,
-            staticPlot: false,
+            staticPlot: true,
         })
 
         let arrows = [];

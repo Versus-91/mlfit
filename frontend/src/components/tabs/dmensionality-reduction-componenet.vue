@@ -37,6 +37,8 @@
                         <button class="button is-small mt-1" v-if="this.pcaData" @click="downloadPCA()">Download
                             PCA
                             data</button>
+                        <button class="button is-small mt-1" v-if="this.pcaData" @click="downloadPCAPlot()">Download
+                            plot</button>
                     </div>
                 </div>
             </div>
@@ -253,6 +255,9 @@ export default {
                 throw error;
             }
 
+        },
+        downloadPCAPlot() {
+            chartController.downloadPlot('pca_matrix');
         },
         downloadPCA() {
             let df = new DataFrame(this.pcaData)
