@@ -324,6 +324,7 @@ export default {
         }
     },
     methods: {
+
         resize() {
             window.dispatchEvent(new Event('resize'));
         },

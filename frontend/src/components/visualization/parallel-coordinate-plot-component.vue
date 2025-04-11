@@ -39,8 +39,6 @@ export default {
     },
     methods: {
         ParallelCoordinatePlot() {
-            console.log('ssss');
-
             this.isLoading = true;
             const df = new DataFrame(this.settings.rawData);
             if (this.settings.isClassification && this.settings.classTransformations.length > 0) {

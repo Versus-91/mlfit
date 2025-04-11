@@ -7,6 +7,7 @@
                 </b-tooltip></div>
             <div class="message-body">
                 <div id="scatterplot_mtx"></div>
+                <button class="button is-small" @click="downlaodSPLOM()">Download plot</button>
                 <div class="columns my-1 ml-5 mt-5 is-multiline" :style="{ width: features.length * 100 + 'px' }">
                     <div :style="{ width: column_width + '%' }"
                         v-for="feature in this.settings.items.filter(column => column.selected)" :key="feature.id">
@@ -79,6 +80,9 @@ export default {
         }
     },
     methods: {
+        downlaodSPLOM() {
+            chartController.downloadPlot('scatterplot_mtx')
+        },
         updateClassesInfo() {
             this.df = new DataFrame(this.settings.rawData);
             this.settings.mergedClasses.forEach((classes) => {
