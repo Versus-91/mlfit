@@ -21,7 +21,7 @@
                         @click="downloadExplainedVariance()">Download
                         PCA variance data</button>
                     <div class="column is-12" v-if="hasPCA">
-                        <b-field label="Number of Components">
+                        <b-field label="Number of Components" :label-position="'on-border'">
                             <b-input v-model="numberOfComponents" size="is-small" type="number" min="2"
                                 placeholder="Number of Components"></b-input>
                             <p class="control">
@@ -236,7 +236,7 @@ export default {
                 let x = this.df.loc({ columns: numericColumns }).values;
                 let pcaData = await chartController.draw_pca(
                     x,
-                    this.settings.isClassification ? this.df.loc({ columns: [this.settings.modelTarget] }).values : [],
+                    this.settings.isClassification,
                     this.df.loc({ columns: [this.settings.modelTarget] }).values,
                     this.numberOfComponents,
                     this.pcaContainers,
@@ -273,7 +273,7 @@ export default {
                 this.loadingTSNE = true;
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
                 await chartController.plot_tsne(this.df.loc({ columns: numericColumns }).values,
-                    this.settings.isClassification ? this.df.loc({ columns: [this.settings.modelTarget] }).values : []
+                    this.settings.isClassification
                     , this.df.loc({ columns: [this.settings.modelTarget] }).values, this.seedTSNE, this.componentsTSNE);
                 this.loadingTSNE = false;
             } catch (error) {

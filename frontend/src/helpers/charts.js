@@ -214,19 +214,27 @@ export default class ChartController {
 
         return result;
     }
-    async plot_tsne(data, labels, regression_labels, seed, n) {
+    async plot_tsne(data, is_classification, labels, seed, n) {
+        labels = labels.flat()
         const tsne = new TSNE();
         let Y = await tsne.predict(data, n, seed)
         let tsneComponents = Y[0].length
         let tsne_traces = []
         let index = 1;
+        let colors = []
+        if (is_classification) {
+            var uniqueLabels = [...new Set(labels.flat())];
+            colors = labels.map(l => this.indexToColor(uniqueLabels.indexOf(l), uniqueLabels.length));
+        } else {
+            let max = Math.max(...labels)
+            let min = Math.min(...labels)
+            colors = labels.map(item => this.indexToColorSequential(item, min, max));
+        }
         for (let i = 0; i < tsneComponents; i++) {
             for (let j = 0; j < tsneComponents; j++) {
                 if (j < i) {
                     let x = Y.map(values => values[j]);
                     let y = Y.map(values => values[i]);
-                    let max = Math.max(...x)
-                    let min = Math.min(...x)
                     tsne_traces.push({
                         x: x,
                         y: y,
@@ -235,7 +243,7 @@ export default class ChartController {
                         xaxis: 'x' + (index),
                         yaxis: 'y' + (index),
                         marker: {
-                            color: x.map(item => this.indexToColorSequential(item, min, max)),
+                            color: colors,
                             size: 2,
                         },
                     })
@@ -644,7 +652,7 @@ export default class ChartController {
     }
 
     async classificationPCA(dataset, labels, missclassifications, uniqueLabels, index, n) {
-
+        labels = labels.flat()
         const pca = new PCA();
         var colorIndices = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label), uniqueLabels.length));
         const pca_data = await pca.predict(dataset, n)
@@ -738,10 +746,9 @@ export default class ChartController {
     purge_charts(id) {
         Plotly.purge(id)
     }
-    async draw_pca(dataset, labels, regression_labels, numberOfComponents, axes, columns, drawScreePlot = false) {
+    async draw_pca(dataset, is_classification, labels, numberOfComponents, axes, columns, drawScreePlot = false) {
         const pca = new PCA();
         labels = labels.flat()
-        var uniqueLabels = [...new Set(labels)];
         const [pca_data, _, explained_variances, circels, distances] = await pca.predict(dataset, numberOfComponents)
         let pcaComponents = pca_data[0].length;
 
@@ -756,11 +763,20 @@ export default class ChartController {
                     y: element[axis[1] - 1],
                     label: labels[i]
                 })
-                x.push(regression_labels[i][0])
+                x.push(labels[i][0])
             });
         }
         pca_traces = []
         let index = 1;
+        let colors = []
+        if (is_classification) {
+            var uniqueLabels = [...new Set(labels)];
+            colors = labels.map(l => this.indexToColor(uniqueLabels.indexOf(l), uniqueLabels.length));
+        } else {
+            let max = Math.max(...labels)
+            let min = Math.min(...labels)
+            colors = labels.map(item => this.indexToColorSequential(item, min, max));
+        }
         for (let i = 0; i < pcaComponents; i++) {
             for (let j = 0; j < pcaComponents; j++) {
                 if (j < i) {
@@ -776,7 +792,7 @@ export default class ChartController {
                         xaxis: 'x' + (index),
                         yaxis: 'y' + (index),
                         marker: {
-                            color: x.map(item => this.indexToColorSequential(item, min, max)),
+                            color: colors,
                             size: 2,
                         },
                     })
@@ -794,7 +810,7 @@ export default class ChartController {
                         xaxis: 'x' + (index),
                         yaxis: 'y' + (index),
                         marker: {
-                            color: x.map(item => this.indexToColorSequential(item, min, max)),
+                            color: colors,
                             size: 2,
                         },
                     })
@@ -811,7 +827,7 @@ export default class ChartController {
                         xaxis: 'x' + (index),
                         yaxis: 'y' + (index),
                         marker: {
-                            color: x.map(item => this.indexToColorSequential(item, min, max)),
+                            color: colors,
                             size: 2,
                         },
                     })
