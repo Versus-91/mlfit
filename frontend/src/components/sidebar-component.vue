@@ -6,7 +6,7 @@
             <img src="/logo.png" />
         </figure>
         <section>
-            <upload-component @uploaded="generateTargetDropdown"></upload-component>
+            <upload-component @uploaded="generateTargetDropdown" @uploaded-file="setFile"></upload-component>
             <div class="column is-12">
                 <b-field label="Seed" :label-position="'on-border'">
                     <b-input v-model="seed" size="is-small" placeholder="Seed" type="number" min="0">
@@ -70,9 +70,13 @@
                     <b-input size="is-small" v-model="numberOfComponents" type="number"></b-input>
                 </b-field>
                 <b-field>
+                    <b-checkbox v-model="useHPC" size="is-small">Use HPC resources</b-checkbox>
+                </b-field>
+                <b-field>
                     <b-button @click="train" size="is-small" icon-pack="fas" icon-left="play" :loading="training"
                         :disabled="!dataframe || modelOption == null">
                         train</b-button>
+                    <button class="button is-small" @click="upload()">Upload</button>
                 </b-field>
                 <b-loading :is-full-page="false" v-model="training"></b-loading>
             </div>
@@ -116,6 +120,7 @@ export default {
             tuneModel: false,
             numberOfComponents: 0,
             usePCAs: false,
+            useHPC: false,
             seed: 123,
             dataframe: null,
             configureFeatures: false,
@@ -154,10 +159,32 @@ export default {
             }],
             featureSettings: [],
             modelSettings: [],
-            modelName: ''
+            modelName: '',
+            file: null
         }
     },
     methods: {
+        setFile(e) {
+            this.file = e
+        },
+        upload() {
+            let formdata = new FormData();
+            this.settings.rawData
+            formdata.append('file', this.file);
+            console.log(this.file);
+
+            axios.post('http://127.0.0.1:5000/upload', formdata, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+            ).then(function () {
+                console.log('SUCCESS!!');
+            })
+                .catch(function () {
+                    console.log('FAILURE!!');
+                });
+        },
         updateFeatures() {
             this.configureFeatures = false;
             this.$emit('updateFeatures', true)

@@ -175,7 +175,7 @@ export default {
             if (idIndex > -1)
                 dataFrame.drop({ columns: dataFrame.columns[idIndex], inplace: true })
             this.settings.setRawData(processdDataset);
-
+            this.$emit("uploaded-file", file)
             return dataFrame
         },
         async handleFileSelect(name) {

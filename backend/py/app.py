@@ -6,10 +6,18 @@ from missforest.missforest import MissForest
 import json
 import pandas as pd
 import paramiko
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
+ALLOWED_EXTENSIONS = {'csv'}
+app.config['MAX_CONTENT_LENGTH'] = 128 * 1000 * 1000
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route('/missforest', endpoint='imputation', methods=['POST'])
@@ -45,6 +53,16 @@ def connect():
         print(f"File {str(err)} was not found on the local system")
     sftp_client.close()
     return os.getcwd()
+
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    file = request.files['file']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join('files', filename))
+        return (filename, 200)
+    return ("", 400)
 
 
 @app.route('/')
