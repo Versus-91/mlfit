@@ -8,6 +8,8 @@ import pandas as pd
 import paramiko
 from werkzeug.utils import secure_filename
 
+from py.constants import HPC_HOST, HPC_PASSWORD, HPC_USER
+
 app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -38,8 +40,8 @@ def hello_world():
 def connect():
     SSH_Client = paramiko.SSHClient()
     SSH_Client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    SSH_Client.connect(hostname="login2.barnard.hpc.tu-dresden.de", port=22, username="mlfit",
-                       password="Fit_ML_Tool_2", look_for_keys=False
+    SSH_Client.connect(hostname=HPC_HOST, port=22, username=HPC_USER,
+                       password=HPC_PASSWORD, look_for_keys=False
                        )
     sftp_client = SSH_Client.open_sftp()
     basedir = os.path.abspath(os.path.dirname(__file__))
