@@ -11,4 +11,4 @@ def get_ssh_client():
     SSH_Client.connect(hostname=HPC_HOST, port=22, username=HPC_USER,
                        password=HPC_PASSWORD, look_for_keys=False
                        )
-    return SSH_Client.open_sftp()
+    return SSH_Client

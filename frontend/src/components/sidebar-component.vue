@@ -180,10 +180,9 @@ export default {
             }
             ).then(function () {
                 console.log('SUCCESS!!');
-            })
-                .catch(function () {
-                    console.log('FAILURE!!');
-                });
+            }).catch(function () {
+                console.log('FAILURE!!');
+            });
         },
         updateFeatures() {
             this.configureFeatures = false;
@@ -375,27 +374,28 @@ export default {
                     x_test = new DataFrame(pca_test, { columns: cols })
                 }
                 console.log(new Set(encoded_y));
-
-                let predictions = await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
-                let metrics = await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
-                if (predictions?.length > 0) {
+                let predictions = this.useHPC ? [] : await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
+                let metrics = this.useHPC ? [] : await model.evaluateModel(encoded_y_test, predictions, uniqueLabels)
+                if (predictions?.length > 0 || this.useHPC) {
 
                     this.settings.addResult({
                         id: model.id,
-                        useHPC: this.useHPC ? this.settings.getUID : 0,
+                        useHPC: this.useHPC ? Math.random().toString(16).slice(2) : 0,
                         showProbas: model.hasProbability,
                         helpSectionId: model.helpSectionId,
                         hasExplaination: model.hasExplaination,
                         snapshot: {
-                            x: x_train.values,
+                            x: x_train,
                             y: encoded_y,
-                            xt: x_test.values,
+                            xt: x_test,
                             yt: encoded_y_test,
                             xFeatures: x_train.columns,
                             categoricals: categoricalFeatures,
                             id: this.modelOption,
                             labels: uniqueLabels
                         },
+                        seed: seed,
+                        encoder: labelEncoder,
                         name: this.usePCAs ? 'PC.' + this.modelName : this.modelName,
                         datasetName: this.settings.getDatasetName,
                         modelTask: this.settings.classificationTask,
@@ -407,12 +407,12 @@ export default {
                         transformations: [...this.settings.transformationsList.filter(feature => feature.type != 0)],
                         tables: model.tables,
                         plots: model.plots,
-                        predictions: predictions
+                        predictions: predictions,
+                        model: model
 
                     });
                     this.settings.setActiveTab(2);
                     setTimeout(async () => {
-                        4
                         this.settings.setResultActiveTab(model.id + 1);
                         window.dispatchEvent(new Event('resize'));
                     }, 100);

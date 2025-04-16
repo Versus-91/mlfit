@@ -11,17 +11,13 @@ from sklearn.preprocessing import LabelBinarizer
 from sklearn.preprocessing import LabelEncoder
 import json
 
-data = pd.read_csv("data.csv")
+data = pd.read_csv("main.csv")
 data.dropna(inplace=True)
-X_train, X_test, y_train, y_test = train_test_split(
-    data.loc[:, data.columns != "ocean_proximity"], data.loc[:, data.columns == "ocean_proximity"], test_size=0.30, random_state=42)
-encoder = LabelEncoder()
-y_train = encoder.fit_transform(y_train)
-y_test = encoder.transform(y_test)
-lda_type = None
-priors = None
-features = X_train.columns.values
-explain = True
+X_train, X_test, y_train, y_test = train_test_split(data.loc[:, data.columns != "Species"], data.loc[:, data.columns == "Species"], test_size=0.30, random_state=123)
+lda_type= None
+priors= None
+features= X_train.columns.values
+explain= True
 num_classes = len(set(y_train))
 features_importance = []
 partial_dependence_plot_grids = []
@@ -48,16 +44,16 @@ try:
     fpr, tpr, _ = roc_curve(y_test, probas[:, 1])
     auc = roc_auc_score(y_test, probas[:, 1])
     aucs.append(auc)
-    fprs.append(fpr.tolist())
-    tprs.append(tpr.tolist())
+    fprs.append(fpr)
+    tprs.append(tpr)
 
 except Exception as e:
     auc = roc_auc_score(y_test, probas, multi_class='ovr')
     aucs.append(auc)
     for i in range(num_classes):
         fpr, tpr, _ = roc_curve(y_test_one_hot[:, i], probas[:, i])
-        fprs.append(fpr.tolist())
-        tprs.append(tpr.tolist())
+        fprs.append(fpr)
+        tprs.append(tpr)
 
 if explain:
     pdp = PartialDependenceDisplay.from_estimator(
@@ -70,7 +66,6 @@ if explain:
     partial_dependence_plot_grids = [
         item[0].tolist() for item in grids]
 content = json.dumps({"predictions": y_pred.tolist(
-), "pdp_avgs": partial_dependence_plot_avgs, "fprs": fprs, "tprs": tprs, "probas": probas.tolist(), "pdp_grid": partial_dependence_plot_grids, "pfi": features_importance})
+), "pdp_avgs": partial_dependence_plot_avgs, "pdp_grid": partial_dependence_plot_grids,"pfi":features_importance})
 with open('res.json', 'w') as f:
     f.write(content)
-print("done")

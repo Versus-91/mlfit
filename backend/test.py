@@ -1,14 +1,9 @@
-from py.helpers.commnad_write import CommandWriter
-import io
-import textwrap
+from py.helpers.ssh_client import get_ssh_client
 
 
-est = CommandWriter()
-z = [1, 2, 3]
-t = f"""{z}"""
-
-k = est.get_command(
-    {"explain": True, "target": 'ocean_proximity'})
-clean_code_str = textwrap.dedent(k)
-with open('a.py', 'w') as f:
-    f.write(clean_code_str)
+sftp_client = get_ssh_client()
+stdin, stdout, stderr = sftp_client.exec_command('cd /hol -l /home')
+output = stdout.read().decode()
+errors = stderr.read().decode()
+print(output)
+print(errors)

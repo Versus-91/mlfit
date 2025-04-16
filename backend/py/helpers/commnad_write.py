@@ -1,10 +1,12 @@
+import textwrap
+
+
 class CommandWriter():
     def __init__(self):
         pass
 
     def get_command(request, parameters):
         code = f"""
-        import matplotlib
         import pandas as pd
         from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
         from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
@@ -17,12 +19,9 @@ class CommandWriter():
         from sklearn.preprocessing import LabelEncoder
         import json
 
-        data = pd.read_csv("data.csv")
+        data = pd.read_csv("main.csv")
         data.dropna(inplace=True)
         X_train, X_test, y_train, y_test = train_test_split(data.loc[:, data.columns != "{parameters.get("target")}"], data.loc[:, data.columns == "{parameters.get("target")}"], test_size=0.30, random_state={parameters.get("seed")})
-        encoder =  LabelEncoder()
-        y_train = encoder.fit_transform(y_train)
-        y_test = encoder.transform(y_test)
         lda_type= {parameters.get("lda_type")}
         priors= {parameters.get("priors")}
         features= X_train.columns.values
@@ -53,16 +52,16 @@ class CommandWriter():
             fpr, tpr, _ = roc_curve(y_test, probas[:, 1])
             auc = roc_auc_score(y_test, probas[:, 1])
             aucs.append(auc)
-            fprs.append(fpr)
-            tprs.append(tpr)
+            fprs.append(fpr.tolist())
+            tprs.append(tpr.tolist())
 
         except Exception as e:
             auc = roc_auc_score(y_test, probas, multi_class='ovr')
             aucs.append(auc)
             for i in range(num_classes):
                 fpr, tpr, _ = roc_curve(y_test_one_hot[:, i], probas[:, i])
-                fprs.append(fpr)
-                tprs.append(tpr)
+                fprs.append(fpr.tolist())
+                tprs.append(tpr.tolist())
 
         if explain:
             pdp = PartialDependenceDisplay.from_estimator(
@@ -75,8 +74,8 @@ class CommandWriter():
             partial_dependence_plot_grids = [
                 item[0].tolist() for item in grids]
         content = json.dumps({{"predictions": y_pred.tolist(
-        ), "pdp_avgs": partial_dependence_plot_avgs, "pdp_grid": partial_dependence_plot_grids,"pfi":features_importance}})
+        ), "pdp_avgs": partial_dependence_plot_avgs,"fprs":fprs,"tprs":tprs,"probas":probas.tolist(), "pdp_grid": partial_dependence_plot_grids,"pfi":features_importance}})
         with open('res.json', 'w') as f:
             f.write(content)
         """
-        return code
+        return textwrap.dedent(code)

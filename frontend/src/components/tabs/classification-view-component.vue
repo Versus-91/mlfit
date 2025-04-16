@@ -27,9 +27,9 @@
                     {{ key }}: {{ value['value'] }}
                 </p>
                 <p class="subtitle my-1 is-size-7">Goodness of Fit :</p>
-                <p class="ml-2 my-1 subtitle is-size-7">Accuracy : {{ result.metrics.accuracy.toFixed(2) }}</p>
-                <p class="ml-2 my-1 subtitle is-size-7">f1 micro : {{ result.metrics.f1_micro.toFixed(2) }}</p>
-                <p class="ml-2 my-1 subtitle is-size-7"> f1 macro :{{ result.metrics.f1_macro.toFixed(2) }}</p>
+                <p class="ml-2 my-1 subtitle is-size-7">Accuracy : {{ result.metrics?.accuracy?.toFixed(2) }}</p>
+                <p class="ml-2 my-1 subtitle is-size-7">f1 micro : {{ result.metrics?.f1_micro?.toFixed(2) }}</p>
+                <p class="ml-2 my-1 subtitle is-size-7"> f1 macro :{{ result.metrics?.f1_macro?.toFixed(2) }}</p>
                 <button class="button is-danger has-text-white is-small" style="color:#fff !important"
                     @click="deleteTab()">Delete </button>
                 <button class="button is-success is-small" @click="toggleHelp(result.helpSectionId)">Method description
@@ -37,7 +37,7 @@
                 <button class="button is-info is-small" @click="downloadPythonCode()">Download the code</button>
             </b-message>
         </div>
-        <template v-if="!result.useHPC">
+        <template v-if="!hide">
             <div class="column is-12">
                 <article class="message is-info">
                     <div class="message-header p-2"> Confusion Matrix and PCA of predictions</div>
@@ -130,8 +130,13 @@
 </template>
 
 <script>
-import { settingStore } from '@/stores/settings'
+import { settingStore } from '@/stores/settings';
 import { ModelFactory } from "@/helpers/model_factory";
+import { concat } from 'danfojs/dist/danfojs-base';
+
+import { $toCSV } from 'danfojs/dist/danfojs-base/io/browser/io.csv';
+
+import axios from "axios";
 
 export default {
 
@@ -145,12 +150,59 @@ export default {
     data() {
         return {
             pdpFeature: null,
+            hide: false,
+            fileName: null,
             showResult: true,
             intervalId: null
         }
     },
     name: 'ClassificationViewComponent',
     methods: {
+        upload() {
+            let vm = this;
+            let formdata = new FormData();
+            let dataframe = concat({ dfList: [this.result.snapshot.x, this.result.snapshot.xt], axis: 0 })
+            let target = this.result.snapshot.y.concat(this.result.snapshot.yt)
+            dataframe.addColumn(this.result.target, target, { inplace: true })
+            let file = $toCSV(dataframe, { filePath: "pca_data.csv" });
+            const blob = new Blob([file], { type: "text/csv" });
+            formdata.append('file', blob, 'main.csv');
+
+            return axios.post('http://127.0.0.1:5000/upload', formdata, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+            ).then(function (res) {
+                vm.fileName = res.data
+                console.log('SUCCESS!!', vm.fileName);
+                axios.get(`http://127.0.0.1:5000/run?file_name=${vm.fileName}&job_id=${vm.result.useHPC}&target=${vm.result.target}&seed=${vm.result.seed}`).then(() => {
+                    vm.intervalId = setInterval(() => {
+                        axios.get(`http://127.0.0.1:5000/progress?job_id=${vm.result.useHPC}`)
+                            .then((res) => {
+                                if (res.data != 'ongoing') {
+                                    vm.hide = false;
+                                    vm.result.model.predictions = res.data.predictions;
+                                    vm.result.model.pdp_averages = res.data.pdp_avgs;
+                                    vm.result.model.pdp_grid = res.data.pdp_grid;
+                                    vm.result.model.importances = res.data.pfi;
+                                    vm.result.model.fpr = res.data.fprs;
+                                    vm.result.model.tpr = res.data.tprs;
+                                    vm.result.model.auc = res.data.auc;
+                                    vm.result.model.probas = res.data.probas;
+                                    vm.result.model.visualize(vm.result.snapshot.xt, vm.result.snapshot.yt, vm.result.snapshot.labels,
+                                        res.data.predictions, vm.result.encoder, vm.result.snapshot.x.columns, vm.result.snapshot.categoricals)
+                                    clearInterval(vm.intervalId);
+                                }
+                            });
+                    }, 3 * 1000)
+                }).catch(function (err) {
+                    console.log('FAILURE!!', err.data);
+                });
+            }).catch(function () {
+                console.log('FAILURE!!');
+            });
+        },
         toggleHelp(id) {
             this.settings.setActiveTab(3);
             setTimeout(() => {
@@ -189,12 +241,10 @@ export default {
     },
     watch: {
         result: {
-            handler(v) {
-                console.log(v.useHPC);
+            handler() {
                 if (this.result.useHPC) {
-                    this.intervalId = setInterval(() => {
-                        console.log('check');
-                    }, 3 * 1000)
+                    this.hide = true;
+                    this.upload()
                 }
             },
             immediate: true,

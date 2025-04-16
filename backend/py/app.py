@@ -10,6 +10,7 @@ import paramiko
 from werkzeug.utils import secure_filename
 
 from helpers.ssh_client import get_ssh_client
+from helpers.commnad_write import CommandWriter
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -48,37 +49,62 @@ def execute():
     content = request.args
     filename = content.get('file_name') if content.get(
         'file_name') else "housing.csv"
+    method_name = content.get('method_name')
+    seed = content.get('seed')
+    target_feature = content.get('target')
     job_id = content.get('job_id') if content.get('job_id') else 2025
-    sftp_client = get_ssh_client()
+    ssh = get_ssh_client()
+    sftp_client = ssh.open_sftp()
     basedir = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(basedir, filename)
+    file_path = os.path.join(basedir, "files", filename)
     localFilePath = file_path
     remoteFilePath = f"/home/mlfit/{str(job_id)}/{str(filename)}"
     try:
-        print(sftp_client, f'/home/mlfit/{job_id}')
         if not remote_dir_exists(sftp_client, f'/home/mlfit/{job_id}'):
+            writer = CommandWriter()
+            k = writer.get_command(
+                {"explain": True, "target": target_feature, "seed": seed})
+            python_file_name = f'{job_id}.py'
+            with open(python_file_name, 'w') as f:
+                f.write(k)
             sftp_client.mkdir(f'/home/mlfit/{job_id}')
             sftp_client.put(localFilePath, remoteFilePath)
+            file_path = os.path.join(basedir, python_file_name)
+            remoteFilePath = f"/home/mlfit/{str(job_id)}/{python_file_name}"
+            sftp_client.put(file_path, remoteFilePath)
+            stdin, stdout, stderr = ssh.exec_command(
+                f'cd /home/mlfit/{str(job_id)} && source /data/horse/ws/mlfit-python_virtual_environment/bin/activate && sbatch --cpus-per-task=4 --mem=4G --time=01:00:00 --wrap="python3 {str(job_id)}.py"')
+            output = stdout.read().decode()
+            errors = stderr.read().decode()
+            print(output)
+            print(errors)
+            os.remove(file_path)
+
     except FileNotFoundError as err:
         return (f"File {str(err)} was not found on the local system", 400)
-    sftp_client.close()
+    ssh.close()
     return ('done', 204)
 
 
 @app.route('/progress', methods=['GET'])
 def progress():
-    sftp_client = get_ssh_client()
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(basedir, 'files', "test.json")
-    localFilePath = file_path
-    remoteFilePath = "/home/mlfit/test.json"
+    ssh = get_ssh_client()
+    sftp_client = ssh.open_sftp()
+    content = request.args
+    job_id = content.get('job_id')
+    remoteFilePath = f"/home/mlfit/{str(job_id)}/res.json"
     try:
-        file = sftp_client.get(remoteFilePath, localFilePath)
-
+        if not remote_dir_exists(sftp_client, remoteFilePath):
+            return ('ongoing', 200)
+        else:
+            basedir = os.path.abspath(os.path.dirname(__file__))
+            local_file_path = os.path.join(basedir, "files", f"{job_id}.json")
+            sftp_client.get(remoteFilePath, local_file_path)
+            ssh.close()
+            with open(local_file_path, 'r') as f:
+                return json.load(f)
     except FileNotFoundError as err:
-        print(f"File was not found on the local system")
-    sftp_client.close()
-    return json.load(open(localFilePath, 'r'))
+        return ("File was not found on the local system", 400)
 
 
 @app.route('/upload', methods=['POST'])
@@ -87,7 +113,8 @@ def upload():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join('files', filename))
-        return (filename, 204)
+        print(filename)
+        return (filename, 200)
     return ("", 400)
 
 
