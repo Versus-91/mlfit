@@ -5,6 +5,7 @@ export const settingStore = defineStore({
     state: () => ({
         counter: 1,
         df: {},
+        id: null,
         rawData: {},
         features: [],
         transformations: [],
@@ -32,6 +33,10 @@ export const settingStore = defineStore({
         },
         getCounter: (state) => {
             return state.counter
+        },
+        getUID: () => {
+            let id = Math.random().toString(16).slice(2);
+            return id;
         },
         getMessages: (state) => {
             return state.messages.reverse()

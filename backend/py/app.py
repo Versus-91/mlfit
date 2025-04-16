@@ -1,3 +1,4 @@
+import io
 import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
@@ -8,7 +9,7 @@ import pandas as pd
 import paramiko
 from werkzeug.utils import secure_filename
 
-from py.constants import HPC_HOST, HPC_PASSWORD, HPC_USER
+from helpers.ssh_client import get_ssh_client
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -22,6 +23,14 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def remote_dir_exists(sftp, path):
+    try:
+        s = sftp.stat(path)
+        return True
+    except FileNotFoundError:
+        return False
+
+
 @app.route('/missforest', endpoint='imputation', methods=['POST'])
 def hello_world():
     content = request.get_json()
@@ -29,32 +38,47 @@ def hello_world():
     rgr = RandomForestRegressor(n_jobs=-1)
     mf = MissForest(clf, rgr)
     df = pd.io.json.json_normalize(content.get('data'))
-
-    print(df.head)
     df_imputed = mf.fit_transform(
         df, categorical=content.get('categoricalFeatures'))
     return json.loads(df_imputed.to_json(orient='records'))
 
 
 @app.route('/run', methods=['GET'])
-def connect():
-    SSH_Client = paramiko.SSHClient()
-    SSH_Client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    SSH_Client.connect(hostname=HPC_HOST, port=22, username=HPC_USER,
-                       password=HPC_PASSWORD, look_for_keys=False
-                       )
-    sftp_client = SSH_Client.open_sftp()
+def execute():
+    content = request.args
+    filename = content.get('file_name') if content.get(
+        'file_name') else "housing.csv"
+    job_id = content.get('job_id') if content.get('job_id') else 2025
+    sftp_client = get_ssh_client()
     basedir = os.path.abspath(os.path.dirname(__file__))
-    file_path = os.path.join(basedir, 'housing.csv')
+    file_path = os.path.join(basedir, filename)
     localFilePath = file_path
-    remoteFilePath = "/home/mlfit/housing.csv"
+    remoteFilePath = f"/home/mlfit/{str(job_id)}/{str(filename)}"
     try:
-        sftp_client.put(localFilePath, remoteFilePath)
+        print(sftp_client, f'/home/mlfit/{job_id}')
+        if not remote_dir_exists(sftp_client, f'/home/mlfit/{job_id}'):
+            sftp_client.mkdir(f'/home/mlfit/{job_id}')
+            sftp_client.put(localFilePath, remoteFilePath)
     except FileNotFoundError as err:
-        print(err)
-        print(f"File {str(err)} was not found on the local system")
+        return (f"File {str(err)} was not found on the local system", 400)
     sftp_client.close()
-    return os.getcwd()
+    return ('done', 204)
+
+
+@app.route('/progress', methods=['GET'])
+def progress():
+    sftp_client = get_ssh_client()
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    file_path = os.path.join(basedir, 'files', "test.json")
+    localFilePath = file_path
+    remoteFilePath = "/home/mlfit/test.json"
+    try:
+        file = sftp_client.get(remoteFilePath, localFilePath)
+
+    except FileNotFoundError as err:
+        print(f"File was not found on the local system")
+    sftp_client.close()
+    return json.load(open(localFilePath, 'r'))
 
 
 @app.route('/upload', methods=['POST'])
@@ -63,7 +87,7 @@ def upload():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join('files', filename))
-        return (filename, 200)
+        return (filename, 204)
     return ("", 400)
 
 

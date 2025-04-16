@@ -382,6 +382,7 @@ export default {
 
                     this.settings.addResult({
                         id: model.id,
+                        useHPC: this.useHPC ? this.settings.getUID : 0,
                         showProbas: model.hasProbability,
                         helpSectionId: model.helpSectionId,
                         hasExplaination: model.hasExplaination,
