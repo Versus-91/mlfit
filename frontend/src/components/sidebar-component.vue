@@ -416,8 +416,9 @@ export default {
                         this.settings.setResultActiveTab(model.id + 1);
                         window.dispatchEvent(new Event('resize'));
                     }, 100);
-
-                    await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, x_train.columns, categoricalFeatures)
+                    if (!this.useHPC) {
+                        await model.visualize(x_test, encoded_y_test, uniqueLabels, predictions, labelEncoder, x_train.columns, categoricalFeatures)
+                    }
                     this.settings.increaseCounter();
                     this.toggleTraining();
                 }

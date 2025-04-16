@@ -37,89 +37,94 @@
                 <button class="button is-info is-small" @click="downloadPythonCode()">Download the code</button>
             </b-message>
         </div>
-        <div class="column is-12">
-            <article class="message is-info">
-                <div class="message-header p-2"> Confusion Matrix and PCA of predictions</div>
-                <div class="message-body mx-1">
-                    <div class="columns is-multiline is-gapless">
-                        <div class="column is-6 my-1" style="height: 400px;" :id="'confusion_matrix_' + result.id">
-                        </div>
-                        <div v-show="result.showProbas" class="column is-6 my-1" style="height: 400px;"
-                            :id="'proba_plot_' + result.id">
-                        </div>
-                        <br>
-                        <div v-show="result.showProbas" class="column is-6 my-1" style="height: 400px;"
-                            :id="'roc_plot_' + result.id">
-                        </div>
+        <template v-if="!result.useHPC">
+            <div class="column is-12">
+                <article class="message is-info">
+                    <div class="message-header p-2"> Confusion Matrix and PCA of predictions</div>
+                    <div class="message-body mx-1">
+                        <div class="columns is-multiline is-gapless">
+                            <div class="column is-6 my-1" style="height: 400px;" :id="'confusion_matrix_' + result.id">
+                            </div>
+                            <div v-show="result.showProbas" class="column is-6 my-1" style="height: 400px;"
+                                :id="'proba_plot_' + result.id">
+                            </div>
+                            <br>
+                            <div v-show="result.showProbas" class="column is-6 my-1" style="height: 400px;"
+                                :id="'roc_plot_' + result.id">
+                            </div>
 
-                        <div v-show="result.hasExplaination && result.if !== 1" class="column is-6 my-1"
-                            style="height: 400px;" :id="'pfi_boxplot_' + result.id">
+                            <div v-show="result.hasExplaination && result.if !== 1" class="column is-6 my-1"
+                                style="height: 400px;" :id="'pfi_boxplot_' + result.id">
+                            </div>
                         </div>
                     </div>
-                </div>
-            </article>
-        </div>
-        <div class="column is-12" v-if="result.name.includes('Logi.Reg')">
-            <div class="columns is-multiline">
-                <div class="column is-7">
-                    <div class="table-container">
-                        <table
-                            class="table has-text-centered nowrap is-striped is-bordered is-narrow is-hoverable is-size-7"
-                            :id="'metrics_table_' + result.id">
-                            <thead>
-                                <tr>
-                                    <th colspan="1"></th>
-                                    <th colspan="3" class="has-text-centered">OLS</th>
-                                    <th colspan="3" class="has-text-centered">lambda min</th>
-                                    <th colspan="3" class="has-text-centered">lambda 1se</th>
-                                </tr>
-                                <tr>
-                                    <th class="has-text-centered">name</th>
-                                    <th>coef</th>
-                                    <th>st.d.</th>
-                                    <th><i>p</i>-value</th>
-                                    <th>coef</th>
-                                    <th>st.d.</th>
-                                    <th><i>p</i>-value</th>
-                                    <th>coef</th>
-                                    <th>st.d.</th>
-                                    <th><i>p</i>-value</th>
-                                </tr>
-                            </thead>
-                            <tfoot class="has-text-centered" style=" font-weight: normal">
-                                <tr>
-                                    <th></th>
-                                    <th colspan="3" class="has-text-centered"></th>
-                                    <th colspan="3" class="has-text-centered"></th>
-                                    <th colspan="3" class="has-text-centered"></th>
+                </article>
+            </div>
+            <div class="column is-12" v-if="result.name.includes('Logi.Reg')">
+                <div class="columns is-multiline">
+                    <div class="column is-7">
+                        <div class="table-container">
+                            <table
+                                class="table has-text-centered nowrap is-striped is-bordered is-narrow is-hoverable is-size-7"
+                                :id="'metrics_table_' + result.id">
+                                <thead>
+                                    <tr>
+                                        <th colspan="1"></th>
+                                        <th colspan="3" class="has-text-centered">OLS</th>
+                                        <th colspan="3" class="has-text-centered">lambda min</th>
+                                        <th colspan="3" class="has-text-centered">lambda 1se</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="has-text-centered">name</th>
+                                        <th>coef</th>
+                                        <th>st.d.</th>
+                                        <th><i>p</i>-value</th>
+                                        <th>coef</th>
+                                        <th>st.d.</th>
+                                        <th><i>p</i>-value</th>
+                                        <th>coef</th>
+                                        <th>st.d.</th>
+                                        <th><i>p</i>-value</th>
+                                    </tr>
+                                </thead>
+                                <tfoot class="has-text-centered" style=" font-weight: normal">
+                                    <tr>
+                                        <th></th>
+                                        <th colspan="3" class="has-text-centered"></th>
+                                        <th colspan="3" class="has-text-centered"></th>
+                                        <th colspan="3" class="has-text-centered"></th>
 
-                                </tr>
-                            </tfoot>
-                        </table>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <div class="column is-5" :id="'parameters_plot_' + result.id">
-                </div>
-                <div class="column is-6" :id="'errors_' + result.id" style="height:250px">
-                </div>
-                <div class="column is-6" :id="'regularization_' + result.id" style="height:250px">
+                    <div class="column is-5" :id="'parameters_plot_' + result.id">
+                    </div>
+                    <div class="column is-6" :id="'errors_' + result.id" style="height:250px">
+                    </div>
+                    <div class="column is-6" :id="'regularization_' + result.id" style="height:250px">
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="column is-12" v-show="result.hasExplaination && !result.name.includes('Logi.Reg')">
-            <article class="message is-info">
-                <div class="message-header p-2"> Partial Dependence Plot</div>
-                <div class="message-body mx-1">
-                    <div class="columns is-multiline is-gapless">
-                        <div class="column is-6" style="height: 400px;" :id="'knn_table_' + result.id"
-                            v-if="result.name.toString().toLowerCase().includes('knn')">
+            <div class="column is-12" v-show="result.hasExplaination && !result.name.includes('Logi.Reg')">
+                <article class="message is-info">
+                    <div class="message-header p-2"> Partial Dependence Plot</div>
+                    <div class="message-body mx-1">
+                        <div class="columns is-multiline is-gapless">
+                            <div class="column is-6" style="height: 400px;" :id="'knn_table_' + result.id"
+                                v-if="result.name.toString().toLowerCase().includes('knn')">
+                            </div>
+                            <div :id="'pdp_containers_' + result.id"></div>
                         </div>
-                        <div :id="'pdp_containers_' + result.id"></div>
+                        <br>
                     </div>
-                    <br>
-                </div>
-            </article>
-        </div>
+                </article>
+            </div>
+        </template>
+        <template v-else>
+            In progress...
+        </template>
     </article>
 
 </template>
@@ -140,7 +145,8 @@ export default {
     data() {
         return {
             pdpFeature: null,
-            showResult: true
+            showResult: true,
+            intervalId: null
         }
     },
     name: 'ClassificationViewComponent',
@@ -181,9 +187,25 @@ export default {
     props: {
         result: {}
     },
+    watch: {
+        result: {
+            handler(v) {
+                console.log(v.useHPC);
+                if (this.result.useHPC) {
+                    this.intervalId = setInterval(() => {
+                        console.log('check');
+                    }, 3 * 1000)
+                }
+            },
+            immediate: true,
+        }
+    },
     errorCaptured(err, vm, info) {
         console.log(`cat EC: ${err.toString()}\ninfo: ${info}`);
         return false;
+    },
+    unmounted() {
+        clearInterval(this.intervalId)
     }
 }
 </script>
