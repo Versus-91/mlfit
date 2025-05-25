@@ -182,7 +182,7 @@
                     <methods-tab-component></methods-tab-component>
                 </b-tab-item>
                 <b-tab-item label="Help" icon="question" icon-pack="fas">
-                    <div class="content has-text-left	">
+                    <div class="content has-text-left">
                         <h4>1. Dataset Selection</h4>
                         <p>
                             To begin, you can either select a sample dataset provided by the system or upload your own

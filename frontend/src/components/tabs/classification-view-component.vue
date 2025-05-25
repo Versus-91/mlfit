@@ -153,7 +153,8 @@ export default {
             hide: false,
             fileName: null,
             showResult: true,
-            intervalId: null
+            intervalId: null,
+            jobProgressTries: 0,
         }
     },
     name: 'ClassificationViewComponent',
@@ -180,6 +181,7 @@ export default {
                     vm.intervalId = setInterval(() => {
                         axios.get(`http://127.0.0.1:5000/progress?job_id=${vm.result.useHPC}`)
                             .then((res) => {
+                                vm.jobProgressTries += 1;
                                 if (res.data != 'ongoing') {
                                     vm.hide = false;
                                     vm.result.model.predictions = res.data.predictions;
@@ -192,6 +194,8 @@ export default {
                                     vm.result.model.probas = res.data.probas;
                                     vm.result.model.visualize(vm.result.snapshot.xt, vm.result.snapshot.yt, vm.result.snapshot.labels,
                                         res.data.predictions, vm.result.encoder, vm.result.snapshot.x.columns, vm.result.snapshot.categoricals)
+                                    clearInterval(vm.intervalId);
+                                } else if (vm.jobProgressTries > 100) {
                                     clearInterval(vm.intervalId);
                                 }
                             });
