@@ -23,14 +23,13 @@
                 <div v-show="compare" class="column is-12" id="comaprison_plot" style="height:400px;"></div>
             </b-tab-item>
             <template v-for="result in this.settings.results">
-                {{ result.useHPC }}
                 <b-tab-item :label="(result.id) + '.' + result.name.toString()" :key="result.id">
                     <classification-view-component @delete-result="deleteResult" :result="result"
                         v-if="result.modelTask"></classification-view-component>
                     <regression-view-component @delete-result="deleteResult" :result="result" v-else>
                     </regression-view-component>
                     <div class="column is-12">
-                        <div class="table-container" v-if="result.useHPC">
+                        <div class="table-container" v-if="!result.useHPC">
                             <table :id="'predictions_table_' + result.id"
                                 class="table is-bordered is-hoverable is-narrow display is-size-7" width="100%">
                             </table>
