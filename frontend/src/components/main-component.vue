@@ -1,6 +1,5 @@
 <template>
     <div class="column is-10">
-        {{ settings.getUID}}
         <section>
             <b-tabs v-model="settings.activeTab" :position="'is-centered'" :animated="false" type="success"
                 @input="resize()">

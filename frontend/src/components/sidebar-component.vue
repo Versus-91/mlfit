@@ -76,7 +76,7 @@
                     <b-button @click="train" size="is-small" icon-pack="fas" icon-left="play" :loading="training"
                         :disabled="!dataframe || modelOption == null">
                         train</b-button>
-                    <button class="button is-small" @click="upload()">Upload</button>
+                    <button class="button is-small" @click="upload()">Upload to HPC server</button>
                 </b-field>
                 <b-loading :is-full-page="false" v-model="training"></b-loading>
             </div>
