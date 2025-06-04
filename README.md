@@ -40,8 +40,8 @@ A web-based platform for building and executing machine learning pipelines with 
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Web UI (React/Vue recommended)
-- **Backend**: Python (Flask or FastAPI), scikit-learn, PyTorch
+- **Frontend**: Web UI (Vue)
+- **Backend**: Python (Flask), scikit-learn
 - **Visualization**: Plotly, Seaborn, Matplotlib
 - **Dimensionality Reduction**: PCA, t-SNE, Autoencoders
 - **HPC Access**: SSH or SLURM job scheduler (TU Dresden HPC)
