@@ -61,4 +61,4 @@ jobs:
           app-name: 'MLToolkit'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DBE7B23E91134C7A8BE49F5447E429AF }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_7990F6DA2986417EA3EE9A85ACB5F5ED }}
