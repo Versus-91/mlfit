@@ -1,36 +1,21 @@
-# Stage 1: Build Vue.js app
-FROM node:14-alpine as build-stage
+# Build stage
+FROM node:18-alpine AS build-stage
 
-WORKDIR /app/frontend
-
-COPY frontend/package.json frontend/package-lock.json ./
-RUN npm install
-
-COPY frontend/ ./
-RUN npm run build
-
-# Stage 2: Set up Flask and R environment
-FROM continuumio/miniconda3 as final-stage
-
-# Install R
-RUN apt-get update && apt-get install -y r-base && rm -rf /var/lib/apt/lists/*
-
-# Set up Flask environment
 WORKDIR /app
 
-RUN pip install flask
+COPY package*.json ./
+RUN npm install
 
-COPY backend/r ./backend/r
-COPY backend/py ./backend.py
+COPY . .
+RUN npm run build
 
+# Production stage
+FROM nginx:stable-alpine
 
-# Copy built frontend from stage 1
-COPY --from=build-stage /app/frontend/dist ./frontend/dist
+# Copy built files from build stage
+COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# Set environment variables for Flask
-ENV FLASK_APP=backend.py/app.py
+# Expose port 80
+EXPOSE 80
 
-EXPOSE 5000
-
-# Command to run Flask server
-CMD ["flask", "run", "--host=0.0.0.0"]
+CMD ["nginx", "-g", "daemon off;"]
