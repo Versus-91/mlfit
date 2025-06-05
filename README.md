@@ -7,6 +7,7 @@ A web-based platform for building and executing machine learning pipelines with 
 - **Modular ML Pipelines**  
   Create, edit, and run pipelines for classification, regression, clustering, and preprocessing using an intuitive, no-code web interface.
 
+
 - **Data Visualization**  
   Visual tools for exploring datasets and model results:
   - Scatter plots
