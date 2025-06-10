@@ -185,7 +185,7 @@ export default {
             name += '.csv';
             let current = this;
             let file;
-            fetch('/' + name)
+            fetch(name)
                 .then(response => response.blob())
                 .then(async blob => {
                     file = new File([blob], name);
