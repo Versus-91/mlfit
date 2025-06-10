@@ -329,7 +329,7 @@ export default class ChartController {
         }
         Plotly.react('tsne', tsne_traces, layout, {
             ...plotlyImageExportConfig,
-            staticPlot: false,
+            staticPlot: true,
         })
 
     }
@@ -831,7 +831,7 @@ export default class ChartController {
                         x: x,
                         y: y,
                         mode: 'markers',
-                        type: 'scatter',
+                        type: 'scattergl',
                         xaxis: 'x' + (index),
                         yaxis: 'y' + (index),
                         marker: {
@@ -918,7 +918,7 @@ export default class ChartController {
                 }
             }
         }
-        Plotly.react('pca_matrix', pca_traces, layout, {
+        Plotly.newPlot('pca_matrix', pca_traces, layout, {
             ...plotlyImageExportConfig,
             staticPlot: true,
         })
@@ -967,7 +967,7 @@ export default class ChartController {
         Plotly.newPlot('correlation_circle', [{
             x: [],
             y: [],
-            type: 'scatter',
+            type: 'scattergl',
             mode: 'markers'
         }], {
             title: {
