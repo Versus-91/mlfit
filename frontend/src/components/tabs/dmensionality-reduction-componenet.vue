@@ -33,7 +33,7 @@
                         </b-field>
                     </div>
                     <div class="column is-12">
-                        <div id="pca_matrix"></div>
+                        <div id="pca_matrix" style="overflow: auto;"></div>
                         <button class="button is-small mt-1" v-if="this.pcaData" @click="downloadPCA()">Download
                             PCA
                             data</button>
