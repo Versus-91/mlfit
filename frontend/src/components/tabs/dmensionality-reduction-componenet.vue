@@ -298,16 +298,16 @@ export default {
                 units: +this.hiddenLayerSize,
                 batchInputShape: [null, unitsLength],
                 activation: this.encoderActivationFunction,
-                kernelInitializer: "glorotNormal",
-                biasInitializer: "zeros"
+                kernelInitializer: "randomNormal",
+                biasInitializer: "ones"
             });
             const decoder = tensorflow.layers.dense({ units: unitsLength, activation: this.decoderActivationFunction });
             model.add(encoder);
             model.add(decoder);
-            await model.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
+            await model.compile({ optimizer: 'sgd', loss: 'meanSquaredError' });
             const xs = tensorflow.tensor2d(values);
             // eslint-disable-next-line no-unused-vars
-            let h = await model.fit(xs, xs, { epochs: +this.iterations, batchSize: 64, shuffle: false, validationSplit: 0.1 });
+            let h = await model.fit(xs, xs, { epochs: +this.iterations, batchSize: 32, shuffle: true, validationSplit: 0.1 });
             xs.dispose();
             const tidyWrapper = tensorflow.tidy(() => {
                 const predictor = tensorflow.sequential();
@@ -318,9 +318,9 @@ export default {
                 return ret.arraySync();
             });
             // eslint-disable-next-line no-unused-vars
-            let data = await tidyWrapper;
-            chartController.drawAutoencoder(data, this.autoEncoderX - 1, this.autoEncoderY - 1,
-                this.df.loc({ columns: [this.settings.modelTarget] }).values
+            let autoencoderPredictions = await tidyWrapper;
+            chartController.drawAutoencoder(autoencoderPredictions, this.autoEncoderX - 1, this.autoEncoderY - 1,
+                this.settings.df.loc({ columns: [this.settings.modelTarget] }).values
                 , this.settings.isClassification
             )
             this.loadingAutoEncoder = false;

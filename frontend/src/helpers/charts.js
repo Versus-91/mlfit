@@ -2940,7 +2940,6 @@ export default class ChartController {
             y: points.map(point => point[yIndex]),
             mode: 'markers',
             type: 'scatter',
-            name: 'Team A',
             marker: {
                 size: 3,
                 color: colors
