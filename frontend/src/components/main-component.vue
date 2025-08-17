@@ -117,10 +117,12 @@
                         </section>
                         <section>
                             <article class="message is-info mt-2">
-                                <div class="message-header p-2">Correlation Matrix and Dendrogram <b-tooltip
-                                        append-to-body label="Ward method requires euclidean distance" multilined>
+                                <div class="message-header p-2">Correlation Matrix and Dendrogram
+                                    <b-tooltip append-to-body label="Ward method requires euclidean distance"
+                                        multilined>
                                         <b-button icon-left="info" icon-pack="fas" size="is-small" type="is-dark" />
-                                    </b-tooltip></div>
+                                    </b-tooltip>
+                                </div>
                                 <div class="message-body">
                                     <div class="columns is-gapless">
                                         <div class="column is-6 mx-1"></div>

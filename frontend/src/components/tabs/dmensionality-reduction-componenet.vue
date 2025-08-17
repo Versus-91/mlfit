@@ -1,7 +1,12 @@
 <template>
     <section v-if="this.settings?.items.length > 2">
         <div class="message is-info">
-            <div class="message-header p-2">Principle Component Analysis</div>
+            <div class="message-header p-2">Principle Component Analysis
+
+                <b-tooltip append-to-body label="PCA dimentionality reduction and correlation circle" multilined>
+                    <b-button icon-left="info" icon-pack="fas" size="is-small" type="is-dark" />
+                </b-tooltip>
+            </div>
             <div class="message-body">
                 <b-field>
                     <p class="control">
