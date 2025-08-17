@@ -190,11 +190,11 @@ export default {
         },
         toggleTraining() {
             this.training = !this.training;
-            let message = this.training ? 'started training ' + this.modelName : 'Successully fitted ' + this.modelName;
+            let message = this.training ? 'Started training ' + this.modelName : 'Successully fitted ' + this.modelName;
             this.$buefy.toast.open(
                 {
                     duration: 5000,
-                    message: this.training ? 'started training ' + this.modelName : 'Successully fitted ' + this.modelName,
+                    message: this.training ? 'Started training ' + this.modelName : 'Successully fitted ' + this.modelName,
                     type: this.training ? 'is-info' : 'is-success',
                 })
             this.settings.addMessage({ message: message, type: 'info' });
