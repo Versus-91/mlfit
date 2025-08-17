@@ -17,7 +17,7 @@
                     <div class="column is-6">
                         <div id="correlation_circle" style="height: 300px;"></div>
                     </div>
-                    <button class="button is-small mt-1" v-if="this.pcaVarianceData"
+                    <button class="button is-small mt-1 ml-2" v-if="this.pcaVarianceData"
                         @click="downloadExplainedVariance()">Download
                         PCA variance data</button>
                     <div class="column is-12" v-if="hasPCA">
