@@ -42,16 +42,14 @@ import { settingStore } from '@/stores/settings'
 
 const DATASET_SIZE = 10000;
 export default {
-    setup() {
-        const settings = settingStore()
-        return { settings }
-    },
+
     name: 'UploadComponent',
     props: {
         msg: String
     },
     data() {
         return {
+            settings : settingStore(),
             sampleDataset: 'none',
             file: null,
             separator: 2,

@@ -1,7 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
     <div class="column is-2  has-background-info-light	" style="height: 100%;">
-        <!-- <button @click="impute()">Impute</button> -->
         <figure class="image is-96x96">
             <img src="/logo.png" />
         </figure>
@@ -93,18 +92,15 @@ import PCA from '@/helpers/dimensionality-reduction/pca';
 
 import { ModelFactory } from "@/helpers/model_factory";
 import { settingStore } from '@/stores/settings'
-import { applyDataTransformation, handle_missing_values, encode_dataset, evaluate_classification } from '@/helpers/utils';
-import { LabelEncoder, tensorflow, concat } from 'danfojs/dist/danfojs-base';
+import { applyDataTransformation, handle_missing_values, encode_dataset } from '@/helpers/utils';
+import { LabelEncoder, concat } from 'danfojs/dist/danfojs-base';
 import { toJSON, DataFrame } from 'danfojs';
 import axios from "axios";
+import { mapStores } from "pinia";
 
 export default {
     name: 'SidebarComponent',
-    setup() {
-        const settings = settingStore()
 
-        return { settings }
-    },
     components: {
         UploadComponent
     },
@@ -114,6 +110,7 @@ export default {
 
     data() {
         return {
+            settings: settingStore(),
             dataScalingBehavior: false,
             explainModel: true,
             training: false,
@@ -169,7 +166,6 @@ export default {
         },
         upload() {
             let formdata = new FormData();
-            this.settings.rawData
             formdata.append('file', this.file);
             console.log(this.file);
 
@@ -228,8 +224,8 @@ export default {
             this.modelTarget = this.dataframe.columns[this.dataframe.columns.length - 1];
             this.settings.setTarget(this.modelTarget)
             let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
-            for (let i = 0; i < selectedFeatures.length; i++) {
-                this.settings.addFeature(selectedFeatures[i])
+            for (const element of selectedFeatures) {
+                this.settings.addFeature(element)
             }
             this.$emit('updateFeatures', true)
 
@@ -250,12 +246,9 @@ export default {
                 this.settings.addMessage({ message: message, type: 'warning' });
                 return
             }
-            this.settings.setmodelTask(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
+            this.settings.setmodelTask(targetFeature.type !== FeatureCategories.Numerical.id);
             this.modelOptions = targetFeature.type === FeatureCategories.Numerical.id ? Settings.regression : Settings.classification;
-            // let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
-            // for (let i = 0; i < selectedFeatures.length; i++) {
-            //     this.settings.addFeature(selectedFeatures[i])
-            // }
+
         },
         async train() {
             try {
@@ -275,8 +268,8 @@ export default {
                 dataset = applyDataTransformation(dataset, numericColumns, this.settings.transformationsList);
                 if (this.dataScalingBehavior) {
                     let transformations = []
-                    for (let i = 0; i < numericColumns.length; i++) {
-                        transformations.push({ name: numericColumns[i], scaler: '1' })
+                    for (const element of numericColumns) {
+                        transformations.push({ name: element, scaler: '1' })
                     }
                     dataset = applyDataTransformation(dataset, numericColumns, transformations);
                 }

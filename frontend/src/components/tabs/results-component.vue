@@ -22,8 +22,9 @@
                 </div>
                 <div v-show="compare" class="column is-12" id="comaprison_plot" style="height:400px;"></div>
             </b-tab-item>
-            <template v-for="result in this.settings.results">
-                <b-tab-item :label="(result.id) + '.' + result.name.toString()" :key="result.id">
+            <template>
+                <b-tab-item v-for="result in this.settings.results" v-bind:key="result.id"
+                    :label="(result.id) + '.' + result.name.toString()">
                     <classification-view-component @delete-result="deleteResult" :result="result"
                         v-if="result.modelTask"></classification-view-component>
                     <regression-view-component @delete-result="deleteResult" :result="result" v-else>
@@ -106,7 +107,7 @@ export default {
             let task = this.settings.classificationTask;
             try {
                 Plotly.purge('comaprison_plot');
-            } catch (error) {
+            } catch {
                 console.log('no plot to remove');
             }
             if (dataset) {
