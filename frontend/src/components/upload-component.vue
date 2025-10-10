@@ -49,7 +49,7 @@ export default {
     },
     data() {
         return {
-            settings : settingStore(),
+            settings: settingStore(),
             sampleDataset: 'none',
             file: null,
             separator: 2,
@@ -176,7 +176,9 @@ export default {
             this.$emit("uploaded-file", file)
             return dataFrame
         },
-        async handleFileSelect(name) {
+        async handleFileSelect(event) {
+            console.log(event);
+            let name = event.target.value
             if (name == 'none') {
                 return
             }

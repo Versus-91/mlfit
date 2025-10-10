@@ -243,7 +243,7 @@
                         </p>
                     </div>
                 </b-tab-item>
-                <b-tab-item label="Messages Log" icon="history" icon-pack="fas">
+                <!-- <b-tab-item label="Messages Log" icon="history" icon-pack="fas">
                     <b-notification aria-close-label="Close notification" icon-pack="fas"
                         :type="m.type == 'warning' ? 'is-warning' : m.type == 'danger' ? 'is-danger' : 'is-info'"
                         has-icon :closable="false" v-for="(m, i) in this.settings.getMessages" :key="i">
@@ -252,7 +252,7 @@
                         {{ m.date }}
 
                     </b-notification>
-                </b-tab-item>
+                </b-tab-item> -->
             </b-tabs>
         </section>
     </div>
