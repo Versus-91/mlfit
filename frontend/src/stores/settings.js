@@ -12,25 +12,10 @@ export const settingStore = defineStore('main', {
         classTransformations: [],
         results: [],
         messages: [],
-        datasetName: '',
-        activeTab: 0,
-        dataSizeFlag: false,
-        resultActiveTab: '',
-        datasetShape: {
-            count: 0,
-            columns: 0
-        },
-        target: null,
-        isClassification: true,
-        seed: 123,
     }),
     getters: {
-        items: (state) => {
-            return state.features
-        },
-        getDatasizeFlag: (state) => {
-            return state.dataSizeFlag
-        },
+
+
         getCounter: (state) => {
             return state.counter
         },
@@ -53,15 +38,11 @@ export const settingStore = defineStore('main', {
         getRawData: (state) => {
             return state.rawData;
         },
-        currentTab: (state) => {
-            return state.activeTab
-        },
+
         mergedClasses: (state) => {
             return state.classTransformations
         },
-        getSeed: (state) => {
-            return state.seed
-        },
+
         getMethodResults: (state) => {
             return state.results
         },
@@ -70,8 +51,7 @@ export const settingStore = defineStore('main', {
         },
         outputs: (state) => state.results,
         transformationsList: (state) => state.transformations,
-        modelTarget: (state) => state.target,
-        classificationTask: (state) => state.isClassification,
+
     },
     actions: {
         setSeed(seed) {
@@ -83,20 +63,14 @@ export const settingStore = defineStore('main', {
         setDatasetShape(shape) {
             this.datasetShape = shape;
         },
-        resetFeatures() {
-            this.features = []
-            this.transformations = []
-            this.classTransformations = []
-        },
+
         resetClassTransformations() {
             this.classTransformations = []
         },
         resetTransformations() {
             this.transformations = []
         },
-        setDatasizeFlag(flag) {
-            this.dataSizeFlag = flag;
-        },
+
         resetDataset() {
             this.datasetName = '';
             this.datasetShape = {
@@ -139,7 +113,7 @@ export const settingStore = defineStore('main', {
             this.results.push(result)
         },
         addMessage(message) {
-            var date = new Date();
+            let date = new Date();
             message['date'] = date.toLocaleString()
             this.messages.push(message)
         },
@@ -170,18 +144,8 @@ export const settingStore = defineStore('main', {
             const i = this.features.lastIndexOf(name)
             if (i > -1) this.features.splice(i, 1)
         },
-        setTarget(target) {
-            this.target = target
-        },
-        setmodelTask(type) {
-            this.isClassification = type
-        },
-        setActiveTab(index) {
-            this.activeTab = index
-        },
-        setResultActiveTab(index) {
-            this.resultActiveTab = index
-        }
+
+
     },
 })
 
