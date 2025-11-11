@@ -289,46 +289,46 @@ export function evaluate_classification(predictions, y_test, encoder) {
         mispredictions: missclassification_preds
     }
 }
-export function scale_data(dataset, column, normalization_type) {
+export async function scale_data(dataset, column, normalization_type) {
     try {
 
-        getDanfo().then((danfo) => {
-            switch (normalization_type) {
-                case "0":
-                    {
-                        break;
-                    }
-                case "1":
-                    {
-                        let scaler = new danfo.MinMaxScaler()
-                        scaler.fit(dataset[column])
-                        dataset.addColumn(column, scaler.transform(dataset[column]), { inplace: true })
-                        break;
-                    }
-                case "2":
-                    dataset.addColumn(column, dataset[column].apply((x) => x * x), { inplace: true })
+        const danfo = await getDanfo();
+        switch (normalization_type) {
+            case "0":
+                {
                     break;
-                case "3":
-                    dataset.addColumn(column, dataset[column].apply((x) => {
-                        let ln = Math.log(x);
-                        if (isNaN(ln)) {
-                            throw new Error('falied at data transformation.');
-                        }
-                        return Math.log(x)
-                    }
-                    ), { inplace: true })
+                }
+            case "1":
+                {
+                    let scaler = new danfo.MinMaxScaler()
+                    scaler.fit(dataset[column])
+                    dataset.addColumn(column, scaler.transform(dataset[column]), { inplace: true })
                     break;
-                case "4":
-                    {
-                        let scaler = new danfo.StandardScaler()
-                        scaler.fit(dataset[column])
-                        dataset.addColumn(column, scaler.transform(dataset[column]), { inplace: true })
-                        break;
+                }
+            case "2":
+                dataset.addColumn(column, dataset[column].apply((x) => x * x), { inplace: true })
+                break;
+            case "3":
+                dataset.addColumn(column, dataset[column].apply((x) => {
+                    let ln = Math.log(x);
+                    if (isNaN(ln)) {
+                        throw new Error('falied at data transformation.');
                     }
-                default:
+                    return Math.log(x)
+                }
+                ), { inplace: true })
+                break;
+            case "4":
+                {
+                    let scaler = new danfo.StandardScaler()
+                    scaler.fit(dataset[column])
+                    dataset.addColumn(column, scaler.transform(dataset[column]), { inplace: true })
                     break;
-            }
-        });
+                }
+            default:
+                break;
+        }
+
     } catch (error) {
         throw new Error('falied at data transformation.')
     }

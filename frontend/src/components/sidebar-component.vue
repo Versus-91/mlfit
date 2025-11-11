@@ -322,7 +322,7 @@ export default {
                         let uniqueLabels = [...new Set(y_train.values)];
                         let labelEncoder, encoded_y, encoded_y_test;
                         if (this.settings.classificationTask) {
-                            [labelEncoder, encoded_y, encoded_y_test] = this.encodeTarget(y_train.values, y_test.values)
+                            [labelEncoder, encoded_y, encoded_y_test] = await this.encodeTarget(y_train.values, y_test.values)
                         } else {
                             encoded_y = y_train.values;
                             encoded_y_test = y_test.values;
@@ -350,7 +350,7 @@ export default {
                 let uniqueLabels = [...new Set(y_train.values)];
                 let labelEncoder, encoded_y, encoded_y_test;
                 if (this.settings.classificationTask) {
-                    [labelEncoder, encoded_y, encoded_y_test] = this.encodeTarget(y_train.values, y_test.values)
+                    [labelEncoder, encoded_y, encoded_y_test] = await this.encodeTarget(y_train.values, y_test.values)
                 } else {
                     encoded_y = y_train.values;
                     encoded_y_test = y_test.values;

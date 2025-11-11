@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 
 import PCA from './dimensionality-reduction/pca';
 import { binarize } from './utils'
@@ -8,8 +9,6 @@ import { metrics as ClassificationMetric, encode_name, scale_data } from './util
 import { corrcoeff } from 'jstat';
 import { getDanfo } from '@/utils/danfo_loader';
 import TSNE from './dimensionality-reduction/tsne';
-let Highcharts
-let $
 const plotlyImageExportConfig = {
     toImageButtonOptions: {
         format: 'png', // one of png, svg, jpeg, webp
@@ -1347,8 +1346,38 @@ export default class ChartController {
         }, { responsive: true });
     }
     // eslint-disable-next-line no-unused-vars
-    confusionMatrix(labels, predictions, numClasses) {
-
+    confusionMatrix(labels, predictions, numClasses, weights) {
+        const labelsInt = labels.cast('int32');
+        const predictionsInt = predictions.cast('int32');
+        if (numClasses == null) {
+            numClasses = this.danfo.tensorflow.tidy(() => {
+                const max = this.danfo.tensorflow.maximum(labelsInt.max(), predictionsInt.max()).cast('int32');
+                return max.dataSync()[0] + 1;
+            });
+        }
+        let weightsPromise = Promise.resolve(null);
+        if (weights != null) {
+            weightsPromise = weights.data();
+        }
+        return Promise.all([labelsInt.data(), predictionsInt.data(), weightsPromise])
+            .then(([labelsArray, predsArray, weightsArray]) => {
+                const result = Array(numClasses).fill(0);
+                // Initialize the matrix
+                for (let i = 0; i < numClasses; i++) {
+                    result[i] = Array(numClasses).fill(0);
+                }
+                for (let i = 0; i < labelsArray.length; i++) {
+                    const label = labelsArray[i];
+                    const pred = predsArray[i];
+                    if (weightsArray != null) {
+                        result[label][pred] += weightsArray[i];
+                    }
+                    else {
+                        result[label][pred] += 1;
+                    }
+                }
+                return result;
+            });
     }
     async plotConfusionMatrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
 
@@ -1368,7 +1397,7 @@ export default class ChartController {
             recalls.push(parseFloat(metric.recall[j].toFixed(2)))
         }
         this.danfo.tensorflow.dispose(y)
-        this.tensorflow.dispose(predictedLabels)
+        this.danfo.tensorflow.dispose(predictedLabels)
         const metric_labels = ["Precession", "Recall", "F1 score", "Support"]
         labels.push("Precession")
         recalls.push(0)

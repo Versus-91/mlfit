@@ -1,6 +1,6 @@
 
 import ChartController from '@/helpers/charts';
-import { tensorflow } from '@/utils/danfo_loader';
+import { getDanfo } from '@/utils/danfo_loader';
 import UI from '@/helpers/ui';
 import { metrics } from './utils.js';
 
@@ -102,13 +102,10 @@ plt.show()
         `.trim()
     }
     async visualize(x_test, y_test, uniqueLabels, predictions, encoder) {
-        // const evaluation_result = evaluate_classification(predictions, y_test, encoder);
+        const danfo = await getDanfo()
         const classes = Object.keys(encoder.$labels);
-
-        await this.chartController.plotConfusionMatrix(tensorflow.tensor(predictions), tensorflow.tensor(y_test), classes, Object.values(encoder.$labels), this.id);
-        // await this.chartController.classificationPCA(x_test.values, encoder.inverseTransform(y_test), evaluation_result, uniqueLabels, this.id, 2);
+        await this.chartController.plotConfusionMatrix(danfo.tensorflow.tensor(predictions), danfo.tensorflow.tensor(y_test), classes, Object.values(encoder.$labels), this.id);
         this.ui.predictions_table(x_test, encoder.inverseTransform(y_test), encoder.inverseTransform(predictions), null, this.id);
-        // this.plots.push('pca_results_' + this.id);
         this.tables.push('#predictions_table_' + this.id);
 
     }
