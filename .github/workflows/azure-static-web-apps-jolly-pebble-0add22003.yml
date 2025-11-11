@@ -3,7 +3,7 @@ name: Azure Static Web Apps CI/CD
 on:
   push:
     branches:
-      - master
+      - v2
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
@@ -44,3 +44,4 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_JOLLY_PEBBLE_0ADD22003 }}
           action: "close"
+
