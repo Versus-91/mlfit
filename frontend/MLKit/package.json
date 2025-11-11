@@ -10,7 +10,23 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxt/fonts": "^0.11.4",
+    "@nuxt/image": "^1.11.0",
+    "@nuxt/scripts": "^0.12.1",
+    "@pinia/nuxt": "^0.11.2",
+    "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs-vis": "^1.5.1",
+    "@unhead/vue": "^2.0.17",
+    "axios": "^1.13.2",
+    "buefy": "^3.0.3",
+    "d3-scale-chromatic": "^3.1.0",
+    "danfojs": "^1.2.0",
+    "eslint": "^9.37.0",
     "nuxt": "^4.2.1",
+    "nuxt-buefy": "^0.4.29",
+    "pinia": "^3.0.3",
+    "plotly.js": "^3.2.0",
+    "simple-statistics": "^7.8.8",
     "vue": "^3.5.24",
     "vue-router": "^4.6.3"
   }
