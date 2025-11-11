@@ -307,7 +307,7 @@ export default {
 
                 const cross_validation_setting = this.crossValidationOption;
 
-                [filterd_dataset, categoricalFeatures] = encode_dataset(filterd_dataset, this.settings.items.filter(m => m.selected).filter(m => m.name !== this.settings.modelTarget).map(m => {
+                [filterd_dataset, categoricalFeatures] = await encode_dataset(filterd_dataset, this.settings.items.filter(m => m.selected).filter(m => m.name !== this.settings.modelTarget).map(m => {
                     return {
                         name: m.name,
                         type: m.type

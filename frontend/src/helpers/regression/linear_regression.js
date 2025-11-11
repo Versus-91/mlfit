@@ -4,7 +4,6 @@
 
 
 import { RegressionModel } from '../regression_model';
-
 export default class LinearRegression extends RegressionModel {
     constructor(options) {
         super();

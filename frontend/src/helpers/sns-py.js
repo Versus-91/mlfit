@@ -26,6 +26,9 @@ self.onmessage = async (event) => {
     }
     // Now is the easy part, the one that is similar to working in the main thread:
     try {
+        await self.pyodide.loadPackage(["micropip", "scipy", "matplotlib", "pandas"]);
+        const micropip = self.pyodide.pyimport("micropip");
+        await micropip.install('seaborn');
         await self.pyodide.loadPackagesFromImports(python);
         let results = await self.pyodide.runPythonAsync(python);
         const result = results.toJs()

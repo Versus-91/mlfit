@@ -407,28 +407,27 @@ export function getCategoricalMode(arr) {
     categoryCount['mode'] = modeCategory;
     return categoryCount;
 }
-export function encode_dataset(data_frame, columns_types) {
+export async function encode_dataset(data_frame, columns_types) {
     let df = data_frame.copy()
-    getDanfo().then((danfo) => {
+    const danfo = await getDanfo()
 
-        let categorical_columns = columns_types.filter(column => column.type === FeatureCategories.Nominal.id || column.type === FeatureCategories.Ordinal.id)
-        let categoriclaFeaturesAfterEncoding = []
-        categorical_columns.forEach((column) => {
-            if (column.type === FeatureCategories.Ordinal.id) {
-                let encoder = new danfo.LabelEncoder()
-                encoder.fit(df[column.name])
-                let encoded_column = encoder.transform(df[column.name])
-                df.addColumn(column.name, encoded_column.values, { inplace: true })
-                categoriclaFeaturesAfterEncoding.push(column.name)
-            } else {
-                df = danfo.getDummies(df, { columns: [column.name] })
-                df.drop({ columns: [df.columns.find(m => m.includes(column.name + "_"))], inplace: true });
-                categoriclaFeaturesAfterEncoding.push(...df.columns.filter(m => m.includes(column.name + "_")))
+    let categorical_columns = columns_types.filter(column => column.type === FeatureCategories.Nominal.id || column.type === FeatureCategories.Ordinal.id)
+    let categoriclaFeaturesAfterEncoding = []
+    categorical_columns.forEach((column) => {
+        if (column.type === FeatureCategories.Ordinal.id) {
+            let encoder = new danfo.LabelEncoder()
+            encoder.fit(df[column.name])
+            let encoded_column = encoder.transform(df[column.name])
+            df.addColumn(column.name, encoded_column.values, { inplace: true })
+            categoriclaFeaturesAfterEncoding.push(column.name)
+        } else {
+            df = danfo.getDummies(df, { columns: [column.name] })
+            df.drop({ columns: [df.columns.find(m => m.includes(column.name + "_"))], inplace: true });
+            categoriclaFeaturesAfterEncoding.push(...df.columns.filter(m => m.includes(column.name + "_")))
 
-            }
-        })
-        return [df, categoriclaFeaturesAfterEncoding]
-    });
+        }
+    })
+    return [df, categoriclaFeaturesAfterEncoding]
 
 }
 

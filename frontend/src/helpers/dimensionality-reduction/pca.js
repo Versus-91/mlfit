@@ -1,7 +1,6 @@
 import { asyncRun } from "../py-worker";
 export default class PCA {
-    constructor() {
-    }
+
     async predict(x, n, x_test = []) {
         this.context = {
             x_train: x,
