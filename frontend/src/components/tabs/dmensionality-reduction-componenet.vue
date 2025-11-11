@@ -215,7 +215,7 @@ export default {
         },
         async findPCA(drawExplainedVariance = false) {
             try {
-                this.prepareData()
+                await this.prepareData()
                 this.loadingPCA = true;
                 this.pcaContainers = []
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
@@ -282,7 +282,7 @@ export default {
         },
         async findTSNE() {
             try {
-                this.prepareData()
+                await this.prepareData()
                 this.loadingTSNE = true;
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
                 await chartController.plot_tsne(this.df.loc({ columns: numericColumns }).values,
@@ -296,7 +296,7 @@ export default {
 
         },
         async autoEncoder() {
-            this.prepareData()
+            await this.prepareData()
             const danfo = await getDanfo()
 
             this.loadingAutoEncoder = true;

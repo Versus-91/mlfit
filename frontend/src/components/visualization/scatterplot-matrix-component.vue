@@ -124,11 +124,11 @@ export default {
                 if (this.settings.isClassification) {
                     this.updateClassesInfo();
                 }
-                this.$refs.coordinate_plot?.ParallelCoordinatePlot()
+                await this.$refs.coordinate_plot?.ParallelCoordinatePlot()
                 this.isLoading = false;
 
             } catch (error) {
-                let message = 'Something went wrong drawing data analysis plots'
+                let message = 'Something went wrong drawing data analysis plots' + error.toString()
                 this.$buefy.toast.open(message);
                 this.settings.addMessage({ message: message, type: 'warning' })
             }

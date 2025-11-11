@@ -1,9 +1,8 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
     <div class="column is-2  has-background-info-light	" style="height: 100%;">
-        <!-- <button @click="impute()">Impute</button> -->
         <figure class="image is-96x96">
-            <img src="/logo.png" />
+            <img fetchpriority="high" src="/logo.png" alt="logo" />
         </figure>
         <section>
             <upload-component @uploaded="generateTargetDropdown" @uploaded-file="setFile"></upload-component>
