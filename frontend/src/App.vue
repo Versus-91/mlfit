@@ -1,14 +1,14 @@
 <template>
 
   <div class="container">
-    <b-notification v-show="this.settings.getDatasizeFlag" class="mt-2" type="is-warning" has-icon
+    <b-notification v-show="getDatasizeFlag" class="mt-2" type="is-warning" has-icon
       aria-close-label="Close notification" role="alert">
       Due to the large size of dataset only 10,000 radom samples from dataset would be used.
     </b-notification>
     <div class="columns is-multiline" id="app">
       <SidebarComponent ref="sidebar" @updateFeatures="updateFeatureStats">
       </SidebarComponent>
-      <MainComponent ref="main" :dataframe="this.settings.df" @check-target="checkTarget()"></MainComponent>
+      <MainComponent ref="main" :dataframe="df" @check-target="checkTarget()"></MainComponent>
     </div>
   </div>
 
@@ -18,6 +18,7 @@
 import SidebarComponent from "./components/sidebar-component.vue";
 import MainComponent from "./components/main-component.vue";
 import { settingStore } from '@/stores/settings'
+import { mapStores, mapActions } from 'pinia'
 
 
 export default {
@@ -26,13 +27,12 @@ export default {
     SidebarComponent,
     MainComponent,
   },
-  setup() {
-    // eslint-disable-next-line no-unused-vars
-    const settings = settingStore()
-    return { settings }
+  computed: {
+    ...mapStores(settingStore),
+
   },
   errorCaptured(err, vm, info) {
-    console.log(`cat EC: ${err.toString()}\ninfo: ${info} + ${ err.stack}`);
+    console.log(`cat EC: ${err.toString()}\ninfo: ${info} + ${err.stack}`);
 
     this.$buefy.toast.open(
       {
@@ -40,7 +40,7 @@ export default {
         message: 'Something went wrong',
         type: 'is-danger',
       })
-    this.settings.addMessage({ message: err.toString(), type: 'danger' })
+    this.addMessage({ message: err.toString(), type: 'danger' })
     return false;
   },
   data() {
@@ -50,11 +50,12 @@ export default {
     }
   },
   methods: {
+    ...mapActions(settingStore, ['addMessage', 'resetDF']),
     checkTarget() {
       this.$refs.sidebar.checkmodelTask()
     },
     reset() {
-      this.settings.resetDF();
+      this.resetDF();
     },
     updateFeatureStats() {
       this.$refs.main.renderStats();

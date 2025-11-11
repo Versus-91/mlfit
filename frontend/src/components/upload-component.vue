@@ -179,7 +179,9 @@ export default {
             this.$emit("uploaded-file", file)
             return dataFrame
         },
-        async handleFileSelect(name) {
+        async handleFileSelect(e) {
+            let name = e.target.value
+
             if (name == 'none') {
                 return
             }

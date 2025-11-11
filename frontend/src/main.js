@@ -1,20 +1,18 @@
-import Vue from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import Buefy from 'buefy'
 import 'buefy/dist/buefy.min.css'
 
-import { createPinia, PiniaVuePlugin } from 'pinia'
-import VueMathjax from 'vue-mathjax'
+import { createPinia } from 'pinia'
 
-Vue.prototype.window = window;
+// Vue.prototype.window = window;
 
-Vue.use(VueMathjax)
-Vue.use(Buefy)
-Vue.use(PiniaVuePlugin)
-const pinia = createPinia()
-
-new Vue({
-  render: h => h(App),
-  pinia
-}).$mount('#app')
+// Vue.use(VueMathjax)
+// Vue.use(Buefy)
+// Vue.use(PiniaVuePlugin)
+const pinia = createPinia();
+const app = createApp(App);
+app.use(pinia);
+app.use(Buefy)
+app.mount('#app');
 

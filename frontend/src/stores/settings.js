@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 
-export const settingStore = defineStore({
-    id: 'cart',
+export const settingStore = defineStore('mlfit', {
     state: () => ({
         counter: 1,
         df: {},
