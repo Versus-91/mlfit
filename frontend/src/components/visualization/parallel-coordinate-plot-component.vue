@@ -14,9 +14,8 @@ import { settingStore } from '@/stores/settings'
 import { ScaleOptions } from '@/helpers/settings'
 import ChartController from '@/helpers/charts';
 let chartController = new ChartController();
-import { DataFrame } from 'danfojs/dist/danfojs-base';
+import { DataFrame } from 'danfojs';
 import { applyDataTransformation } from '@/helpers/utils';
-import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 
 export default {
     setup() {
@@ -51,7 +50,7 @@ export default {
             }
 
             let validTransformations = this.settings.items.filter(column => column.selected && column.type === 1)
-            Plotly.purge('parallel_coordinate_plot')
+            window.Plotly.purge('parallel_coordinate_plot')
             applyDataTransformation(df, validTransformations.map(transformation => transformation.name), validTransformations);
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
             chartController.parallelCoordinatePlot(df.loc({ columns: numericColumns }).values,

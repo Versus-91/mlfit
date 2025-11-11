@@ -260,7 +260,6 @@
 
 <script>
 import UI from '@/helpers/ui';
-import { toJSON } from 'danfojs';
 import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
 import ResultsComponent from './tabs/results-component.vue'
 import SPLOMComponent from './visualization/scatterplot-matrix-component.vue'
@@ -272,7 +271,7 @@ import { settingStore } from '@/stores/settings'
 import { Matrix, correlation } from 'ml-matrix';
 // eslint-disable-next-line no-unused-vars
 import Clustermap from '@/helpers/correlation/correlation-matrix'
-import { DataFrame } from 'danfojs/dist/danfojs-base';
+import { DataFrame,toJSON } from 'danfojs';
 
 let ui = new UI(null, null);
 let chartController = new ChartController(null, null)

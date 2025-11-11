@@ -94,8 +94,7 @@ import PCA from '@/helpers/dimensionality-reduction/pca';
 import { ModelFactory } from "@/helpers/model_factory";
 import { settingStore } from '@/stores/settings'
 import { applyDataTransformation, handle_missing_values, encode_dataset, evaluate_classification } from '@/helpers/utils';
-import { LabelEncoder, tensorflow, concat } from 'danfojs/dist/danfojs-base';
-import { toJSON, DataFrame } from 'danfojs';
+import { LabelEncoder, concat, DataFrame, toJSON } from 'danfojs';
 import axios from "axios";
 
 export default {

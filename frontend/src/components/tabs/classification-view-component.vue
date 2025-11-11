@@ -132,9 +132,8 @@
 <script>
 import { settingStore } from '@/stores/settings';
 import { ModelFactory } from "@/helpers/model_factory";
-import { concat } from 'danfojs/dist/danfojs-base';
 
-import { $toCSV } from 'danfojs/dist/danfojs-base/io/browser/io.csv';
+import { toCSV,concat } from 'danfojs';
 
 import axios from "axios";
 
@@ -165,7 +164,7 @@ export default {
             let dataframe = concat({ dfList: [this.result.snapshot.x, this.result.snapshot.xt], axis: 0 })
             let target = this.result.snapshot.y.concat(this.result.snapshot.yt)
             dataframe.addColumn(this.result.target, target, { inplace: true })
-            let file = $toCSV(dataframe, { filePath: "pca_data.csv" });
+            let file = toCSV(dataframe, { filePath: "pca_data.csv" });
             const blob = new Blob([file], { type: "text/csv" });
             formdata.append('file', blob, 'main.csv');
 

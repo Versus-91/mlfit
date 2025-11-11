@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { asyncRun } from "./py-worker";
-import { MinMaxScaler, StandardScaler, LabelEncoder, getDummies } from 'danfojs/dist/danfojs-base';
+import { MinMaxScaler, StandardScaler, LabelEncoder, getDummies } from 'danfojs';
 import { FeatureCategories } from '../helpers/settings'
 
 import * as Papa from 'papaparse';

@@ -1,9 +1,7 @@
 
 import ChartController from '@/helpers/charts';
-import { tensorflow } from 'danfojs/dist/danfojs-base';
+import {tensorflow } from 'danfojs';
 import UI from '@/helpers/ui';
-// eslint-disable-next-line no-unused-vars
-import { evaluate_classification } from '@/helpers/utils';
 import { metrics } from './utils.js';
 
 export class ClassificationModel {

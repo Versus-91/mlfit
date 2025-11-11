@@ -149,8 +149,7 @@
 <script>
 import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
-import { tensorflow, DataFrame } from 'danfojs/dist/danfojs-base';
-import { $toCSV } from 'danfojs/dist/danfojs-base/io/browser/io.csv';
+import { tensorflow, DataFrame, toCSV } from 'danfojs';
 
 import { FeatureCategories } from '@/helpers/settings'
 
@@ -266,7 +265,7 @@ export default {
         },
         downloadPCA() {
             let df = new DataFrame(this.pcaData)
-            $toCSV(df, { filePath: "pca_data.csv", download: true });
+            toCSV(df, { filePath: "pca_data.csv", download: true });
         },
         downloadExplainedVariance() {
             let varianceData = [];
@@ -275,7 +274,7 @@ export default {
                 varianceData.push({ Components: i, ExplainedVariace: element })
             }
             let df = new DataFrame(varianceData)
-            $toCSV(df, { filePath: "variance_data.csv", download: true });
+            toCSV(df, { filePath: "variance_data.csv", download: true });
         },
         async findTSNE() {
             try {

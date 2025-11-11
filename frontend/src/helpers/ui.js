@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 
-import { MinMaxScaler, StandardScaler } from 'danfojs/dist/danfojs-base';
+import { MinMaxScaler, StandardScaler } from 'danfojs';
 import { encode_name } from './utils';
 import { FeatureCategories, Settings } from "./settings.js";
 export default class UI {

@@ -37,7 +37,7 @@
 
 <script>
 import { ParserFactory } from '../helpers/parser/parser_factory.js'
-import { DataFrame } from 'danfojs/dist/danfojs-base';
+import { DataFrame } from 'danfojs';
 import { settingStore } from '@/stores/settings'
 
 const DATASET_SIZE = 10000;

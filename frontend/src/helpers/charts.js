@@ -1,16 +1,16 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
 import PCA from './dimensionality-reduction/pca';
 import { binarize } from './utils'
-import * as ss from "simple-statistics"
+import { equalIntervalBreaks, kernelDensityEstimation, standardDeviation, interquartileRange } from "simple-statistics"
 import { schemeTableau10, interpolateBlues, interpolateRainbow } from 'd3-scale-chromatic';
 import { FeatureCategories } from "./settings";
 import { metrics as ClassificationMetric, encode_name } from './utils.js';
 import { metrics } from '@tensorflow/tfjs-vis';
 import { scale_data } from './utils';
-import { tensorflow, LabelEncoder } from 'danfojs/dist/danfojs-base';
-import { MinMaxScaler } from 'danfojs/dist/danfojs-base';
+import { corrcoeff } from 'jstat'
+import { tensorflow, LabelEncoder } from 'danfojs';
+import { MinMaxScaler } from 'danfojs';
 import TSNE from './dimensionality-reduction/tsne';
 const plotlyImageExportConfig = {
     toImageButtonOptions: {
@@ -67,8 +67,8 @@ export default class ChartController {
         let kde_data = [];
         let ys = [];
         let items_range = items
-        var breaks = ss.equalIntervalBreaks(items_range, 100);
-        let kde = ss.kernelDensityEstimation(items, 'gaussian', 'nrd');
+        var breaks = equalIntervalBreaks(items_range, 100);
+        let kde = kernelDensityEstimation(items, 'gaussian', 'nrd');
         breaks.forEach((item) => {
             ys.push(kde(item, 'nrd'));
             kde_data.push([item, ys[ys.length - 1]]);
@@ -378,8 +378,8 @@ export default class ChartController {
         });
     }
     nrd(x) {
-        let s = ss.standardDeviation(x);
-        const iqr = ss.interquartileRange(x);
+        let s = standardDeviation(x);
+        const iqr = interquartileRange(x);
         if (typeof iqr === "number") {
             s = Math.min(s, iqr / 1.34);
         }
@@ -529,7 +529,7 @@ export default class ChartController {
             // let maxValue = Math.max(...items_range);
             // items_range.push(minValue - parseFloat(default_bandwidth))
             // items_range.push(maxValue + parseFloat(default_bandwidth))
-            var breaks = ss.equalIntervalBreaks(items_range, 100);
+            var breaks = equalIntervalBreaks(items_range, 100);
             let allData = [];
             let kernel_type = document.getElementById(key + "-kernel_type")?.value ?? "gaussian"
             // Loop through subsets to generate data for all subsets
@@ -539,7 +539,7 @@ export default class ChartController {
                 for (let i = 0; i < subsets.length; i++) {
                     if (subsets[i].length > 2) {
                         let ys = [];
-                        kde = ss.kernelDensityEstimation(subsets[i], this.kernelFunctions[kernel_type], bandwidth);
+                        kde = kernelDensityEstimation(subsets[i], this.kernelFunctions[kernel_type], bandwidth);
                         let data = [];
                         breaks.forEach((item) => {
                             ys.push(kde(item, bandwidth));
@@ -562,7 +562,7 @@ export default class ChartController {
                 for (let i = 0; i < subsets.length; i++) {
                     if (subsets[i].length > 2) {
                         let ys = [];
-                        kde = ss.kernelDensityEstimation(subsets[i], this.kernelFunctions[kernel_type], bandwidth);
+                        kde = kernelDensityEstimation(subsets[i], this.kernelFunctions[kernel_type], bandwidth);
                         let data = [];
                         breaks.forEach((item) => {
                             ys.push(kde(item, bandwidth));
@@ -1846,10 +1846,10 @@ export default class ChartController {
                                     for (let ii = 0; ii < subsets.length; ii++) {
                                         if (subsets[ii].length > 2) {
                                             let default_bandwidth = this.nrd(subsets[ii]).toFixed(2);
-                                            breaks = ss.equalIntervalBreaks(subsets[ii], 100);
+                                            breaks = equalIntervalBreaks(subsets[ii], 100);
 
                                             let ys = [];
-                                            kde = ss.kernelDensityEstimation(subsets[ii], 'gaussian', 'nrd');
+                                            kde = kernelDensityEstimation(subsets[ii], 'gaussian', 'nrd');
                                             let data = [];
                                             breaks.forEach((item) => {
                                                 ys.push(kde(item, default_bandwidth));
@@ -1903,8 +1903,8 @@ export default class ChartController {
                                         if (subsets[i].length > 2) {
                                             let ys = [];
                                             let default_bandwidth = this.nrd(subsets[i]).toFixed(2);
-                                            breaks = ss.equalIntervalBreaks(subsets[i], 100);
-                                            kde = ss.kernelDensityEstimation(subsets[i], 'gaussian', 'nrd');
+                                            breaks = equalIntervalBreaks(subsets[i], 100);
+                                            kde = kernelDensityEstimation(subsets[i], 'gaussian', 'nrd');
                                             let data = [];
                                             breaks.forEach((item) => {
                                                 ys.push(kde(item, default_bandwidth));
@@ -2006,7 +2006,7 @@ export default class ChartController {
                                 traces.push({
                                     x: [1.5],
                                     y: [1.5],
-                                    text: [jStat.corrcoeff(arr1, arr2).toFixed(2)],
+                                    text: [corrcoeff(arr1, arr2).toFixed(2)],
                                     mode: 'text',
                                     textfont: {
                                         size: 12, // Font size for the text

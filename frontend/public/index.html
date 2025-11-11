@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 
 <head>
   <meta charset="utf-8">
@@ -9,13 +9,11 @@
   <title>
     Machine Learning Tool Kit
   </title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css"
-    integrity="sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw=="
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="https://cdn.datatables.net/v/bm/dt-1.13.8/r-2.5.0/sb-1.6.0/datatables.min.css" rel="stylesheet">
-  <script type="text/javascript" async
-    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
-    </script>
+
 </head>
 
 <body>
@@ -39,27 +37,6 @@
 
   </nav>
   <div id="app"></div>
-  <!-- built files will be auto injected -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/highcharts.min.js"
-    integrity="sha512-XC3Yk00lu4YeJueUiJ2dhW1feASV0F7rCWlIKbPDSl5nLULRBzieHsDujma6SKpQHOlL1b/Vx89T4VSkq89wtw=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/modules/heatmap.min.js"
-    integrity="sha512-UnB4oMqreoARmg5J+Z75xQj0EVIIfV3ciCNGOyZ/m6HgNcg6eztp06jio3syCn4lTsMcbWMXE0zt+XqG3seehA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/modules/exporting.min.js"
-    integrity="sha512-Vgj9fas1rIsERPmMJLow8xuIQOBltfpm7Vum5R2HFDhr3jOYT5hochU4I+AO4+RUu9a9dxd0nVlSTx9RZCexpA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="
-    https://code.jquery.com/jquery-3.7.0.min.js
-    "></script>
-  <script src="
-  https://cdn.datatables.net/v/bm/dt-1.13.8/r-2.5.0/sb-1.6.0/datatables.min.js
-  "></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="
-  https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js
-  "></script>
-
   <script type="module">
     window.addEventListener('load', (event) => {
       import('https://webr.r-wasm.org/v0.4.3/webr.mjs').then(
@@ -67,6 +44,20 @@
           window.webr = new WebR({ interactive: false });
         }
       )
+      import('https://code.jquery.com/jquery-3.7.0.min.js').then(() => {
+        import('https://cdn.datatables.net/v/bm/dt-1.13.8/r-2.5.0/sb-1.6.0/datatables.min.js');
+      });
+      import('https://cdnjs.cloudflare.com/ajax/libs/plotly.js/3.1.1/plotly-basic.min.js').then(() => {
+        Plotly.setPlotConfig({
+          autosize: true,
+          displaylogo: false,
+          modeBarButtonsToRemove: ['resetScale2d', 'zoom2d', 'pan', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '], // Remove certain buttons from the mode bar
+        });
+        window.Plotly = Plotly
+      })
+      import('https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/highcharts.min.js');
+      import('https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/modules/heatmap.min.js');
+      import('https://cdnjs.cloudflare.com/ajax/libs/highcharts/11.0.1/modules/exporting.min.js');
     });
 
   </script>

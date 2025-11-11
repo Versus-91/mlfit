@@ -49,8 +49,7 @@ import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
 import { ScaleOptions } from '@/helpers/settings'
 import { applyDataTransformation } from '@/helpers/utils';
-import Plotly from 'danfojs/node_modules/plotly.js-dist-min';
-import { DataFrame } from 'danfojs/dist/danfojs-base';
+import { DataFrame } from 'danfojs';
 import PCPComponent from '../visualization/parallel-coordinate-plot-component.vue'
 
 let chartController = new ChartController();
@@ -155,7 +154,7 @@ export default {
 
             let validTransformations = this.settings.items.filter(feature => feature.selected && feature.type === 1 && feature.scaler != 0)
             this.isLoading = true;
-            Plotly.purge('scatterplot_mtx')
+            window.Plotly.purge('scatterplot_mtx')
             this.updateClassesInfo()
             applyDataTransformation(this.df, validTransformations.map(transformation => transformation.name), validTransformations);
             await this.dispalySPLOM(this.df)
