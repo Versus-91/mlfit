@@ -1,9 +1,11 @@
 <template>
-    <section>
-        <b-tabs type="is-boxed">
-            <b-tab-item v-for="tab in tabs" :label="tab.name" :icon="tab.icon"></b-tab-item>
-        </b-tabs>
-    </section>
+    <div class="column is-10">
+        <section>
+            <b-tabs type="is-boxed">
+                <b-tab-item v-for="tab in tabs" :label="tab.name" :icon="tab.icon"></b-tab-item>
+            </b-tabs>
+        </section>
+    </div>
 </template>
 
 <script setup lang="ts">

@@ -1,6 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
-    <div class="column is-2  has-background-info-light	" style="height: 100%;">
+    <div class="column is-2 has-background-info-light" style="height: 100%;">
         <figure class="image is-96x96">
             <!-- <img src="/logo.png" alt="logo" /> -->
         </figure>
@@ -91,13 +91,14 @@ import { ModelFactory } from "@/helpers/model_factory";
 import { settingStore } from '@/stores/settings'
 import { applyDataTransformation, handle_missing_values, encode_dataset } from '@/helpers/utils';
 import { LabelEncoder, concat, toJSON, DataFrame } from 'danfojs';
+import { BField, BSelect, BInput, BButton, BCheckbox } from 'buefy'
 import axios from "axios";
 
 export default {
     name: 'SidebarComponent',
-    // components: {
-    //     UploadComponent
-    // },
+    components: {
+        BField, BSelect, BInput, BButton, BCheckbox
+    },
     props: {
         msg: String
     },
@@ -496,8 +497,6 @@ export default {
         modelOption: function () {
             this.modelConfigurations = null
         },
-
-
     }
 }
 </script>

@@ -1,8 +1,6 @@
 <template>
-    <div class="container">
-        <section>
-            Refresh
-        </section>
+    <div class="container my-5">
+        Refresh
     </div>
 
 </template>

@@ -3,7 +3,7 @@
 /* eslint-disable no-unused-vars */
 
 
-import Plotly from 'plotly.js';
+import Plotly from 'plotly.js-dist-min'
 import { RegressionModel } from '../regression_model';
 
 export default class LinearRegression extends RegressionModel {
