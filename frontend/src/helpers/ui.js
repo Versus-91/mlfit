@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 
-import { MinMaxScaler, StandardScaler } from 'danfojs';
+import { getDanfo } from '@/utils/danfo_loader';
 import { encode_name } from './utils';
 import { FeatureCategories, Settings } from "./settings.js";
 export default class UI {
@@ -55,10 +55,11 @@ export default class UI {
         return model_settings
     }
 
-    scale_data(dataset, column, normalization_type) {
+    async scale_data(dataset, column, normalization_type) {
+        const danfo = await getDanfo();
         switch (normalization_type) {
             case "1": {
-                let scaler = new MinMaxScaler()
+                let scaler = new danfo.MinMaxScaler()
                 scaler.fit(dataset[column])
                 dataset.addColumn(column, scaler.transform(dataset[column]), { inplace: true })
                 break;
@@ -70,7 +71,7 @@ export default class UI {
                 dataset.addColumn(column, dataset[column].apply((x) => Math.log(x)), { inplace: true })
                 break;
             case "4": {
-                let scaler = new StandardScaler()
+                let scaler = new danfo.StandardScaler()
                 scaler.fit(dataset[column])
                 dataset.addColumn(column, scaler.transform(dataset[column]), { inplace: true })
                 break;

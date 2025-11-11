@@ -37,7 +37,7 @@
 
 <script>
 import { ParserFactory } from '../helpers/parser/parser_factory.js'
-import { DataFrame } from 'danfojs';
+import { getDanfo } from '@/utils/danfo_loader';
 import { settingStore } from '@/stores/settings'
 
 const DATASET_SIZE = 10000;
@@ -170,7 +170,8 @@ export default {
             } else {
                 this.settings.setDatasizeFlag(false);
             }
-            let dataFrame = new DataFrame(processdDataset);
+            const danfo = await getDanfo();
+            let dataFrame = new danfo.DataFrame(processdDataset);
             let idIndex = dataFrame.columns.findIndex(col => col.toLowerCase() === 'id')
             if (idIndex > -1)
                 dataFrame.drop({ columns: dataFrame.columns[idIndex], inplace: true })

@@ -94,7 +94,7 @@ import PCA from '@/helpers/dimensionality-reduction/pca';
 import { ModelFactory } from "@/helpers/model_factory";
 import { settingStore } from '@/stores/settings'
 import { applyDataTransformation, handle_missing_values, encode_dataset, evaluate_classification } from '@/helpers/utils';
-import { LabelEncoder, concat, DataFrame, toJSON } from 'danfojs';
+import { getDanfo } from '@/utils/danfo_loader';
 import axios from "axios";
 
 export default {
@@ -263,9 +263,10 @@ export default {
                 }
                 let seed = +this.seed;
                 this.settings.setSeed(seed)
+                const danfo = await getDanfo();
                 let categoricalFeatures = []
                 let dataset = null;
-                this.dataframe = new DataFrame(this.settings.rawData);
+                this.dataframe = new danfo.DataFrame(this.settings.rawData);
                 dataset = await this.dataframe.sample(this.dataframe.$data.length, { seed: seed });
 
                 let numericColumns = this.settings.items.filter(m => m.selected && m.type === FeatureCategories.Numerical.id).map(m => m.name);
@@ -369,8 +370,8 @@ export default {
                     pca_train = pca_train.map(m => [].slice.call(m))
                     pca_test = pca_test.map(m => [].slice.call(m))
                     let cols = pca_train[0].map((_, i) => 'PC_' + (i + 1))
-                    x_train = new DataFrame(pca_train, { columns: cols })
-                    x_test = new DataFrame(pca_test, { columns: cols })
+                    x_train = new danfo.DataFrame(pca_train, { columns: cols })
+                    x_test = new danfo.DataFrame(pca_test, { columns: cols })
                 }
                 console.log(new Set(encoded_y));
                 let predictions = this.useHPC ? [] : await model.train(x_train.values, encoded_y, x_test.values, encoded_y_test, x_train.columns, categoricalFeatures, 0);
@@ -434,13 +435,14 @@ export default {
                 throw error;
             }
         },
-        impute() {
+        async impute() {
+            const danfo = await getDanfo();
             this.training = true;
             axios.post('http://127.0.0.1:5000/missforest', {
-                data: toJSON(this.dataframe),
+                data: danfo.toJSON(this.dataframe),
                 categoricalFeatures: this.settings.items.filter(m => m.selected && m.type !== FeatureCategories.Numerical.id).map(m => m.name)
             }).then(res => {
-                let df = new DataFrame(res.data);
+                let df = new danfo.DataFrame(res.data);
                 this.dataframe = df
                 this.settings.setDataframe(df);
                 this.training = false;
@@ -467,7 +469,9 @@ export default {
             }
             return [x_train, y_train, x_test, y_test]
         }
-        this.kfoldSplit = function (filterd_dataset, targets, fold = 1) {
+        this.kfoldSplit = async function (filterd_dataset, targets, fold = 1) {
+            const danfo = await getDanfo();
+
             let x_train, y_train, x_test, y_test;
             let len = filterd_dataset.$data.length
             const lowerLimit = Math.ceil(len * ((fold - 1) * 0.2))
@@ -484,8 +488,8 @@ export default {
             let x_train_lower = train_bound_lower != null ? filterd_dataset.iloc({ rows: [train_bound_lower] }) : null
             let y_train_lower = train_bound_lower != null ? targets.iloc([train_bound_lower]) : null
             if (x_train_lower && x_train_upper) {
-                x_train = concat({ dfList: [x_train_lower, x_train_upper], axis: 0 })
-                y_train = concat({ dfList: [y_train_lower, y_train_upper], axis: 0 })
+                x_train = danfo.concat({ dfList: [x_train_lower, x_train_upper], axis: 0 })
+                y_train = danfo.concat({ dfList: [y_train_lower, y_train_upper], axis: 0 })
             } else {
                 x_train = x_train_lower == null ? x_train_upper : x_train_lower
                 y_train = x_train_lower == null ? y_train_upper : y_train_lower
@@ -495,8 +499,9 @@ export default {
             return [x_train, y_train, x_test, y_test]
 
         }
-        this.encodeTarget = function (y_train, y_test) {
-            let labelEncoder = new LabelEncoder()
+        this.encodeTarget = async function (y_train, y_test) {
+            const danfo = await getDanfo();
+            let labelEncoder = new danfo.LabelEncoder()
             labelEncoder.fit(y_train)
             labelEncoder.transform(y_train)
             let encoded_y = labelEncoder.transform(y_train)

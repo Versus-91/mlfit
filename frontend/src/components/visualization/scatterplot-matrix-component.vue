@@ -49,8 +49,8 @@ import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
 import { ScaleOptions } from '@/helpers/settings'
 import { applyDataTransformation } from '@/helpers/utils';
-import { DataFrame } from 'danfojs';
 import PCPComponent from '../visualization/parallel-coordinate-plot-component.vue'
+import { getDanfo } from '@/utils/danfo_loader';
 
 let chartController = new ChartController();
 export default {
@@ -82,8 +82,10 @@ export default {
         downlaodSPLOM() {
             chartController.downloadPlot('scatterplot_mtx')
         },
-        updateClassesInfo() {
-            this.df = new DataFrame(this.settings.rawData);
+        async updateClassesInfo() {
+            const danfo = await getDanfo()
+
+            this.df = new danfo.DataFrame(this.settings.rawData);
             this.settings.mergedClasses.forEach((classes) => {
                 let newClass = classes.map(m => m.class).join('_');
                 classes.forEach(cls => {
@@ -116,7 +118,6 @@ export default {
                 let categorical_columns = this.settings.items.filter(column => column.selected && column.type !== 1).map(column => column.name);
                 let features = numericColumns.concat(categorical_columns);
                 dataframe.dropNa({ axis: 1, inplace: true })
-                console.log(new Set(dataframe.column(this.settings.modelTarget).values));
 
                 await chartController.ScatterplotMatrix(dataframe.loc({ columns: features }).values, features, dataframe.column(this.settings.modelTarget).values, categorical_columns.length,
                     this.settings.isClassification, numericColumns, categorical_columns, this.dataframe)
@@ -133,7 +134,9 @@ export default {
             }
         },
         async scaleData(reset = false) {
-            this.df = new DataFrame(this.settings.rawData);
+            const danfo = await getDanfo()
+
+            this.df = new danfo.DataFrame(this.settings.rawData);
             if (reset) {
                 this.settings.resetClassTransformations([]);
                 this.updateClassesInfo();
@@ -180,7 +183,9 @@ export default {
             this.$emit('coordinate-plot', true)
         },
         async initSPLOM() {
-            this.df = new DataFrame(this.settings.rawData);
+            const danfo = await getDanfo()
+
+            this.df = new danfo.DataFrame(this.settings.rawData);
             this.df = await this.df.sample(this.df.$data.length, { seed: this.settings.getSeed });
             this.df.dropNa({ axis: 1, inplace: true })
             let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(function (column) {

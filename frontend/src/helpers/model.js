@@ -1,6 +1,6 @@
 
 import ChartController from '@/helpers/charts';
-import {tensorflow } from 'danfojs';
+import { tensorflow } from '@/utils/danfo_loader';
 import UI from '@/helpers/ui';
 import { metrics } from './utils.js';
 

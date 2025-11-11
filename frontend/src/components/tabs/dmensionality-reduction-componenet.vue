@@ -149,7 +149,7 @@
 <script>
 import ChartController from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
-import { tensorflow, DataFrame, toCSV } from 'danfojs';
+import { getDanfo } from '@/utils/danfo_loader';
 
 import { FeatureCategories } from '@/helpers/settings'
 
@@ -190,8 +190,9 @@ export default {
         }
     },
     methods: {
-        prepareData() {
-            this.df = new DataFrame(this.settings.rawData);
+        async prepareData() {
+            const danfo = await getDanfo()
+            this.df = new danfo.DataFrame(this.settings.rawData);
             this.df.dropNa({ axis: 1, inplace: true })
             if (this.settings.isClassification && this.settings.mergedClasses?.length > 0) {
                 this.settings.mergedClasses.forEach((classes) => {
@@ -263,18 +264,21 @@ export default {
         downloadPCAPlot() {
             chartController.downloadPlot('pca_matrix');
         },
-        downloadPCA() {
-            let df = new DataFrame(this.pcaData)
-            toCSV(df, { filePath: "pca_data.csv", download: true });
+        async downloadPCA() {
+            const danfo = await getDanfo()
+            let df = new danfo.DataFrame(this.pcaData)
+            danfo.toCSV(df, { filePath: "pca_data.csv", download: true });
         },
-        downloadExplainedVariance() {
+        async downloadExplainedVariance() {
+            const danfo = await getDanfo()
+
             let varianceData = [];
             for (let i = 1; i <= this.pcaVarianceData.length; i++) {
                 const element = this.pcaVarianceData[i - 1];
                 varianceData.push({ Components: i, ExplainedVariace: element })
             }
-            let df = new DataFrame(varianceData)
-            toCSV(df, { filePath: "variance_data.csv", download: true });
+            let df = new danfo.DataFrame(varianceData)
+            danfo.toCSV(df, { filePath: "variance_data.csv", download: true });
         },
         async findTSNE() {
             try {
@@ -293,30 +297,32 @@ export default {
         },
         async autoEncoder() {
             this.prepareData()
+            const danfo = await getDanfo()
+
             this.loadingAutoEncoder = true;
-            const model = tensorflow.sequential();
+            const model = danfo.tensorflow.sequential();
             let numericColumns = this.settings.items.filter(m => m.type === FeatureCategories.Numerical.id).map(m => m.name);
             let unitsLength = numericColumns.length;
             let values = this.settings.df.loc({ columns: numericColumns }).values
-            const encoder = tensorflow.layers.dense({
+            const encoder = danfo.tensorflow.layers.dense({
                 units: +this.hiddenLayerSize,
                 batchInputShape: [null, unitsLength],
                 activation: this.encoderActivationFunction,
                 kernelInitializer: "randomNormal",
                 biasInitializer: "ones"
             });
-            const decoder = tensorflow.layers.dense({ units: unitsLength, activation: this.decoderActivationFunction });
+            const decoder = danfo.tensorflow.layers.dense({ units: unitsLength, activation: this.decoderActivationFunction });
             model.add(encoder);
             model.add(decoder);
             await model.compile({ optimizer: 'sgd', loss: 'meanSquaredError' });
-            const xs = tensorflow.tensor2d(values);
+            const xs = danfo.tensorflow.tensor2d(values);
             // eslint-disable-next-line no-unused-vars
             let h = await model.fit(xs, xs, { epochs: +this.iterations, batchSize: 32, shuffle: true, validationSplit: 0.1 });
             xs.dispose();
-            const tidyWrapper = tensorflow.tidy(() => {
-                const predictor = tensorflow.sequential();
+            const tidyWrapper = danfo.tensorflow.tidy(() => {
+                const predictor = danfo.tensorflow.sequential();
                 predictor.add(encoder);
-                let xs = tensorflow.tensor2d(values);
+                let xs = danfo.tensorflow.tensor2d(values);
                 let ret = predictor.predict(xs);
                 xs.dispose();
                 return ret.arraySync();

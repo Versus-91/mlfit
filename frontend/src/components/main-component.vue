@@ -271,10 +271,9 @@ import { settingStore } from '@/stores/settings'
 import { Matrix, correlation } from 'ml-matrix';
 // eslint-disable-next-line no-unused-vars
 import Clustermap from '@/helpers/correlation/correlation-matrix'
-import { DataFrame,toJSON } from 'danfojs';
+import { getDanfo, getPlotly } from '@/utils/danfo_loader';
 
 let ui = new UI(null, null);
-let chartController = new ChartController(null, null)
 
 export default {
     name: 'MainComponent',
@@ -331,6 +330,8 @@ export default {
         },
         async correlationMatrix() {
             this.loading = true;
+            let chartController = new ChartController(null, null)
+
             try {
                 let numericColumns = this.settings.items.filter(m => m.selected && m.type === FeatureCategories.Numerical.id).map(m => m.name);
                 let values = this.settings.df.loc({ columns: numericColumns })
@@ -354,7 +355,7 @@ export default {
         applyChanges() {
             this.renderStats(true)
         },
-        renderStats(update = false) {
+        async renderStats(update = false) {
             if (this.settings.df?.columns?.length > 0) {
                 let numericColumns, categoricalColumns;
                 if (!update) {
@@ -390,15 +391,16 @@ export default {
                         });
 
                     let selectedFeatures = features;
-                    for (let i = 0; i < selectedFeatures.length; i++) {
-                        this.settings.addFeature(selectedFeatures[i])
+                    for (const element of selectedFeatures) {
+                        this.settings.addFeature(element)
                     }
                     this.$emit('check-target')
 
                 }
 
-
-                let df = new DataFrame(this.settings.rawData);
+                const danfo = await getDanfo()
+                console.log(await getPlotly());
+                let df = new danfo.DataFrame(this.settings.rawData);
                 let datasetStats = ui.renderDatasetStats(df, numericColumns, categoricalColumns);
                 this.continuousFeaturesColumns = datasetStats[0];
                 this.continuousFeaturesStats = datasetStats[1];
@@ -411,7 +413,7 @@ export default {
 
                     }
                 });
-                this.sampleData = toJSON(this.settings.df.head(5));
+                this.sampleData = danfo.toJSON(this.settings.df.head(5));
                 this.$refs.splom?.initSPLOM();
                 setTimeout(() => {
                     this.correlationMatrix();
@@ -422,5 +424,3 @@ export default {
 
 }
 </script>
-
-<style></style>

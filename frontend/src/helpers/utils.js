@@ -1,6 +1,6 @@
-/* eslint-disable no-undef */
+
 import { asyncRun } from "./py-worker";
-import { MinMaxScaler, StandardScaler, LabelEncoder, getDummies } from 'danfojs';
+import { getDanfo } from '@/utils/danfo_loader';
 import { FeatureCategories } from '../helpers/settings'
 
 import * as Papa from 'papaparse';
@@ -22,6 +22,7 @@ async function parseCsv(data) {
  */
 export async function loadCsv(filename) {
     return new Promise(resolve => {
+        // eslint-disable-next-line no-undef
         const url = `${BASE_URL}${filename}.csv`;
 
         Papa.parse(url, {
@@ -149,17 +150,20 @@ export function normalizeDataset(
  * @returns {tf.Tensor} Binarized tensor.
  */
 export function binarize(y, threshold) {
-    if (threshold == null) {
-        threshold = 0.5;
-    }
-    tf.util.assert(
-        threshold >= 0 && threshold <= 1,
-        `Expected threshold to be >=0 and <=1, but got ${threshold}`);
+    getDanfo().then((danfo) => {
+        if (threshold == null) {
+            threshold = 0.5;
+        }
+        danfo.tensorflow.util.assert(
+            threshold >= 0 && threshold <= 1,
+            `Expected threshold to be >=0 and <=1, but got ${threshold}`);
 
-    return tf.tidy(() => {
-        const condition = y.greater(tf.scalar(threshold));
-        return tf.where(condition, tf.onesLike(y), tf.zerosLike(y));
-    });
+        return danfo.tensorflow.tidy(() => {
+            const condition = y.greater(danfo.tensorflow.scalar(threshold));
+            return danfo.tensorflow.where(condition, danfo.tensorflow.onesLike(y), danfo.tensorflow.zerosLike(y));
+        });
+    })
+
 }
 export function encode_name(key) {
     let str_encoded = key.replace(/\s/g, '').replace(/[^\w-]/g, '_');
@@ -288,42 +292,43 @@ export function evaluate_classification(predictions, y_test, encoder) {
 export function scale_data(dataset, column, normalization_type) {
     try {
 
-
-        switch (normalization_type) {
-            case "0":
-                {
-                    break;
-                }
-            case "1":
-                {
-                    let scaler = new MinMaxScaler()
-                    scaler.fit(dataset[column])
-                    dataset.addColumn(column, scaler.transform(dataset[column]), { inplace: true })
-                    break;
-                }
-            case "2":
-                dataset.addColumn(column, dataset[column].apply((x) => x * x), { inplace: true })
-                break;
-            case "3":
-                dataset.addColumn(column, dataset[column].apply((x) => {
-                    let ln = Math.log(x);
-                    if (isNaN(ln)) {
-                        throw new Error('falied at data transformation.');
+        getDanfo().then((danfo) => {
+            switch (normalization_type) {
+                case "0":
+                    {
+                        break;
                     }
-                    return Math.log(x)
-                }
-                ), { inplace: true })
-                break;
-            case "4":
-                {
-                    let scaler = new StandardScaler()
-                    scaler.fit(dataset[column])
-                    dataset.addColumn(column, scaler.transform(dataset[column]), { inplace: true })
+                case "1":
+                    {
+                        let scaler = new danfo.MinMaxScaler()
+                        scaler.fit(dataset[column])
+                        dataset.addColumn(column, scaler.transform(dataset[column]), { inplace: true })
+                        break;
+                    }
+                case "2":
+                    dataset.addColumn(column, dataset[column].apply((x) => x * x), { inplace: true })
                     break;
-                }
-            default:
-                break;
-        }
+                case "3":
+                    dataset.addColumn(column, dataset[column].apply((x) => {
+                        let ln = Math.log(x);
+                        if (isNaN(ln)) {
+                            throw new Error('falied at data transformation.');
+                        }
+                        return Math.log(x)
+                    }
+                    ), { inplace: true })
+                    break;
+                case "4":
+                    {
+                        let scaler = new danfo.StandardScaler()
+                        scaler.fit(dataset[column])
+                        dataset.addColumn(column, scaler.transform(dataset[column]), { inplace: true })
+                        break;
+                    }
+                default:
+                    break;
+            }
+        });
     } catch (error) {
         throw new Error('falied at data transformation.')
     }
@@ -404,24 +409,27 @@ export function getCategoricalMode(arr) {
 }
 export function encode_dataset(data_frame, columns_types) {
     let df = data_frame.copy()
+    getDanfo().then((danfo) => {
 
-    let categorical_columns = columns_types.filter(column => column.type === FeatureCategories.Nominal.id || column.type === FeatureCategories.Ordinal.id)
-    let categoriclaFeaturesAfterEncoding = []
-    categorical_columns.forEach((column) => {
-        if (column.type === FeatureCategories.Ordinal.id) {
-            let encoder = new LabelEncoder()
-            encoder.fit(df[column.name])
-            let encoded_column = encoder.transform(df[column.name])
-            df.addColumn(column.name, encoded_column.values, { inplace: true })
-            categoriclaFeaturesAfterEncoding.push(column.name)
-        } else {
-            df = getDummies(df, { columns: [column.name] })
-            df.drop({ columns: [df.columns.find(m => m.includes(column.name + "_"))], inplace: true });
-            categoriclaFeaturesAfterEncoding.push(...df.columns.filter(m => m.includes(column.name + "_")))
+        let categorical_columns = columns_types.filter(column => column.type === FeatureCategories.Nominal.id || column.type === FeatureCategories.Ordinal.id)
+        let categoriclaFeaturesAfterEncoding = []
+        categorical_columns.forEach((column) => {
+            if (column.type === FeatureCategories.Ordinal.id) {
+                let encoder = new danfo.LabelEncoder()
+                encoder.fit(df[column.name])
+                let encoded_column = encoder.transform(df[column.name])
+                df.addColumn(column.name, encoded_column.values, { inplace: true })
+                categoriclaFeaturesAfterEncoding.push(column.name)
+            } else {
+                df = danfo.getDummies(df, { columns: [column.name] })
+                df.drop({ columns: [df.columns.find(m => m.includes(column.name + "_"))], inplace: true });
+                categoriclaFeaturesAfterEncoding.push(...df.columns.filter(m => m.includes(column.name + "_")))
 
-        }
-    })
-    return [df, categoriclaFeaturesAfterEncoding]
+            }
+        })
+        return [df, categoriclaFeaturesAfterEncoding]
+    });
+
 }
 
 export function merge_classes(classes, dataframe) {

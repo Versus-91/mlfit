@@ -133,7 +133,7 @@
 import { settingStore } from '@/stores/settings';
 import { ModelFactory } from "@/helpers/model_factory";
 
-import { toCSV,concat } from 'danfojs';
+import { toCSV, concat } from '@/utils/danfo_loader';
 
 import axios from "axios";
 

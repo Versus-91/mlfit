@@ -14,7 +14,7 @@ import { settingStore } from '@/stores/settings'
 import { ScaleOptions } from '@/helpers/settings'
 import ChartController from '@/helpers/charts';
 let chartController = new ChartController();
-import { DataFrame } from 'danfojs';
+import { getDanfo } from '@/utils/danfo_loader';
 import { applyDataTransformation } from '@/helpers/utils';
 
 export default {
@@ -37,9 +37,10 @@ export default {
         }
     },
     methods: {
-        ParallelCoordinatePlot() {
+        async ParallelCoordinatePlot() {
             this.isLoading = true;
-            const df = new DataFrame(this.settings.rawData);
+            const danfo = await getDanfo()
+            const df = new danfo.DataFrame(this.settings.rawData);
             if (this.settings.isClassification && this.settings.classTransformations.length > 0) {
                 this.settings.mergedClasses.forEach((classes) => {
                     let newClass = classes.map(m => m.class).join('_');

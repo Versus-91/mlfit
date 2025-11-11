@@ -1,17 +1,15 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
+
 import PCA from './dimensionality-reduction/pca';
 import { binarize } from './utils'
 import { equalIntervalBreaks, kernelDensityEstimation, standardDeviation, interquartileRange } from "simple-statistics"
-import { schemeTableau10, interpolateBlues, interpolateRainbow } from 'd3-scale-chromatic';
+import { schemeTableau10, interpolateRainbow } from 'd3-scale-chromatic';
 import { FeatureCategories } from "./settings";
-import { metrics as ClassificationMetric, encode_name } from './utils.js';
-import { metrics } from '@tensorflow/tfjs-vis';
-import { scale_data } from './utils';
-import { corrcoeff } from 'jstat'
-import { tensorflow, LabelEncoder } from 'danfojs';
-import { MinMaxScaler } from 'danfojs';
+import { metrics as ClassificationMetric, encode_name, scale_data } from './utils.js';
+import { corrcoeff } from 'jstat';
+import { getDanfo } from '@/utils/danfo_loader';
 import TSNE from './dimensionality-reduction/tsne';
+let Highcharts
+let $
 const plotlyImageExportConfig = {
     toImageButtonOptions: {
         format: 'png', // one of png, svg, jpeg, webp
@@ -22,13 +20,18 @@ const plotlyImageExportConfig = {
 };
 export default class ChartController {
     constructor() {
+
         this.color_scheme = schemeTableau10;
         this.color_scheme_sequential = interpolateRainbow;
+        getDanfo().then(danfo => {
+            this.danfo = danfo;
+        }
+        )
 
     }
 
     // eslint-disable-next-line no-unused-vars
-    classification_target_chart(values, labels, name, container, title = "") {
+    classification_target_chart(values, labels, container, title = "") {
         var uniqueLabels = [...new Set(labels)];
         var colorIndices = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label)));
         var data = [];
@@ -114,7 +117,7 @@ export default class ChartController {
             }]
         });
     }
-    draw_categorical_barplot(column_values, target, title) {
+    draw_categorical_barplot(column_values, title) {
         const key = title + "- barplot";
         $("#categories_barplots").append(`<div class="column is-4" style="height:40vh;" id="${key}"></div>`)
         const countOccurrences = column_values.reduce((acc, val) => {
@@ -182,13 +185,13 @@ export default class ChartController {
 
         var data = [trace, trace2];
 
-        Plotly.newPlot(container, data, layout);
+        window.Plotly.newPlot(container, data, layout);
     }
-    falsePositives(yTrue, yPred) {
-        return tf.tidy(() => {
-            const one = tf.scalar(1);
-            const zero = tf.scalar(0);
-            return tf.logicalAnd(yTrue.equal(zero), yPred.equal(one))
+    async falsePositives(yTrue, yPred) {
+        return this.danfo.tensorflow.tidy(() => {
+            const one = this.danfo.tensorflow.scalar(1);
+            const zero = this.danfo.tensorflow.scalar(0);
+            return this.danfo.tensorflow.logicalAnd(yTrue.equal(zero), yPred.equal(one))
                 .sum()
                 .cast('float32');
         });
@@ -327,16 +330,16 @@ export default class ChartController {
                 }
             }
         }
-        Plotly.react('tsne', tsne_traces, layout, {
+        window.Plotly.react('tsne', tsne_traces, layout, {
             ...plotlyImageExportConfig,
             staticPlot: true,
         })
 
     }
     trueNegatives(yTrue, yPred) {
-        return tf.tidy(() => {
-            const zero = tf.scalar(0);
-            return tf.logicalAnd(yTrue.equal(zero), yPred.equal(zero))
+        return this.danfo.tensorflow.tidy(() => {
+            const zero = this.danfo.tensorflow.scalar(0);
+            return this.danfo.tensorflow.logicalAnd(yTrue.equal(zero), yPred.equal(zero))
                 .sum()
                 .cast('float32');
         });
@@ -344,7 +347,7 @@ export default class ChartController {
 
     // TODO(cais): Use tf.metrics.falsePositiveRate when available.
     falsePositiveRate(yTrue, yPred) {
-        return tf.tidy(() => {
+        return this.danfo.tensorflow.tidy(() => {
             const fp = this.falsePositives(yTrue, yPred);
             const tn = this.trueNegatives(yTrue, yPred);
             return fp.div(fp.add(tn));
@@ -352,7 +355,7 @@ export default class ChartController {
     }
     drawROC(targets, probs) {
 
-        return tf.tidy(() => {
+        return this.danfo.tensorflow.tidy(() => {
             const thresholds = [
                 0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55,
                 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.92, 0.94, 0.96, 0.98, 1.0
@@ -365,7 +368,7 @@ export default class ChartController {
                 const threshPredictions = binarize(probs, threshold).as1D();
 
                 const fpr = this.falsePositiveRate(targets, threshPredictions).dataSync()[0];
-                const tpr = tf.metrics.recall(targets, threshPredictions).dataSync()[0];
+                const tpr = this.danfo.tensorflow.metrics.recall(targets, threshPredictions).dataSync()[0];
 
                 fprs.push(fpr);
                 tprs.push(tpr);
@@ -600,7 +603,7 @@ export default class ChartController {
                     y: 1
                 },
             };
-            Plotly.newPlot(key + '-boxplot', traces, layout, { autosize: true, responsive: true, modeBarButtonsToRemove: ['pan', 'resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
+            window.Plotly.newPlot(key + '-boxplot', traces, layout, { autosize: true, responsive: true, modeBarButtonsToRemove: ['pan', 'resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
             Highcharts.chart(container_id, {
                 credits: {
                     enabled: false
@@ -651,7 +654,7 @@ export default class ChartController {
         }
     }
     downloadPlot(container) {
-        Plotly.toImage(container, {
+        window.Plotly.toImage(container, {
             format: 'png',
             width: null,
             height: null,
@@ -728,7 +731,7 @@ export default class ChartController {
         };
         var data = [trace1, trace2];
 
-        Plotly.newPlot('pca_results_' + index, data, {
+        window.Plotly.newPlot('pca_results_' + index, data, {
             title: {
                 text: 'Principle Component Analysis of Predictions'
             },
@@ -758,11 +761,12 @@ export default class ChartController {
 
     }
     purge_charts(id) {
-        Plotly.purge(id)
+        window.Plotly.purge(id)
     }
     async draw_pca(dataset, is_classification, labels, numberOfComponents, axes, columns, drawScreePlot = false) {
         const pca = new PCA();
         labels = labels.flat()
+        // eslint-disable-next-line no-unused-vars
         const [pca_data, _, explained_variances, circels, distances] = await pca.predict(dataset, numberOfComponents)
         let pcaComponents = pca_data[0].length;
 
@@ -918,7 +922,7 @@ export default class ChartController {
                 }
             }
         }
-        Plotly.newPlot('pca_matrix', pca_traces, layout, {
+        window.Plotly.newPlot('pca_matrix', pca_traces, layout, {
             ...plotlyImageExportConfig,
             staticPlot: true,
         })
@@ -964,7 +968,7 @@ export default class ChartController {
 
         ]
 
-        Plotly.newPlot('correlation_circle', [{
+        window.Plotly.newPlot('correlation_circle', [{
             x: [],
             y: [],
             type: 'scattergl',
@@ -1042,7 +1046,7 @@ export default class ChartController {
         };
         var data = [trace1, trace2, trace3];
         if (drawScreePlot) {
-            Plotly.newPlot('scree_plot', data, {
+            window.Plotly.newPlot('scree_plot', data, {
                 title: {
                     text: 'Scree Plot',
                     font: {
@@ -1185,7 +1189,7 @@ export default class ChartController {
         return [pca_data.map(item => Array.from(item)), cumulatedExplainedVaraince]
     }
     // eslint-disable-next-line no-unused-vars
-    drawStackedHorizontalChart(categories, lable) {
+    drawStackedHorizontalChart() {
         var trace1 = {
             x: [20, 14, 23],
             y: ['giraffes', 'orangutans', 'monkeys'],
@@ -1217,7 +1221,7 @@ export default class ChartController {
             barmode: 'stack'
         };
 
-        Plotly.newPlot('myDiv', data, layout);
+        window.Plotly.newPlot('myDiv', data, layout);
 
     }
     regularization_plot(xs, ys, labels) {
@@ -1242,7 +1246,7 @@ export default class ChartController {
                 title: 'Coefficient Value'
             }
         };
-        Plotly.newPlot('lasso_plot', traces, layout);
+        window.Plotly.newPlot('lasso_plot', traces, layout);
     }
     argmax(array) {
         return array.reduce((maxIndex, currentValue, currentIndex, array) => {
@@ -1295,7 +1299,7 @@ export default class ChartController {
         // traces.forEach(trace => {
         //     trace['type'] = 'violin'
         // })
-        // Plotly.newPlot("proba_violin_plot_" + index, traces, {
+        // window.Plotly.newPlot("proba_violin_plot_" + index, traces, {
         //     xaxis: {
         //         linecolor: 'black',
         //         linewidth: 1,
@@ -1318,7 +1322,7 @@ export default class ChartController {
         // traces.forEach(trace => {
         //     trace['type'] = 'box'
         // })
-        Plotly.newPlot("proba_plot_" + index, traces, {
+        window.Plotly.newPlot("proba_plot_" + index, traces, {
             xaxis: {
                 linecolor: 'black',
                 linewidth: 1,
@@ -1342,10 +1346,13 @@ export default class ChartController {
             boxmode: 'group'
         }, { responsive: true });
     }
+    // eslint-disable-next-line no-unused-vars
+    confusionMatrix(labels, predictions, numClasses) {
 
+    }
     async plotConfusionMatrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
 
-        const confusionMatrix = await metrics.confusionMatrix(y, predictedLabels, uniqueClasses.length);
+        const confusionMatrix = await this.confusionMatrix(y, predictedLabels, uniqueClasses.length);
         let metric = await ClassificationMetric(y.arraySync(), predictedLabels.arraySync(), uniqueClasses)
         let accuracy = metric.accuracy.toFixed(2);
         let f1Micro = metric.f1_micro.toFixed(2)
@@ -1360,8 +1367,8 @@ export default class ChartController {
         for (let j = 0; j < len; j++) {
             recalls.push(parseFloat(metric.recall[j].toFixed(2)))
         }
-        tensorflow.dispose(y)
-        tensorflow.dispose(predictedLabels)
+        this.danfo.tensorflow.dispose(y)
+        this.tensorflow.dispose(predictedLabels)
         const metric_labels = ["Precession", "Recall", "F1 score", "Support"]
         labels.push("Precession")
         recalls.push(0)
@@ -1410,12 +1417,11 @@ export default class ChartController {
                 labels: {
                     formatter: function () {
                         var chart = this.chart,
-                            each = Highcharts.each,
                             series = chart.series[0],
                             sum = 0,
                             x = this.value;
 
-                        series.options.data.forEach(function (p, i) {
+                        series.options.data.forEach(function (p) {
                             if (p[0] === x) {
                                 if (p[1] < uniqueClasses.length) {
                                     sum += p[2];
@@ -1440,11 +1446,10 @@ export default class ChartController {
                 labels: {
                     formatter: function () {
                         var chart = this.chart,
-                            each = Highcharts.each,
                             series = chart.series[0],
                             sum = 0,
                             x = this.value;
-                        series.options.data.forEach(function (p, i) {
+                        series.options.data.forEach(function (p) {
                             if (p[1] < uniqueClasses.length) {
                                 if (p[1] === x) {
                                     if (p[0] < uniqueClasses.length) {
@@ -1590,7 +1595,7 @@ export default class ChartController {
         });
     }
     yhat_plot(y_test, predictions, container, title = '') {
-        Plotly.newPlot(container, [{
+        window.Plotly.newPlot(container, [{
             x: y_test,
             y: predictions,
             type: 'scatter',
@@ -1653,7 +1658,7 @@ export default class ChartController {
         });
     }
     comparison(x, y, container, title = '', yLabel = '') {
-        Plotly.newPlot(container, [{
+        window.Plotly.newPlot(container, [{
             x: x,
             y: y,
             type: 'scatter',
@@ -1709,7 +1714,7 @@ export default class ChartController {
         });
     }
     residual_plot(y, residuals, container, title = '') {
-        Plotly.newPlot(container, [
+        window.Plotly.newPlot(container, [
 
             {
                 x: y,
@@ -1724,7 +1729,7 @@ export default class ChartController {
             },
             {
                 x: y,
-                y: y.map(m => 0),
+                y: y.map(() => 0),
                 mode: 'lines',
                 type: 'scatter',
                 line: { color: 'red', dash: 'solid' },
@@ -1774,8 +1779,8 @@ export default class ChartController {
             }, { responsive: true, ...plotlyImageExportConfig, staticPlot: false });
     }
 
-    ScatterplotMatrix(items, features, labels, number_of_categoricals, is_classification = true, numeric_columns, categorical_columns, dataset) {
-        return new Promise((resolve, reject) => {
+    ScatterplotMatrix(items, features, labels, number_of_categoricals, is_classification = true, numeric_columns, categorical_columns) {
+        return new Promise((resolve) => {
             setTimeout(() => {
 
                 let unique_labels = [...new Set(labels)];
@@ -2109,7 +2114,7 @@ export default class ChartController {
                     }
                 }
 
-                Plotly.react('scatterplot_mtx', traces, layout, {
+                window.Plotly.react('scatterplot_mtx', traces, layout, {
                     ...plotlyImageExportConfig,
                     staticPlot: true,
                     modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath ']
@@ -2186,7 +2191,7 @@ export default class ChartController {
                     }
                 },]
         };
-        Plotly.newPlot("knn_table_" + id, traces, layout, { responsive: true });
+        window.Plotly.newPlot("knn_table_" + id, traces, layout, { responsive: true });
     }
     KNNPerformancePlotRegression(results, optimalTrainSpec, optimalTestSpec, id) {
         let traces = []
@@ -2289,7 +2294,7 @@ export default class ChartController {
                     }
                 },]
         };
-        Plotly.newPlot("knn_table_" + id, traces, layout);
+        window.Plotly.newPlot("knn_table_" + id, traces, layout);
     }
     correaltoinMatrixColorscale(correlations) {
         let featuresCount = correlations[0].length;
@@ -2391,7 +2396,7 @@ export default class ChartController {
             }
         }
 
-        await Plotly.newPlot(id, data, layout, { ...plotlyImageExportConfig, responsive: true });
+        await window.Plotly.newPlot(id, data, layout, { ...plotlyImageExportConfig, responsive: true });
     }
     async dendogramPlot(id, correlations, linkage, names, originalColumns) {
 
@@ -2659,7 +2664,7 @@ export default class ChartController {
 
         data = data.concat(trace4)
 
-        Plotly.newPlot(id, data, layout2, { ...plotlyImageExportConfig, responsive: true });
+        window.Plotly.newPlot(id, data, layout2, { ...plotlyImageExportConfig, responsive: true });
     }
     PFIBoxplot(id, importances, columns) {
         let traces = []
@@ -2668,8 +2673,6 @@ export default class ChartController {
             const importancesMean = importance.reduce((a, b) => a + b, 0)
             avgs.push((importancesMean / importance.length))
         });
-        let max = Math.max(...avgs)
-        let min = Math.min(...avgs)
 
         importances.forEach((importance, index) => {
 
@@ -2709,7 +2712,7 @@ export default class ChartController {
             },
         };
 
-        Plotly.newPlot('pfi_boxplot_' + id, traces, layout, { responsive: true });
+        window.Plotly.newPlot('pfi_boxplot_' + id, traces, layout, { responsive: true });
     }
     plotPDP(id, averages, grids, labels, columns, categorical_columns) {
         let pfiChartId = 'pdp_containers_' + id;
@@ -2782,10 +2785,11 @@ export default class ChartController {
                 },
             };
 
-            Plotly.newPlot(chartId, traces, layout, { ...plotlyImageExportConfig, responsive: true });
+            window.Plotly.newPlot(chartId, traces, layout, { ...plotlyImageExportConfig, responsive: true });
         });
     }
-    plotPDPRegression(id, averages, grids, labels, columns, categoricals) {
+    async plotPDPRegression(id, averages, grids, labels, columns, categoricals) {
+
         let pfiChartId = 'pfi_boxplot_' + id;
         let element = document.getElementById(pfiChartId);
         let chartContainer = document.createElement("div");
@@ -2805,17 +2809,10 @@ export default class ChartController {
 
         let traces = []
         let traces_categoricals = []
-        let allxs = []
-        // grids.forEach((grid, i) => {
-        //     if (!categoricals.includes(columns[i])) {
-        //         allxs = allxs.concat(grid)
-        //     }
-        // })
-        // scaler.fit(allxs)
         grids.forEach((grid, i) => {
             if (!categoricals.includes(columns[i])) {
-                averages[i].forEach((average, index) => {
-                    let scaler = new MinMaxScaler();
+                averages[i].forEach((average) => {
+                    let scaler = new this.danfo.MinMaxScaler();
                     scaler.fit(grid)
                     // let xs = scaler.transform(grid)
                     let xs = grid
@@ -2831,7 +2828,7 @@ export default class ChartController {
                     )
                 });
             } else {
-                averages[i].forEach((average, index) => {
+                averages[i].forEach((average) => {
                     traces_categoricals.push(
                         {
                             x: grid,
@@ -2887,7 +2884,7 @@ export default class ChartController {
                 }
             },
         };
-        Plotly.newPlot(chartId, traces, layout, { ...plotlyImageExportConfig, responsive: true });
+        window.Plotly.newPlot(chartId, traces, layout, { ...plotlyImageExportConfig, responsive: true });
         var layout2 = {
             title: {
                 text: 'Partial Dependence Plot',
@@ -2922,7 +2919,7 @@ export default class ChartController {
             },
         };
 
-        Plotly.newPlot(chartIdCategorical, traces_categoricals, layout2);
+        window.Plotly.newPlot(chartIdCategorical, traces_categoricals, layout2);
     }
     drawAutoencoder(points, xIndex = 1, yIndex = 0, labels, is_classification) {
         labels = labels.map(l => l[0])
@@ -2980,7 +2977,7 @@ export default class ChartController {
             },
         };
 
-        Plotly.newPlot('autoencoder', data, layout);
+        window.Plotly.newPlot('autoencoder', data, layout);
     }
     plotROC(id, fprs, tprs, labels, auc) {
 
@@ -3047,7 +3044,7 @@ export default class ChartController {
             },
         };
 
-        Plotly.newPlot('roc_plot_' + id, traces, layout, { responsive: true });
+        window.Plotly.newPlot('roc_plot_' + id, traces, layout, { responsive: true });
     }
 
     uniformSplist(n) {
@@ -3057,8 +3054,9 @@ export default class ChartController {
         }
         return numbers;
     }
-    parallelCoordinatePlot(features, labels, column_names, is_classification) {
-        let labelEncoder = new LabelEncoder()
+    async parallelCoordinatePlot(features, labels, column_names, is_classification) {
+        let danfo = await getDanfo()
+        let labelEncoder = new danfo.LabelEncoder()
         if (is_classification) {
             labelEncoder.fit(labels)
             labels = labelEncoder.transform(labels)
@@ -3110,6 +3108,6 @@ export default class ChartController {
             },
         };
 
-        Plotly.newPlot('parallel_coordinate_plot', data, layout, { ...plotlyImageExportConfig, responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
+        window.Plotly.newPlot('parallel_coordinate_plot', data, layout, { ...plotlyImageExportConfig, responsive: true, modeBarButtonsToRemove: ['resetScale2d', 'select2d', 'resetViews', 'sendDataToCloud', 'hoverCompareCartesian', 'lasso2d', 'drawopenpath '] });
     }
 }
