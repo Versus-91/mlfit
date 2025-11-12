@@ -147,14 +147,12 @@
 </template>
 
 <script>
-import ChartController from '@/helpers/charts';
+import { ChartController } from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
 import { getDanfo } from '@/utils/danfo_loader';
 
 import { FeatureCategories } from '@/helpers/settings'
 
-// eslint-disable-next-line no-unused-vars
-let chartController = new ChartController();
 export default {
     name: 'dmensionality-reduction-component',
     setup() {
@@ -241,7 +239,7 @@ export default {
                 }
 
                 let x = this.df.loc({ columns: numericColumns }).values;
-                let pcaData = await chartController.draw_pca(
+                let pcaData = await this.chartController.draw_pca(
                     x,
                     this.settings.isClassification,
                     this.df.loc({ columns: [this.settings.modelTarget] }).values,
@@ -262,7 +260,7 @@ export default {
 
         },
         downloadPCAPlot() {
-            chartController.downloadPlot('pca_matrix');
+            this.chartController.downloadPlot('pca_matrix');
         },
         async downloadPCA() {
             const danfo = await getDanfo()
@@ -285,7 +283,7 @@ export default {
                 await this.prepareData()
                 this.loadingTSNE = true;
                 let numericColumns = this.settings.items.filter(column => column.selected && column.type === 1).map(column => column.name);
-                await chartController.plot_tsne(this.df.loc({ columns: numericColumns }).values,
+                await this.chartController.plot_tsne(this.df.loc({ columns: numericColumns }).values,
                     this.settings.isClassification
                     , this.df.loc({ columns: [this.settings.modelTarget] }).values, this.seedTSNE, this.componentsTSNE);
                 this.loadingTSNE = false;
@@ -329,7 +327,7 @@ export default {
             });
             // eslint-disable-next-line no-unused-vars
             let autoencoderPredictions = await tidyWrapper;
-            chartController.drawAutoencoder(autoencoderPredictions, this.autoEncoderX - 1, this.autoEncoderY - 1,
+            this.chartController.drawAutoencoder(autoencoderPredictions, this.autoEncoderX - 1, this.autoEncoderY - 1,
                 this.settings.df.loc({ columns: [this.settings.modelTarget] }).values
                 , this.settings.isClassification
             )
@@ -339,6 +337,9 @@ export default {
     },
     errorCaptured() {
 
+    },
+    mounted() {
+        this.chartController = new ChartController()
     }
 }
 </script>

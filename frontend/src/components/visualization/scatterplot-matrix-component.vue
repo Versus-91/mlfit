@@ -45,14 +45,13 @@
 </template>
 
 <script>
-import ChartController from '@/helpers/charts';
+import { ChartController } from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
 import { ScaleOptions } from '@/helpers/settings'
 import { applyDataTransformation } from '@/helpers/utils';
 import PCPComponent from '../visualization/parallel-coordinate-plot-component.vue'
 import { getDanfo } from '@/utils/danfo_loader';
 import { BSelect, BTable } from 'buefy';
-let chartController = new ChartController();
 export default {
     components: {
         'parallel-coordinate-plot-component': PCPComponent, BSelect, BTable
@@ -80,7 +79,7 @@ export default {
     },
     methods: {
         downlaodSPLOM() {
-            chartController.downloadPlot('scatterplot_mtx')
+            this.chartController.downloadPlot('scatterplot_mtx')
         },
         async updateClassesInfo() {
             const danfo = await getDanfo()
@@ -119,7 +118,7 @@ export default {
                 let features = numericColumns.concat(categorical_columns);
                 dataframe.dropNa({ axis: 1, inplace: true })
 
-                await chartController.ScatterplotMatrix(dataframe.loc({ columns: features }).values, features, dataframe.column(this.settings.modelTarget).values, categorical_columns.length,
+                await this.chartController.ScatterplotMatrix(dataframe.loc({ columns: features }).values, features, dataframe.column(this.settings.modelTarget).values, categorical_columns.length,
                     this.settings.isClassification, numericColumns, categorical_columns, this.dataframe)
                 if (this.settings.isClassification) {
                     this.updateClassesInfo();
@@ -207,6 +206,9 @@ export default {
 
         }
     },
+    mounted() {
+        this.chartController = new ChartController(null, null)
+    },
     created: async function () {
         await this.initSPLOM()
     },
@@ -216,10 +218,6 @@ export default {
                 return this.features.length === 0 ? 0 : 100 / this.features.length
             }
         }
-    }
-
+    },
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>

@@ -1,5 +1,5 @@
 
-import ChartController from '@/helpers/charts';
+import { ChartController } from '@/helpers/charts';
 import { calculateMSE, calculateRSquared, predictions_table_regression } from './utils.js';
 
 export class RegressionModel {

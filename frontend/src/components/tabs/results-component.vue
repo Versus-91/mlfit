@@ -49,9 +49,8 @@ import { settingStore } from '@/stores/settings'
 import ClassificationViewComponent from './classification-view-component.vue'
 import RegressionViewComponent from './regression-view-component.vue'
 import { computed } from "vue";
-import ChartController from '@/helpers/charts';
+import { ChartController } from '@/helpers/charts';
 import { removeTable } from '@/helpers/utils'
-let chartController = new ChartController(null, null)
 
 export default {
     components: {
@@ -134,7 +133,7 @@ export default {
         },
         draw() {
             for (const k in this.metrics) {
-                chartController.comparison(this.xTicks, this.metrics[k], k, k)
+                this.chartController.comparison(this.xTicks, this.metrics[k], k, k)
             }
         },
         compareResultsDraw(dataset) {
@@ -175,8 +174,10 @@ export default {
         },
         showMethodDetails(id) {
             alert(id)
-
         },
     },
+    mounted(){
+        this.chartController = new ChartController(null, null)
+    }
 }
 </script>

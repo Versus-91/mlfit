@@ -19,7 +19,6 @@ import SidebarComponent from "./components/sidebar-component.vue";
 import MainComponent from "./components/main-component.vue";
 import { settingStore } from '@/stores/settings'
 import { mapStores, mapActions } from 'pinia'
-import { useToast } from "buefy"
 
 
 export default {

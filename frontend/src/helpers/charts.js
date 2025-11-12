@@ -1,11 +1,10 @@
 /* eslint-disable no-undef */
 
 import PCA from './dimensionality-reduction/pca';
-import { binarize } from './utils'
 import { equalIntervalBreaks, kernelDensityEstimation, standardDeviation, interquartileRange } from "simple-statistics"
 import { schemeTableau10, interpolateRainbow } from 'd3-scale-chromatic';
 import { FeatureCategories } from "./settings";
-import { metrics as ClassificationMetric, encode_name, scale_data } from './utils.js';
+import { metrics as ClassificationMetric, encode_name, scale_data, binarize } from './utils.js';
 import { corrcoeff } from 'jstat';
 import { getDanfo } from '@/utils/danfo_loader';
 import TSNE from './dimensionality-reduction/tsne';
@@ -17,23 +16,18 @@ const plotlyImageExportConfig = {
         scale: 2
     }
 };
-export default class ChartController {
+export class ChartController {
     constructor() {
-
         this.color_scheme = schemeTableau10;
         this.color_scheme_sequential = interpolateRainbow;
-        getDanfo().then(danfo => {
-            this.danfo = danfo;
-        }
-        )
 
     }
 
     // eslint-disable-next-line no-unused-vars
     classification_target_chart(values, labels, container, title = "") {
-        var uniqueLabels = [...new Set(labels)];
-        var colorIndices = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label)));
-        var data = [];
+        let uniqueLabels = [...new Set(labels)];
+        let colorIndices = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label)));
+        let data = [];
         data.push({
             name: "Count",
             data: values.map((item, i) => ({ y: item, color: colorIndices[i] }))

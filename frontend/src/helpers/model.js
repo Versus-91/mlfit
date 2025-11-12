@@ -1,5 +1,5 @@
 
-import ChartController from '@/helpers/charts';
+import { ChartController } from '@/helpers/charts';
 import { getDanfo } from '@/utils/danfo_loader';
 import { metrics, predictions_table } from './utils.js';
 

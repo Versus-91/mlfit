@@ -264,7 +264,7 @@ import SPLOMComponent from './visualization/scatterplot-matrix-component.vue'
 import MethodsTabComponent from './tabs/methods-tab-component.vue'
 
 import { FeatureCategories } from '../helpers/settings'
-import ChartController from '@/helpers/charts';
+import { ChartController } from '@/helpers/charts';
 import { settingStore } from '@/stores/settings'
 import { Matrix, correlation } from 'ml-matrix';
 // eslint-disable-next-line no-unused-vars
@@ -272,15 +272,13 @@ import Clustermap from '@/helpers/correlation/correlation-matrix'
 import { getDanfo, getPlotly } from '@/utils/danfo_loader';
 import { mapState } from 'pinia';
 import { renderDatasetStats } from '@/helpers/utils'
-import { BTabs, BTabItem, BButton, BSelect, BField, BMessage } from 'buefy'
 export default {
     name: 'MainComponent',
     components: {
         'dmensionality-reduction-component': PCAComponent,
         'results-component': ResultsComponent,
         'scatterplot-matrix-component': SPLOMComponent,
-        'methods-tab-component': MethodsTabComponent,
-        BTabs, BTabItem, BButton, BSelect, BField, BMessage
+        'methods-tab-component': MethodsTabComponent
     },
     setup() {
         const settings = settingStore()
@@ -290,13 +288,7 @@ export default {
         msg: String,
         selectedFeatures: [],
     },
-    errorCaptured(err, vm, info) {
-        console.log(`cat EC: ${err.toString()}\ninfo: ${info}`);
-        let message = { message: 'Encountered unexpected error', type: 'warning' }
-        this.$buefy.toast.open({ message: 'Encountered unexpected error', type: 'is-warning' })
-        this.settings.addMessage(message)
-        return false;
-    },
+
     data() {
         return {
             featureTypeOptions: FeatureCategories,
@@ -340,6 +332,7 @@ export default {
         },
         async correlationMatrix() {
             this.loading = true;
+            await getPlotly()
             let chartController = new ChartController(null, null)
 
             try {
@@ -409,7 +402,6 @@ export default {
                 }
 
                 const danfo = await getDanfo()
-                console.log(await getPlotly());
                 let df = new danfo.DataFrame(this.settings.rawData);
                 let datasetStats = renderDatasetStats(df, numericColumns, categoricalColumns);
                 this.continuousFeaturesColumns = datasetStats[0];
