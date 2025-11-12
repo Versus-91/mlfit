@@ -49,13 +49,9 @@ import { settingStore } from '@/stores/settings'
 import ClassificationViewComponent from './classification-view-component.vue'
 import RegressionViewComponent from './regression-view-component.vue'
 import { computed } from "vue";
-import UI from '@/helpers/ui';
 import ChartController from '@/helpers/charts';
-
+import { removeTable } from '@/helpers/utils'
 let chartController = new ChartController(null, null)
-
-let ui = new UI(null, null)
-
 
 export default {
     components: {
@@ -169,7 +165,7 @@ export default {
             // eslint-disable-next-line no-unused-vars
             let [tables, plots] = this.settings.getResultVisualizations(id);
             tables.forEach(table => {
-                ui.removeTable(table)
+                removeTable(table)
             });
             plots.forEach(plot => {
                 window.Plotly.purge(plot);
@@ -184,6 +180,3 @@ export default {
     },
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped></style>

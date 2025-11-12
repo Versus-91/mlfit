@@ -1,14 +1,12 @@
 
 import ChartController from '@/helpers/charts';
 import { getDanfo } from '@/utils/danfo_loader';
-import UI from '@/helpers/ui';
-import { metrics } from './utils.js';
+import { metrics, predictions_table } from './utils.js';
 
 export class ClassificationModel {
 
     constructor() {
         this.chartController = new ChartController();
-        this.ui = new UI(null, null)
         this.task = null;
         this.predictions = [];
         this.hasProbability = false;
@@ -105,7 +103,7 @@ plt.show()
         const danfo = await getDanfo()
         const classes = Object.keys(encoder.$labels);
         await this.chartController.plotConfusionMatrix(danfo.tensorflow.tensor(predictions), danfo.tensorflow.tensor(y_test), classes, Object.values(encoder.$labels), this.id);
-        this.ui.predictions_table(x_test, encoder.inverseTransform(y_test), encoder.inverseTransform(predictions), null, this.id);
+        predictions_table(x_test, encoder.inverseTransform(y_test), encoder.inverseTransform(predictions), null, this.id);
         this.tables.push('#predictions_table_' + this.id);
 
     }

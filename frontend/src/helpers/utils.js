@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 
 import { asyncRun } from "./py-worker";
 import { getDanfo } from '@/utils/danfo_loader';
@@ -334,8 +335,8 @@ export async function scale_data(dataset, column, normalization_type) {
     }
 }
 export function applyDataTransformation(dataset, column_names, transformations) {
-    for (let i = 0; i < column_names.length; i++) {
-        const column = column_names[i];
+    for (const element of column_names) {
+        const column = element;
         let transformation = transformations.find(transformation => transformation.name === column)
         if (transformation) {
             scale_data(dataset, column, transformation.scaler.toString())
@@ -380,8 +381,8 @@ export function getCategoricalMode(arr) {
     const categoryCount = {};
     categoryCount['total'] = 0
     categoryCount['mode'] = ''
-    for (let i = 0; i < arr.length; i++) {
-        const category = arr[i];
+    for (const element of arr) {
+        const category = element;
         if (category === null || category === undefined) {
             continue
         }
@@ -441,3 +442,128 @@ export function merge_classes(classes, dataframe) {
     this.settings.addMessage(message)
 }
 
+export function predictions_table_regression(x, y, predictions, tab_index) {
+    let table_columns = [];
+    x.addColumn("residuals: ", y.map((item, i) => item - predictions[i]), { inplace: true });
+    x.addColumn("predictions: ", predictions, { inplace: true });
+    x.addColumn("y", y, { inplace: true });
+
+
+    x.columns.forEach(element => {
+        table_columns.push({ title: element });
+    });
+    let columns = x.columns.slice().reverse();
+    new DataTable('#predictions_table_' + tab_index, {
+        pageLength: 5,
+        responsive: false,
+        paging: true,
+        columnDefs: [
+            {
+                render: function (data) {
+                    return data.toFixed(2);
+                },
+                targets: "_all",
+            }
+        ],
+        bPaginate: true,
+        columns: table_columns.reverse(),
+        data: x.loc({ columns: columns }).values,
+        bDestroy: true,
+    });
+}
+export function removeTable(tableId) {
+    $(tableId).DataTable().destroy()
+}
+export function predictions_table(x, y, predictions, probs = null, tab_index = 0) {
+    let table_columns = [];
+    if (probs !== null) {
+        x.addColumn("probs", probs, { inplace: true });
+    }
+    x.addColumn("y", y, { inplace: true });
+    x.addColumn("predictions", predictions, { inplace: true });
+    x.columns.forEach(element => {
+        table_columns.push({ title: element });
+    });
+    let columns = x.columns.slice().reverse();
+    new DataTable('#predictions_table_' + tab_index, {
+        pageLength: 10,
+        responsive: false,
+        paging: true,
+        "bPaginate": true,
+        columns: table_columns.reverse(),
+        data: x.loc({ columns: columns }).values,
+        bDestroy: true,
+        columnDefs: [
+            {
+                render: function (data) {
+                    return data.toFixed(2);
+                },
+                targets: [...Array(table_columns.length).keys()].filter(m => m >= 2)
+            }
+        ],
+        rowCallback: function (row, data) {
+            var prediction = data[0];
+            var y = data[1];
+            if (prediction !== y) {
+                $(row).addClass('is-danger');
+            }
+        }
+    });
+}
+
+export function renderDatasetStats(data, continuousFeatures, categoricalFeatures) {
+    //build numerical feature table table
+    let continuousFeaturesStats = []
+    let categoricalFeaturesStats = []
+
+    const continuousHeaders =
+        [{ field: 'name', label: '#' }, { field: 'min', label: 'Min' }, { field: 'max', label: 'Max' },
+        { field: 'mean', label: 'Mean' },
+        { field: 'median', label: 'Median' }
+            , { field: 'std', label: 'std' }, { field: 'missingVlauesCount', label: '# NAs' }
+            , { field: 'type', label: 'type' }
+        ];
+    const categoricalHeaders =
+        [{ field: 'name', label: '#' }, { field: 'shape', label: 'Shape' }, { field: 'mode', label: 'Mode' }, { field: 'percentage', label: 'Mode Percentage' }
+            , { field: 'missingVlauesCount', label: '# NAs' }
+        ];
+
+    for (const element of continuousFeatures) {
+        const column = element.name;
+        continuousFeaturesStats.push({
+            name: column,
+            min: data.column(column).min().toFixed(2),
+            max: data.column(column).max().toFixed(2),
+            median: data.column(column).median().toFixed(2),
+            mean: data.column(column).mean().toFixed(2),
+            std: data.column(column).std().toFixed(2),
+            missingValuesCount: data.column(column).isNa().sum(),
+            type: 1,
+            selected: element.selected
+        })
+    }
+
+
+    categoricalFeatures.forEach((item) => {
+        let column = item.name
+        const shape = [...new Set(data.column(column).values)];
+        const category_info = getCategoricalMode(data.column(column).values)
+        categoricalFeaturesStats.push({
+            name: column,
+            shape: shape.length,
+            mode: category_info['mode'],
+            percentage: ((category_info[category_info['mode']] / category_info['total'])).toFixed(2),
+            missingValuesCount: data.column(column).isNa().sum(),
+            type: 2,
+            selected: item.selected
+        })
+
+    });
+    return [
+        continuousHeaders,
+        continuousFeaturesStats,
+        categoricalHeaders,
+        categoricalFeaturesStats,
+    ]
+
+}

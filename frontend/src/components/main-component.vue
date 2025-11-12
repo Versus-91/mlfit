@@ -258,7 +258,6 @@
 </template>
 
 <script>
-import UI from '@/helpers/ui';
 import PCAComponent from './tabs/dmensionality-reduction-componenet.vue'
 import ResultsComponent from './tabs/results-component.vue'
 import SPLOMComponent from './visualization/scatterplot-matrix-component.vue'
@@ -272,8 +271,7 @@ import { Matrix, correlation } from 'ml-matrix';
 import Clustermap from '@/helpers/correlation/correlation-matrix'
 import { getDanfo, getPlotly } from '@/utils/danfo_loader';
 import { mapState } from 'pinia';
-
-let ui = new UI(null, null);
+import {renderDatasetStats} from '@/helpers/utils'
 
 export default {
     name: 'MainComponent',
@@ -412,7 +410,7 @@ export default {
                 const danfo = await getDanfo()
                 console.log(await getPlotly());
                 let df = new danfo.DataFrame(this.settings.rawData);
-                let datasetStats = ui.renderDatasetStats(df, numericColumns, categoricalColumns);
+                let datasetStats = renderDatasetStats(df, numericColumns, categoricalColumns);
                 this.continuousFeaturesColumns = datasetStats[0];
                 this.continuousFeaturesStats = datasetStats[1];
                 this.categoricalFeaturesColumns = datasetStats[2];

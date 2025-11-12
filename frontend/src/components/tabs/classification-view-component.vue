@@ -133,7 +133,7 @@
 import { settingStore } from '@/stores/settings';
 import { ModelFactory } from "@/helpers/model_factory";
 
-import { toCSV, concat } from '@/utils/danfo_loader';
+import { getDanfo } from '@/utils/danfo_loader';
 
 import axios from "axios";
 
@@ -158,13 +158,14 @@ export default {
     },
     name: 'ClassificationViewComponent',
     methods: {
-        upload() {
+        async upload() {
             let vm = this;
+            const danfo = await getDanfo()
             let formdata = new FormData();
-            let dataframe = concat({ dfList: [this.result.snapshot.x, this.result.snapshot.xt], axis: 0 })
+            let dataframe = danfo.concat({ dfList: [this.result.snapshot.x, this.result.snapshot.xt], axis: 0 })
             let target = this.result.snapshot.y.concat(this.result.snapshot.yt)
             dataframe.addColumn(this.result.target, target, { inplace: true })
-            let file = toCSV(dataframe, { filePath: "pca_data.csv" });
+            let file = danfo.toCSV(dataframe, { filePath: "pca_data.csv" });
             const blob = new Blob([file], { type: "text/csv" });
             formdata.append('file', blob, 'main.csv');
 

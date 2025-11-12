@@ -1,13 +1,11 @@
 
 import ChartController from '@/helpers/charts';
-import UI from '@/helpers/ui';
-import { calculateMSE, calculateRSquared } from './utils.js';
+import { calculateMSE, calculateRSquared, predictions_table_regression } from './utils.js';
 
 export class RegressionModel {
 
     constructor() {
         this.chartController = new ChartController();
-        this.ui = new UI(null, null)
         this.task = null;
         this.predictions = [];
         this.id = null;
@@ -35,7 +33,7 @@ export class RegressionModel {
                 });
                 current.chartController.yhat_plot(y, predictions, 'regression_y_yhat_' + current.id, 'Predictions vs y')
                 current.chartController.residual_plot(predictions, residuals, 'errors_' + current.id, 'Residuals vs y')
-                this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
+                predictions_table_regression(x_test, y_test, predictions, this.id);
                 this.plots.push('regression_y_yhat_' + current.id);
                 this.plots.push('errors_' + current.id);
                 this.tables.push('#predictions_table_' + this.id);
