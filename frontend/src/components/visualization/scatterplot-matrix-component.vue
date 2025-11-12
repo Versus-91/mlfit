@@ -51,11 +51,11 @@ import { ScaleOptions } from '@/helpers/settings'
 import { applyDataTransformation } from '@/helpers/utils';
 import PCPComponent from '../visualization/parallel-coordinate-plot-component.vue'
 import { getDanfo } from '@/utils/danfo_loader';
-
+import { BSelect, BTable } from 'buefy';
 let chartController = new ChartController();
 export default {
     components: {
-        'parallel-coordinate-plot-component': PCPComponent,
+        'parallel-coordinate-plot-component': PCPComponent, BSelect, BTable
     },
     setup() {
         const settings = settingStore()

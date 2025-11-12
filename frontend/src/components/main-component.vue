@@ -271,15 +271,16 @@ import { Matrix, correlation } from 'ml-matrix';
 import Clustermap from '@/helpers/correlation/correlation-matrix'
 import { getDanfo, getPlotly } from '@/utils/danfo_loader';
 import { mapState } from 'pinia';
-import {renderDatasetStats} from '@/helpers/utils'
-
+import { renderDatasetStats } from '@/helpers/utils'
+import { BTabs, BTabItem, BButton, BSelect, BField, BMessage } from 'buefy'
 export default {
     name: 'MainComponent',
     components: {
         'dmensionality-reduction-component': PCAComponent,
         'results-component': ResultsComponent,
         'scatterplot-matrix-component': SPLOMComponent,
-        'methods-tab-component': MethodsTabComponent
+        'methods-tab-component': MethodsTabComponent,
+        BTabs, BTabItem, BButton, BSelect, BField, BMessage
     },
     setup() {
         const settings = settingStore()

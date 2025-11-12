@@ -1,14 +1,14 @@
 <template>
 
   <div class="container">
-    <b-notification v-show="getDatasizeFlag" class="mt-2" type="is-warning" has-icon
+    <b-notification v-show="appStore.getDatasizeFlag" class="mt-2" type="is-warning" has-icon
       aria-close-label="Close notification" role="alert">
       Due to the large size of dataset only 10,000 radom samples from dataset would be used.
     </b-notification>
     <div class="columns is-multiline" id="app">
       <SidebarComponent ref="sidebar" @updateFeatures="updateFeatureStats">
       </SidebarComponent>
-      <MainComponent ref="main" :dataframe="df" @check-target="checkTarget()"></MainComponent>
+      <MainComponent ref="main" :dataframe="appStore.df" @check-target="checkTarget()"></MainComponent>
     </div>
   </div>
 
@@ -19,6 +19,7 @@ import SidebarComponent from "./components/sidebar-component.vue";
 import MainComponent from "./components/main-component.vue";
 import { settingStore } from '@/stores/settings'
 import { mapStores, mapActions } from 'pinia'
+import { useToast } from "buefy"
 
 
 export default {
@@ -32,6 +33,7 @@ export default {
 
   },
   errorCaptured(err, vm, info) {
+
     console.log(`cat EC: ${err.toString()}\ninfo: ${info} + ${err.stack}`);
 
     this.$buefy.toast.open(

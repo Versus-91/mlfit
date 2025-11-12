@@ -39,7 +39,7 @@
 import { ParserFactory } from '../helpers/parser/parser_factory.js'
 import { getDanfo } from '@/utils/danfo_loader';
 import { settingStore } from '@/stores/settings'
-
+import { BField, BCheckbox, BUpload, BSelect } from 'buefy';
 const DATASET_SIZE = 10000;
 export default {
     setup() {
@@ -49,6 +49,9 @@ export default {
     name: 'UploadComponent',
     props: {
         msg: String
+    },
+    components: {
+        BField, BCheckbox, BUpload, BSelect
     },
     data() {
         return {

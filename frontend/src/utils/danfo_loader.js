@@ -2,7 +2,7 @@ let danfoPromise = null;
 let plotlyPromise = null
 export const getDanfo = async () => {
     if (!danfoPromise) {
-        danfoPromise = import('danfojs')
+        danfoPromise = import('danfojs/dist/danfojs-browser/src/index')
     }
     return danfoPromise
 }

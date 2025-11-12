@@ -1,6 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
-    <div class="column is-2  has-background-info-light	" style="height: 100%;">
+    <div class="column is-2  has-background-light" style="height: 100%;">
         <figure class="image is-96x96">
             <img fetchpriority="high" src="/logo.png" alt="logo" />
         </figure>
@@ -92,10 +92,11 @@ import PCA from '@/helpers/dimensionality-reduction/pca';
 
 import { ModelFactory } from "@/helpers/model_factory";
 import { settingStore } from '@/stores/settings'
-import { applyDataTransformation, handle_missing_values, encode_dataset, evaluate_classification } from '@/helpers/utils';
+import { applyDataTransformation, handle_missing_values, encode_dataset } from '@/helpers/utils';
 import { getDanfo } from '@/utils/danfo_loader';
-import axios from "axios";
+import { BButton, BSelect, BField, BInput, BCheckbox, useToast } from 'buefy'
 
+import axios from "axios";
 export default {
     name: 'SidebarComponent',
     setup() {
@@ -104,7 +105,8 @@ export default {
         return { settings }
     },
     components: {
-        UploadComponent
+        UploadComponent, BButton, BSelect, BField, BInput, BCheckbox
+
     },
     props: {
         msg: String
@@ -189,7 +191,7 @@ export default {
         toggleTraining() {
             this.training = !this.training;
             let message = this.training ? 'Started training ' + this.modelName : 'Successully fitted ' + this.modelName;
-            this.$buefy.toast.open(
+            this.Toast.open(
                 {
                     duration: 5000,
                     message: this.training ? 'Started training ' + this.modelName : 'Successully fitted ' + this.modelName,
@@ -226,20 +228,18 @@ export default {
             this.modelTarget = this.dataframe.columns[this.dataframe.columns.length - 1];
             this.settings.setTarget(this.modelTarget)
             let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
-            for (let i = 0; i < selectedFeatures.length; i++) {
-                this.settings.addFeature(selectedFeatures[i])
+            for (const element of selectedFeatures) {
+                this.settings.addFeature(element)
             }
             this.$emit('updateFeatures', true)
 
         },
         checkmodelTask() {
-            console.log(this.modelTarget);
-
             this.settings.setTarget(this.modelTarget)
             let targetFeature = this.settings.items.find(feature => feature.name == this.modelTarget);
             if (!targetFeature.selected) {
                 let message = 'Target is not selected'
-                this.$buefy.toast.open(
+                this.Toast.open(
                     {
                         duration: 3000,
                         message: message,
@@ -250,10 +250,7 @@ export default {
             }
             this.settings.setmodelTask(targetFeature.type === FeatureCategories.Numerical.id ? false : true);
             this.modelOptions = targetFeature.type === FeatureCategories.Numerical.id ? Settings.regression : Settings.classification;
-            // let selectedFeatures = this.featureSettings.filter(feature => feature.selected);
-            // for (let i = 0; i < selectedFeatures.length; i++) {
-            //     this.settings.addFeature(selectedFeatures[i])
-            // }
+
         },
         async train() {
             try {
@@ -449,6 +446,8 @@ export default {
         }
     },
     created: function () {
+        this.Toast = useToast()
+
         this.splitData = function (cross_validation_setting, filterd_dataset, targets, stepSize = 0.7) {
             let x_train, y_train, x_test, y_test;
             let len = filterd_dataset.$data.length

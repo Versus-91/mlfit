@@ -13,8 +13,9 @@
     integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="https://cdn.datatables.net/v/bm/dt-1.13.8/r-2.5.0/sb-1.6.0/datatables.min.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_HTML"></script>
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/buefy/3.0.3/css/buefy.min.css"
+    integrity="sha512-NXTOU8SrCwbw6zONSSMwhe1cPRO8bFcd6wHUIoqqt28/vozOWf20L85BRmMF/ZdGdsQFt1oMXrI1+5hjFog+bQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -41,7 +42,9 @@
   <script src="https://code.highcharts.com/highcharts.js"></script>
   <script src="https://code.highcharts.com/modules/heatmap.js"></script>
   <script src="https://code.highcharts.com/modules/exporting.js"></script>
-  <script type="module">
+  <script type="module" src="/src/main.js"></script>
+
+  <script>
     window.addEventListener('load', (event) => {
       import('https://webr.r-wasm.org/v0.4.3/webr.mjs').then(
         async ({ WebR }) => {
@@ -51,10 +54,7 @@
       import('https://code.jquery.com/jquery-3.7.0.min.js').then(() => {
         import('https://cdn.datatables.net/v/bm/dt-1.13.8/r-2.5.0/sb-1.6.0/datatables.min.js');
       });
-
-
     });
-
   </script>
 </body>
 

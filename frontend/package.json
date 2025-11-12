@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --report",
-    "lint": "vue-cli-service lint",
-    "start": "serve -s dist"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^4.12.0",
     "@tensorflow/tfjs-core": "^4.12.0",
     "@tensorflow/tfjs-tsne": "^0.2.0",
     "@tensorflow/tfjs-vis": "^1.5.1",
+    "@vitejs/plugin-vue": "^6.0.1",
     "axios": "^1.7.3",
     "buefy": "^3.0.3",
     "bulma": "^1.0.4",
@@ -46,7 +46,8 @@
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.0.3"
+    "eslint-plugin-vue": "^8.0.3",
+    "vite": "^7.2.2"
   },
   "eslintConfig": {
     "root": true,
