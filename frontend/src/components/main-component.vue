@@ -1,8 +1,7 @@
 <template>
     <div class="column is-10">
         <section>
-            <b-tabs v-model="settings.activeTab" :position="'is-centered'" :animated="false" type="success"
-                @input="resize()">
+            <b-tabs v-model="activeTab" :position="'is-centered'" :animated="false" type="success" @input="resize()">
                 <b-tab-item label="Data Analysis" icon="search" icon-pack="fas">
                     <section v-if="this.settings.datasetShape?.count > 0">
                         <div class="message is-info" v-if="isActive" :closable="false">
@@ -192,12 +191,12 @@
                             these formats to avoid any issues during the upload process.
                         </p>
                         <figure>
-                            <img src="/upload.png" />
+                            <img src="/upload.png" alt="upload_help" />
                             <figcaption>Figure 1: Dataset Selection</figcaption>
                         </figure>
                         <h4>2. Data Analysis</h4>
                         <figure>
-                            <img src="/stats_categorical.jpg" />
+                            <img src="/stats_categorical.jpg" alt="categorical features" />
                             <figcaption>Figure 2: Categorical features stats</figcaption>
                         </figure>
                         <p>
@@ -246,7 +245,7 @@
                 <b-tab-item label="Messages Log" icon="history" icon-pack="fas">
                     <b-notification aria-close-label="Close notification" icon-pack="fas"
                         :type="m.type == 'warning' ? 'is-warning' : m.type == 'danger' ? 'is-danger' : 'is-info'"
-                        has-icon :closable="false" v-for="(m, i) in this.settings.getMessages" :key="i">
+                        has-icon :closable="false" v-for="(m, i) in messages" :key="i">
                         {{ m.message?.toLowerCase() }}
                         <br>
                         {{ m.date }}
@@ -272,6 +271,7 @@ import { Matrix, correlation } from 'ml-matrix';
 // eslint-disable-next-line no-unused-vars
 import Clustermap from '@/helpers/correlation/correlation-matrix'
 import { getDanfo, getPlotly } from '@/utils/danfo_loader';
+import { mapState } from 'pinia';
 
 let ui = new UI(null, null);
 
@@ -321,6 +321,17 @@ export default {
             isActive: true,
             hasCorrelationMatrix: false,
             loading: false
+        }
+    },
+    computed: {
+        ...mapState(settingStore, ['messages']),
+        activeTab: {
+            get() {
+                return this.settings.activeTab
+            },
+            set(value) {
+                this.settings.setActiveTab(value)
+            }
         }
     },
     methods: {

@@ -144,16 +144,14 @@ export default {
         compareResultsDraw(dataset) {
             let results = [];
             this.compareResults(dataset);
-            for (let i = 0; i < this.settings.getMethodResults.length; i++) {
-                const res = this.settings.getMethodResults[i];
+            for (const element of this.settings.getMethodResults) {
+                const res = element;
                 let index = results.findIndex(m => m.task === res.modelTask && m.name === res.datasetName)
                 if (index == -1) {
                     results.push({ name: res.datasetName, task: res.modelTask })
                 }
 
             }
-            //  results = [...new Set(this.settings.getMethodResults.map(m => m.datasetName))];
-
             this.metricsCollection = results;
 
             setTimeout(() => {
