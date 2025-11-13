@@ -1,6 +1,7 @@
 
 import { ChartController } from '@/helpers/charts';
 import { calculateMSE, calculateRSquared, predictions_table_regression } from './utils.js';
+import { getDatatable } from '@/utils/datatable_loader.js';
 
 export class RegressionModel {
 
@@ -24,6 +25,7 @@ export class RegressionModel {
     }
     async visualize(x_test, y_test, _, predictions) {
         let current = this;
+        await getDatatable()
         return new Promise((resolve) => {
             setTimeout(() => {
                 let y = y_test

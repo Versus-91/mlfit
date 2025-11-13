@@ -31,19 +31,19 @@ export default {
     ...mapStores(settingStore),
 
   },
-  errorCaptured(err, vm, info) {
+  // errorCaptured(err, vm, info) {
 
-    console.log(`cat EC: ${err.toString()}\ninfo: ${info} + ${err.stack}`);
+  //   console.log(`cat EC: ${err.toString()}\ninfo: ${info} + ${err.stack}`);
 
-    this.$buefy.toast.open(
-      {
-        duration: 3000,
-        message: 'Something went wrong',
-        type: 'is-danger',
-      })
-    this.addMessage({ message: err.toString(), type: 'danger' })
-    return false;
-  },
+  //   this.$buefy.toast.open(
+  //     {
+  //       duration: 3000,
+  //       message: 'Something went wrong',
+  //       type: 'is-danger',
+  //     })
+  //   this.addMessage({ message: err.toString(), type: 'danger' })
+  //   return false;
+  // },
   data() {
     return {
       dataframe: null,

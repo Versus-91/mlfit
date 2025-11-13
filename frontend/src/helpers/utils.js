@@ -567,3 +567,37 @@ export function renderDatasetStats(data, continuousFeatures, categoricalFeatures
     ]
 
 }
+export async function confusionMatrix(labels, predictions, numClasses, weights) {
+    const danfo = await getDanfo()
+    const labelsInt = labels.cast('int32');
+    const predictionsInt = predictions.cast('int32');
+    if (numClasses == null) {
+        numClasses = danfo.tensorflow.tidy(() => {
+            const max = danfo.tensorflow.maximum(labelsInt.max(), predictionsInt.max()).cast('int32');
+            return max.dataSync()[0] + 1;
+        });
+    }
+    let weightsPromise = Promise.resolve(null);
+    if (weights != null) {
+        weightsPromise = weights.data();
+    }
+    return Promise.all([labelsInt.data(), predictionsInt.data(), weightsPromise])
+        .then(([labelsArray, predsArray, weightsArray]) => {
+            const result = Array(numClasses).fill(0);
+            // Initialize the matrix
+            for (let i = 0; i < numClasses; i++) {
+                result[i] = Array(numClasses).fill(0);
+            }
+            for (let i = 0; i < labelsArray.length; i++) {
+                const label = labelsArray[i];
+                const pred = predsArray[i];
+                if (weightsArray != null) {
+                    result[label][pred] += weightsArray[i];
+                }
+                else {
+                    result[label][pred] += 1;
+                }
+            }
+            return result;
+        });
+}

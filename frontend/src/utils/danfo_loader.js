@@ -19,3 +19,14 @@ export const getPlotly = async () => {
     }
     return plotlyPromise
 }
+let highChartPromise = null
+export const highChartLoader = async () => {
+    if (!highChartPromise) {
+        highChartPromise = import('highcharts').then((module) => {
+            window.Highcharts = module.default;
+            return import('highcharts/modules/heatmap')
+        });
+
+    }
+    return highChartPromise
+}

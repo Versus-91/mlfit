@@ -4,9 +4,9 @@ import PCA from './dimensionality-reduction/pca';
 import { equalIntervalBreaks, kernelDensityEstimation, standardDeviation, interquartileRange } from "simple-statistics"
 import { schemeTableau10, interpolateRainbow } from 'd3-scale-chromatic';
 import { FeatureCategories } from "./settings";
-import { metrics as ClassificationMetric, encode_name, scale_data, binarize } from './utils.js';
+import { metrics as ClassificationMetric, encode_name, scale_data, confusionMatrix } from './utils.js';
 import { corrcoeff } from 'jstat';
-import { getDanfo } from '@/utils/danfo_loader';
+import { getDanfo, highChartLoader } from '@/utils/danfo_loader';
 import TSNE from './dimensionality-reduction/tsne';
 const plotlyImageExportConfig = {
     toImageButtonOptions: {
@@ -24,7 +24,8 @@ export class ChartController {
     }
 
     // eslint-disable-next-line no-unused-vars
-    classification_target_chart(values, labels, container, title = "") {
+    async classification_target_chart(values, labels, container, title = "") {
+        await highChartLoader()
         let uniqueLabels = [...new Set(labels)];
         let colorIndices = labels.map(label => this.indexToColor(uniqueLabels.indexOf(label)));
         let data = [];
@@ -180,15 +181,7 @@ export class ChartController {
 
         window.Plotly.newPlot(container, data, layout);
     }
-    async falsePositives(yTrue, yPred) {
-        return this.danfo.tensorflow.tidy(() => {
-            const one = this.danfo.tensorflow.scalar(1);
-            const zero = this.danfo.tensorflow.scalar(0);
-            return this.danfo.tensorflow.logicalAnd(yTrue.equal(zero), yPred.equal(one))
-                .sum()
-                .cast('float32');
-        });
-    }
+
     indexToColor(index, max) {
         return this.color_scheme_sequential((index + 1) / max);
     }
@@ -328,50 +321,6 @@ export class ChartController {
             staticPlot: true,
         })
 
-    }
-    trueNegatives(yTrue, yPred) {
-        return this.danfo.tensorflow.tidy(() => {
-            const zero = this.danfo.tensorflow.scalar(0);
-            return this.danfo.tensorflow.logicalAnd(yTrue.equal(zero), yPred.equal(zero))
-                .sum()
-                .cast('float32');
-        });
-    }
-
-    // TODO(cais): Use tf.metrics.falsePositiveRate when available.
-    falsePositiveRate(yTrue, yPred) {
-        return this.danfo.tensorflow.tidy(() => {
-            const fp = this.falsePositives(yTrue, yPred);
-            const tn = this.trueNegatives(yTrue, yPred);
-            return fp.div(fp.add(tn));
-        });
-    }
-    drawROC(targets, probs) {
-
-        return this.danfo.tensorflow.tidy(() => {
-            const thresholds = [
-                0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55,
-                0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.92, 0.94, 0.96, 0.98, 1.0
-            ];
-            const tprs = [];  // True positive rates.
-            const fprs = [];  // False positive rates.
-            let area = 0;
-            for (let i = 0; i < thresholds.length; ++i) {
-                const threshold = thresholds[i];
-                const threshPredictions = binarize(probs, threshold).as1D();
-
-                const fpr = this.falsePositiveRate(targets, threshPredictions).dataSync()[0];
-                const tpr = this.danfo.tensorflow.metrics.recall(targets, threshPredictions).dataSync()[0];
-
-                fprs.push(fpr);
-                tprs.push(tpr);
-                // Accumulate to area for AUC calculation.
-                if (i > 0) {
-                    area += (tprs[i] + tprs[i - 1]) * (fprs[i - 1] - fprs[i]) / 2;
-                }
-            }
-            return [area, fprs, tprs];
-        });
     }
     nrd(x) {
         let s = standardDeviation(x);
@@ -1340,48 +1289,16 @@ export class ChartController {
         }, { responsive: true });
     }
     // eslint-disable-next-line no-unused-vars
-    confusionMatrix(labels, predictions, numClasses, weights) {
-        const labelsInt = labels.cast('int32');
-        const predictionsInt = predictions.cast('int32');
-        if (numClasses == null) {
-            numClasses = this.danfo.tensorflow.tidy(() => {
-                const max = this.danfo.tensorflow.maximum(labelsInt.max(), predictionsInt.max()).cast('int32');
-                return max.dataSync()[0] + 1;
-            });
-        }
-        let weightsPromise = Promise.resolve(null);
-        if (weights != null) {
-            weightsPromise = weights.data();
-        }
-        return Promise.all([labelsInt.data(), predictionsInt.data(), weightsPromise])
-            .then(([labelsArray, predsArray, weightsArray]) => {
-                const result = Array(numClasses).fill(0);
-                // Initialize the matrix
-                for (let i = 0; i < numClasses; i++) {
-                    result[i] = Array(numClasses).fill(0);
-                }
-                for (let i = 0; i < labelsArray.length; i++) {
-                    const label = labelsArray[i];
-                    const pred = predsArray[i];
-                    if (weightsArray != null) {
-                        result[label][pred] += weightsArray[i];
-                    }
-                    else {
-                        result[label][pred] += 1;
-                    }
-                }
-                return result;
-            });
-    }
-    async plotConfusionMatrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
 
-        const confusionMatrix = await this.confusionMatrix(y, predictedLabels, uniqueClasses.length);
+    async plotConfusionMatrix(y, predictedLabels, labels, uniqueClasses, tab_index) {
+        await highChartLoader()
+        const mtx = await confusionMatrix(y, predictedLabels, uniqueClasses.length);
         let metric = await ClassificationMetric(y.arraySync(), predictedLabels.arraySync(), uniqueClasses)
         let accuracy = metric.accuracy.toFixed(2);
         let f1Micro = metric.f1_micro.toFixed(2)
         let f1Macro = metric.f1_macro.toFixed(2)
 
-        let len = confusionMatrix[0].length
+        let len = mtx[0].length
         let preceissions = [];
         let recalls = [];
         for (let j = 0; j < len; j++) {
@@ -1390,17 +1307,15 @@ export class ChartController {
         for (let j = 0; j < len; j++) {
             recalls.push(parseFloat(metric.recall[j].toFixed(2)))
         }
-        this.danfo.tensorflow.dispose(y)
-        this.danfo.tensorflow.dispose(predictedLabels)
         const metric_labels = ["Precession", "Recall", "F1 score", "Support"]
         labels.push("Precession")
         recalls.push(0)
-        confusionMatrix.push(preceissions)
+        mtx.push(preceissions)
         let items_labels = labels.filter(x => !metric_labels.includes(x))
         let formatted_matrix = []
-        for (let i = 0; i < confusionMatrix.length; i++) {
-            const element = confusionMatrix[i];
-            if (i < confusionMatrix.length - 1) {
+        for (let i = 0; i < mtx.length; i++) {
+            const element = mtx[i];
+            if (i < mtx.length - 1) {
                 element.push(recalls[i])
             }
             for (let j = 0; j < element.length; j++) {
@@ -1553,7 +1468,8 @@ export class ChartController {
 
 
 
-    plot_regularization(weights, alphas, names, tab_index) {
+    async plot_regularization(weights, alphas, names, tab_index) {
+        await highChartLoader()
         let content = `
                     <div class="column is-6" id="regularization_${tab_index}" style="height: 40vh;">
                     </div>

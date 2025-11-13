@@ -452,7 +452,7 @@ export default class LinearRegression extends RegressionModel {
         current.chartController.residual_plot(y_test, this.summary['residuals_ols'], 'regression_residual_' + current.id, 'OLS residuals')
         current.chartController.residual_plot(y_test, this.summary['residuals_min'], 'regression_residual_min_' + current.id, 'lasso min residuals')
         current.chartController.residual_plot(y_test, this.summary['residuals_1se'], 'regression_residual_1se_' + current.id, 'lasso 1se residuals')
-        this.ui.predictions_table_regression(x_test, y_test, predictions, this.id);
+        predictions_table_regression(x_test, y_test, predictions, this.id);
         window.dispatchEvent(new Event('resize'));
 
     }

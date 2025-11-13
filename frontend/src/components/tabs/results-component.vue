@@ -52,6 +52,7 @@ import { computed } from "vue";
 import { ChartController } from '@/helpers/charts';
 import { removeTable } from '@/helpers/utils'
 
+
 export default {
     components: {
         'classification-view-component': ClassificationViewComponent,
@@ -100,6 +101,7 @@ export default {
                 window.Plotly.purge('comaprison_plot');
             } catch (error) {
                 console.log('no plot to remove');
+                throw error
             }
             if (dataset) {
                 datasetName = dataset.name
@@ -176,8 +178,8 @@ export default {
             alert(id)
         },
     },
-    mounted(){
-        this.chartController = new ChartController(null, null)
+    mounted() {
+        this.chartController = new ChartController()
     }
 }
 </script>
