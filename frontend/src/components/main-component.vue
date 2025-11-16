@@ -1,6 +1,5 @@
 <template>
     <div class="column is-10">
-        {{ activeTab }}
         <section>
             <b-tabs v-model="activeTab" :position="'is-centered'" :animated="false" type="success" @input="resize()">
                 <b-tab-item label="Data Analysis" icon="search" icon-pack="fas">
@@ -165,7 +164,10 @@
                     </section>
                     <section v-else>
                         <b-message type="is-danger" has-icon icon-pack="fas">
-                            Upload a dataset or select a sample from sidebar.
+                            <span class="my-auto">
+                                Upload a dataset or select a sample from sidebar.
+
+                            </span>
                         </b-message>
                     </section>
 

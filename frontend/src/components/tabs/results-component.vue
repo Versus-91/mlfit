@@ -37,7 +37,7 @@
                 </div>
             </b-tab-item>
         </b-tabs>
-        <b-message type="is-danger" has-icon icon-pack="fas" v-else>
+        <b-message type="is-danger" has-icon icon-pack="fas" class="my-auto" v-else>
             No result to show.
         </b-message>
     </div>

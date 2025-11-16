@@ -1,7 +1,7 @@
 <!-- eslint-disable no-unused-vars -->
 <template>
     <div class="column is-2  has-background-light" style="height: 100%;">
-        <figure class="image is-96x96">
+        <figure class="image mx-auto my-auto p-3">
             <img fetchpriority="high" src="/logo.png" alt="logo" />
         </figure>
         <section>
