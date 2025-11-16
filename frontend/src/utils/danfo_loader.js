@@ -24,7 +24,11 @@ export const highChartLoader = async () => {
     if (!highChartPromise) {
         highChartPromise = import('highcharts').then((module) => {
             window.Highcharts = module.default;
-            return import('highcharts/modules/heatmap')
+            // Return the heatmap import promise to ensure it completes
+            return import('highcharts/modules/heatmap');
+        }).then(() => {
+            // Now both are definitely loaded
+            return window.Highcharts;
         });
 
     }

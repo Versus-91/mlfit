@@ -13,7 +13,7 @@
                         {{ feature + ', ' }}
                     </span>
                 </p>
-                <p class="ml-2 my-1 subtitle is-6 is-size-7">Numerical Features : <span
+                <p class="ml-2 my-1 has-text-white subtitle is-6 is-size-7">Numerical Features : <span
                         v-for="feature in result.numericColumns" :key="feature">
                         {{ feature + ', ' }}
                     </span></p>
@@ -32,9 +32,12 @@
                 <p class="ml-2 my-1 subtitle is-size-7"> f1 macro :{{ result.metrics?.f1_macro?.toFixed(2) }}</p>
                 <button class="button is-danger has-text-white is-small" style="color:#fff !important"
                     @click="deleteTab()">Delete </button>
-                <button class="button is-success is-small" @click="toggleHelp(result.helpSectionId)">Method description
+                <button class="button is-success has-text-white is-small mx-1"
+                    @click="toggleHelp(result.helpSectionId)">Method
+                    description
                 </button>
-                <button class="button is-info is-small" @click="downloadPythonCode()">Download the code</button>
+                <button class="button is-info has-text-white is-small" @click="downloadPythonCode()">Download the
+                    code</button>
             </b-message>
         </div>
         <template v-if="!hide">

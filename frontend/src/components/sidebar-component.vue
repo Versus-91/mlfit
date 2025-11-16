@@ -35,7 +35,7 @@
                 <b-field label="Model" :label-position="'on-border'">
                     <b-select :disabled="tuneModel" :expanded="true" v-model="modelOption" size="is-small">
                         <option v-for="option in modelOptions" :value="option.id" :key="option.id">
-                            {{ option.title }}
+                            {{ option.label }}
                         </option>
                     </b-select>
                     <b-button @click="configureModel" size="is-small" icon-pack="fas"
@@ -126,7 +126,7 @@ export default {
             configureFeatures: false,
             modelOptions: Settings.classification,
             imputationOption: 1,
-            modelOption: 1,
+            modelOption: 5,
             featureTypeOptions: FeatureCategories,
             crossValidationOption: 1,
             columns: [],

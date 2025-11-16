@@ -44,6 +44,36 @@ export const ScaleOptions = {
 }
 export const Settings = {
     "classification": {
+        "random_forest": {
+            "id": 5,
+            "label": "Random forest",
+            "title": "RF",
+            "value": 5,
+            "options": {
+                "estimators": {
+                    label: "estimators",
+                    type: "number",
+                    default: 100
+                },
+                "features": {
+                    label: "features",
+                    type: "number",
+                    default: "sqrt"
+                },
+                "depth": {
+                    label: "depth",
+                    type: "number",
+                    default: 5
+                },
+                "criteria": {
+                    label: "criteria",
+                    type: "select",
+                    default: "gini",
+                    "values": [{ label: "gini", value: "gini" }, { label: "log loss", value: "log_loss" },
+                    { label: "entropy", value: "entropy" }]
+                }
+            },
+        },
         "logistic_regression": {
             "id": 1,
             "label": "Logistic Regression",
@@ -135,36 +165,7 @@ export const Settings = {
                 },
             },
         },
-        "random_forest": {
-            "id": 5,
-            "label": "Random forest",
-            "title": "RF",
-            "value": 5,
-            "options": {
-                "estimators": {
-                    label: "estimators",
-                    type: "number",
-                    default: 100
-                },
-                "features": {
-                    label: "features",
-                    type: "number",
-                    default: "sqrt"
-                },
-                "depth": {
-                    label: "depth",
-                    type: "number",
-                    default: 5
-                },
-                "criteria": {
-                    label: "criteria",
-                    type: "select",
-                    default: "gini",
-                    "values": [{ label: "gini", value: "gini" }, { label: "log loss", value: "log_loss" },
-                    { label: "entropy", value: "entropy" }]
-                }
-            },
-        },
+
         "boosting": {
             "id": 6,
             "label": "Boosting",

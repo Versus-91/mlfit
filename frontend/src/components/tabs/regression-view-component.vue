@@ -28,7 +28,7 @@
                 <p class="subtitle is-size-7 my-1">Goodness of Fit :</p>
                 <p class="ml-2 my-1 subtitle is-size-7 ">MSE : {{ result.metrics.mse.toFixed(2) }}</p>
                 <p class="ml-2 my-1 subtitle is-size-7 ">R2 : {{ result.metrics.rsquared.toFixed(2) }}</p>
-                <button class="button is-danger has-text-white is-small" @click="deleteTab()">Delete </button>
+                <button class="button is-danger mx-1 has-text-white is-small" @click="deleteTab()">Delete </button>
                 <button class="button is-success is-small" @click="toggleHelp(result.helpSectionId)">Help</button>
 
             </b-message>
